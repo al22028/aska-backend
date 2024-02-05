@@ -16,6 +16,7 @@ custom:
   # see: https://www.serverless.com/plugins/serverless-offline
   serverless-offline:
     httpPort: 3333
+    noPrependStageInUrl: true
 
   # Serverless Prune Plugin
   # see: https://www.serverless.com/plugins/serverless-prune-plugin
