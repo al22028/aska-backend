@@ -1,0 +1,155 @@
+service: aska-api
+frameworkVersion: "3"
+
+plugins:
+  - serverless-offline
+  - serverless-python-requirements
+  - serverless-prune-plugin
+  - serverless-ignore
+  - serverless-deployment-bucket
+  - serverless-plugin-tracing
+
+custom:
+  default:
+    stage: dev
+  # Serverless Offline
+  # see: https://www.serverless.com/plugins/serverless-offline
+  serverless-offline:
+    httpPort: 3333
+
+  # Serverless Prune Plugin
+  # see: https://www.serverless.com/plugins/serverless-prune-plugin
+  prune:
+    automatic: true
+    number: 3
+  # Serverless Python Requirements
+  pythonRequirements:
+    # comment out this options the first deployment
+    # Cross compiling
+    dockerizePip: true
+    useDownloadCache: true
+    useStaticCache: true
+    slim: true
+    # poetry
+    usePoetry: true
+    noDeploy:
+      - pytest
+      - boto3
+      - black
+      - mypy
+      - isort
+      - pytest-mock
+      - pytest-cov
+      - taskipy
+      - ruff
+      - alembic
+      - tox
+  # Serverless Deployment Bucket
+  deploymentBucket:
+    versioning: true
+    accelerate: true
+    blockPublicAccess: true
+    tags:
+      - Key: Environment
+        Value: ${self:provider.stage}
+
+provider:
+  name: aws
+  # Default stage (default: dev)
+  stage: ${opt:stage, self:custom.default.stage}
+  # Default region (default: us-east-1)
+  region: ap-northeast-1
+
+  # x-ray tracing
+  tracing:
+    lambda: true
+    apiGateway: true
+
+  # Lambda configuration
+  runtime: python3.11
+  runtimeManagement: auto
+  # Processor architecture: 'x86_64' or 'arm64' via Graviton2 (default: x86_64)
+  architecture: x86_64
+  # Default memory size for functions (default: 1024MB)
+  memorySize: 512
+  # Default timeout for functions (default: 6 seconds)
+  # Note: API Gateway has a maximum timeout of 30 seconds
+  timeout: 10
+
+  # Lambda execution role
+  iam:
+    role:
+      statements:
+        # Allow functions to read/write objects in a bucket
+        - Effect: Allow
+          Action:
+            - "s3:*"
+          Resource:
+            - "*"
+        # Allow functions to read/write message in a queue (SQS)
+        - Effect: Allow
+          Action:
+            - "sqs:ReceiveMessage"
+            - "sqs:SendMessage"
+            - "sqs:DeleteMessage"
+            - "sqs:GetQueueAttributes"
+          Resource:
+            - "*"
+        # Allow functions to operate network interfaces on EC2 stuff
+        - Effect: Allow
+          Action:
+            - "logs:CreateLogGroup"
+            - "logs:CreateLogStream"
+            - "logs:PutLogEvents"
+            - "ec2:CreateNetworkInterface"
+            - "ec2:DescribeNetworkInterfaces"
+            - "ec2:DeleteNetworkInterface"
+            - "ec2:AssignPrivateIpAddresses"
+            - "ec2:UnassignPrivateIpAddresses"
+          Resource:
+            - "*"
+
+  # Versioning Deployed Functions
+  # https://www.serverless.com/framework/docs/providers/aws/guide/functions#versioning-deployed-functions
+  versionFunctions: false
+
+  # lambda deployment bucket name
+  deploymentBucket:
+    name: ${self:service}-deployment-bucket-${self:provider.stage}
+    serverSideEncryption: AES256
+
+  environment:
+    TZ: Asia/Tokyo
+    # api config
+    STAGE: ${opt:stage, self:custom.default.stage}
+    APP_API_VERSION: ${file(./env/${opt:stage, self:custom.default.stage}.yml):APP_API_VERSION}
+    APP_API_CORS_ALLOWED_ORIGINS: ${file(./env/${opt:stage, self:custom.default.stage}.yml):APP_API_CORS_ALLOWED_ORIGINS}
+    # lambda powertools config
+    POWERTOOLS_LOG_LEVEL: ${file(./env/${opt:stage, self:custom.default.stage}.yml):POWERTOOLS_LOG_LEVEL}
+    POWERTOOLS_SERVICE_NAME: ${file(./env/${opt:stage, self:custom.default.stage}.yml):POWERTOOLS_SERVICE_NAME}
+    POWERTOOLS_DEV: ${file(./env/${opt:stage, self:custom.default.stage}.yml):POWERTOOLS_DEV}
+    POWERTOOLS_DEBUG: ${file(./env/${opt:stage, self:custom.default.stage}.yml):POWERTOOLS_DEBUG}
+    POWERTOOLS_TRACE_MIDDLEWARES: ${file(./env/${opt:stage, self:custom.default.stage}.yml):POWERTOOLS_TRACE_MIDDLEWARES}
+    POWERTOOLS_TRACE_DISABLED: ${file(./env/${opt:stage, self:custom.default.stage}.yml):POWERTOOLS_TRACE_DISABLED}
+    # SQLAlchemy config
+    SQLALCHEMY_ECHO_SQL: ${file(./env/${opt:stage, self:custom.default.stage}.yml):SQLALCHEMY_ECHO_SQL}
+    # AWS RDS config
+    AWS_RDS_DATABASE_URL: ${file(./env/${opt:stage, self:custom.default.stage}.yml):AWS_RDS_DATABASE_URL}
+
+package:
+  # package.json devDependencies are not included in the deployment package
+  excludeDevDependencies: true
+  exclude:
+    - ./**
+  include:
+    - ./src/**
+
+functions:
+  ApplicationApiHandler:
+    description: Aska Application API Handler
+    handler: src/v1/handlers/app.lambda_handler
+    events:
+      - http:
+          path: /{proxy+}
+          method: ANY
+          cors: true

@@ -4,8 +4,8 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_USER: psaco
-      POSTGRES_PASSWORD: psaco
+      POSTGRES_USER: aska
+      POSTGRES_PASSWORD: aska
       POSTGRES_DB: app
     ports:
       - 5433:5432
@@ -13,8 +13,8 @@ services:
   test-db:
     image: postgres:15
     environment:
-      POSTGRES_USER: psaco
-      POSTGRES_PASSWORD: psaco
+      POSTGRES_USER: aska
+      POSTGRES_PASSWORD: aska
       POSTGRES_DB: test
     ports:
       - 5431:5432
@@ -26,8 +26,8 @@ services:
     volumes:
       - pgadmin4_data:/var/lib/pgadmin
     environment:
-      PGADMIN_DEFAULT_EMAIL: psaco@mail.com
-      PGADMIN_DEFAULT_PASSWORD: psaco
+      PGADMIN_DEFAULT_EMAIL: aska@mail.com
+      PGADMIN_DEFAULT_PASSWORD: aska
     depends_on:
       - db
 
