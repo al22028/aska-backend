@@ -1,0 +1,38 @@
+{
+  "name": "aska-backend",
+  "version": "1.0.0",
+  "description": "![python](https://img.shields.io/badge/-Python-F2C63C.svg?logo=python&style=for-the-badge) ![AWS](https://img.shields.io/badge/Amazon_AWS-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white) ![lambda](https://img.shields.io/badge/-AWS%20lambda-232F3E.svg?logo=aws-lambda&style=for-the-badge) ![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white) ![git](https://img.shields.io/badge/GIT-E44C30?style=for-the-badge&logo=git&logoColor=white) ![github-actions](https://img.shields.io/badge/-githubactions-FFFFFF.svg?logo=github-actions&style=for-the-badge) ![postgresql](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white) ![terraform](https://img.shields.io/badge/-terraform-20232A?style=for-the-badge&logo=terraform&logoColor=844EBA)",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "dev": "serverless offline start --reloadHandler --stage local",
+    "clean": "rm -rf .serverless .pytest_cache .mypy_cache .coverage .pytest_cache .mypy_cache .ruff_cache htmlcov",
+    "deploy": "serverless deploy --verbose --stage dev --region ap-northeast-1",
+    "deploy:dev": "serverless deploy --verbose --stage dev --region ap-northeast-1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/world-wing/aska-backend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/world-wing/aska-backend/issues"
+  },
+  "devDependencies": {
+    "serverless-deployment-bucket": "^1.6.0",
+    "serverless-ignore": "^0.2.1",
+    "serverless-offline": "^13.3.2",
+    "serverless-plugin-tracing": "^2.0.0",
+    "serverless-prune-plugin": "^2.0.2",
+    "serverless-prune-versions": "^1.0.4",
+    "serverless-python-requirements": "^6.0.1"
+  },
+  "volta": {
+    "node": "18.12.1",
+    "npm": "8.19.2"
+  },
+  "homepage": "https://github.com/world-wing/aska-backend#readme"
+}
