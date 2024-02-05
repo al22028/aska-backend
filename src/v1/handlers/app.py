@@ -15,12 +15,19 @@ class HealthCheckSchema(BaseModel):
     status: str
 
 
-@app.get("/healthcheck")
+@app.get(
+    "/healthcheck",
+    cors=True,
+    summary="Health Check",
+    response_description="Health Check",
+    tags=["default"],
+    operation_id="healthcheck",
+)
 def health_check() -> HealthCheckSchema:
     return HealthCheckSchema(**{"status": "ok"})
 
 
-# @tracer.capture_lambda_handler
+@tracer.capture_lambda_handler
 @logger.inject_lambda_context(log_event=True)
 def lambda_handler(event: dict, context: LambdaContext) -> dict[str, str | int]:
     return app.resolve(event, context)
