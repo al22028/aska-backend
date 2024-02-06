@@ -77,6 +77,9 @@ provider:
   # Note: API Gateway has a maximum timeout of 30 seconds
   timeout: 10
 
+  # VPC configuration
+  vpc: ${file(./env/${opt:stage, self:custom.default.stage}.yml):vpc}
+
   # Lambda execution role
   iam:
     role:
