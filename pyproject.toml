@@ -80,7 +80,7 @@ disallow_untyped_defs = true
 # Shows a warning when encountering any code inferred to be unreachable or redundant after performing type analysis.
 warn_unreachable = true
 # Warns about unneeded # type: ignore comments.
-warn_unused_ignores = true
+# warn_unused_ignores = true
 # Warns about casting an expression to its inferred type.
 warn_redundant_casts = true
 

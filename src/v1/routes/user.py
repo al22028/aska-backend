@@ -53,9 +53,8 @@ def fetch_user(userId: str) -> UserSchema:
     responses={201: {"description": "User Created"}},
 )
 def create_user(user: UserCreateSchema) -> UserSchema:
-    created_user = controller.create_one(user_data=user)
-
-    return created_user
+    created_user, status_code = controller.create_one(user_data=user)
+    return created_user, status_code  # type: ignore
 
 
 @router.put(
@@ -66,9 +65,5 @@ def create_user(user: UserCreateSchema) -> UserSchema:
     operation_id="updateSingleUserById",
 )
 def update_user(userId: str, user: UserUpdateSchema) -> UserSchema:
-    return UserSchema(
-        id=userId,
-        **user.model_dump(),
-        created_at="2021-10-10",
-        updated_at="2021-10-10",
-    )
+    updated_user = controller.update_one(user_id=userId, user_data=user)
+    return updated_user

@@ -23,3 +23,18 @@ class UserController:
     def create_one(self, session: Session, user_data: UserCreateSchema) -> tuple[UserSchema, int]:
         user = self.users.create_one(db=session, user_data=user_data)
         return UserSchema(**user.serializer()), HTTPStatus.CREATED.value
+
+    @with_session
+    def find_one(self, session: Session, user_id: str) -> UserSchema:
+        user = self.users.find_one(db=session, user_id=user_id)
+        return UserSchema(**user.serializer())
+
+    @with_session
+    def update_one(self, session: Session, user_id: str, user_data: UserCreateSchema) -> UserSchema:
+        user = self.users.update_one(db=session, user_id=user_id, user_data=user_data)
+        return UserSchema(**user.serializer())
+
+    @with_session
+    def delete_one(self, session: Session, user_id: str) -> None:
+        self.users.delete_one(db=session, user_id=user_id)
+        return None
