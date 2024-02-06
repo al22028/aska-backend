@@ -3,10 +3,10 @@ from http import HTTPStatus
 from typing import List
 
 # Third Party Library
+from aws_lambda_powertools.event_handler.exceptions import BadRequestError, NotFoundError
 from database.base import User
 from database.session import with_session
 from models.user import UserORM
-from aws_lambda_powertools.event_handler.exceptions import NotFoundError, BadRequestError
 from schemas import UserCreateSchema, UserSchema, UserUpdateSchema
 from sqlalchemy.orm.session import Session
 
