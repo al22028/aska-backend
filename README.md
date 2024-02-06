@@ -88,6 +88,13 @@ alembic revision --autogenrate -m "migration message"
 alembic upgrade head
 ```
 
+### Terraform
+
+```bash
+cd terraform/environment/dev
+terraform apply
+```
+
 ## Branch
 
 基本的には [Git-flow](https://qiita.com/KosukeSone/items/514dd24828b485c69a05 "Git-flowって何？") です
