@@ -174,8 +174,9 @@ functions:
       - s3:
           bucket: aska-image-bucket-dev
           event: s3:ObjectCreated:*
+          rules:
+            - suffix: .png
           existing: true
-          suffix: .png
 
   PdfToImagesHandler:
     description: Convert PDF to Images
