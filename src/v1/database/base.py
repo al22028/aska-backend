@@ -50,3 +50,40 @@ class User(Base, TimestampMixin):
             "updatedAt": self.updated_at.isoformat(),  # type: ignore
             "createdAt": self.created_at.isoformat(),  # type: ignore
         }
+
+
+class Project(Base, TimestampMixin):
+    __tablename__ = "projects"
+
+    id = Column(String, primary_key=True)
+    name = Column(String(256), nullable=False)
+    team_id = Column(String, nullable=False)
+
+    def __init__(
+        self,
+        id: str,
+        name: str,
+        team_id: str,
+    ) -> None:
+        self.id = id
+        self.name = name
+        self.team_id = team_id
+        self.is_deleted = False
+        self.updated_at = datetime.now()
+        self.created_at = datetime.now()
+
+    def __str__(self) -> str:
+        return f"<Project id={self.id}, name={self.name}, team_id={self.team_id}>"
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
+    def serializer(self) -> dict:
+        return {
+            "id": self.id,
+            "name": self.name,
+            "teamId": self.team_id,
+            "isDeleted": self.is_deleted,
+            "updatedAt": self.updated_at.isoformat(),  # type: ignore
+            "createdAt": self.created_at.isoformat(),  # type: ignore
+        }
