@@ -21,8 +21,8 @@ class ProjectORM(object):
             return True
         return False
 
-    def create_one(self, db: Session, user_data: ProjectCreateSchema) -> Project:
-        create_project = Project(**user_data.model_dump())
+    def create_one(self, db: Session, project_data: ProjectCreateSchema) -> Project:
+        create_project = Project(**project_data.model_dump())
         db.add(create_project)
         return create_project
 
@@ -30,7 +30,9 @@ class ProjectORM(object):
         self, db: Session, project_id: str, project_data: ProjectUpdateSchema
     ) -> Project:
         project = self.find_one(db, project_id)
-        project.name = project_data.name
+        project.title = project_data.title
+        project.description = project_data.description
+        project.thumbnail = project_data.thumnail
         db.add(project)
         return project
 

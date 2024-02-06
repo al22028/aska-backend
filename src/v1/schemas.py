@@ -77,32 +77,56 @@ class ProjectCreateSchema(BaseSchema):
         description="ID",
         examples=[{"value": "44f97c86-d495-4afc-bdc6-f2443a159c28", "description": "ID"}],
     )
-    name: str = Field(
+    title: str = Field(
         ...,
         min_length=1,
         max_length=256,
-        title="Name",
-        description="Name",
-        examples=[{"value": "Project A", "description": "Name"}],
+        title="Title",
+        description="Title",
+        examples=[{"value": "Project A", "description": "Title"}],
     )
-    team_id: str = Field(
+    description: str = Field(
         ...,
         min_length=1,
         max_length=256,
-        title="Team ID",
-        description="Team ID",
-        examples=[{"value": "44f97c86-d495-4afc-bdc6-f2443a159c28", "description": "Team ID"}],
+        title="Description",
+        description="Description",
+        examples=[{"value": "description of the project", "description": "Description"}],
+    )
+    thumnail: str = Field(
+        ...,
+        min_length=1,
+        max_length=256,
+        title="Thumnail",
+        description="Thumnail",
+        examples=[{"value": "https://example.com/thumnail.jpg", "description": "Thumnail"}],
     )
 
 
 class ProjectUpdateSchema(BaseSchema):
-    name: str = Field(
+    title: str = Field(
         ...,
         min_length=1,
         max_length=256,
-        title="Name",
-        description="Name",
-        examples=[{"value": "Project A", "description": "Name"}],
+        title="Title",
+        description="Title",
+        examples=[{"value": "Project A", "description": "Title"}],
+    )
+    description: str = Field(
+        ...,
+        min_length=1,
+        max_length=256,
+        title="Description",
+        description="Description",
+        examples=[{"value": "description of the project", "description": "Description"}],
+    )
+    thumnail: str = Field(
+        ...,
+        min_length=1,
+        max_length=256,
+        title="Thumnail",
+        description="Thumnail",
+        examples=[{"value": "https://example.com/thumnail.jpg", "description": "Thumnail"}],
     )
 
 

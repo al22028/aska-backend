@@ -56,24 +56,22 @@ class Project(Base, TimestampMixin):
     __tablename__ = "projects"
 
     id = Column(String, primary_key=True)
-    name = Column(String(256), nullable=False)
-    team_id = Column(String, nullable=False)
+    title = Column(String(256), nullable=False)
+    description = Column(String(256), nullable=True)
+    thumbnail = Column(String(256), nullable=True)
 
     def __init__(
-        self,
-        id: str,
-        name: str,
-        team_id: str,
+        self, id: str, title: str, description: str | None = None, thumbnail: str | None = None
     ) -> None:
         self.id = id
-        self.name = name
-        self.team_id = team_id
-        self.is_deleted = False
+        self.title = title
+        self.description = description
+        self.thumbnail = thumbnail
         self.updated_at = datetime.now()
         self.created_at = datetime.now()
 
     def __str__(self) -> str:
-        return f"<Project id={self.id}, name={self.name}, team_id={self.team_id}>"
+        return f"<Project id={self.id}, title={self.title}>"
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -81,9 +79,9 @@ class Project(Base, TimestampMixin):
     def serializer(self) -> dict:
         return {
             "id": self.id,
-            "name": self.name,
-            "teamId": self.team_id,
-            "isDeleted": self.is_deleted,
+            "title": self.title,
+            "description": self.description,
+            "thumbnail": self.thumbnail,
             "updatedAt": self.updated_at.isoformat(),  # type: ignore
             "createdAt": self.created_at.isoformat(),  # type: ignore
         }
