@@ -1,0 +1,25 @@
+# api config
+APP_API_VERSION: "v1"
+APP_API_CORS_ALLOWED_ORIGINS: "*"
+
+# lambda powertools config
+POWERTOOLS_SERVICE_NAME: "api-dev"
+POWERTOOLS_LOG_LEVEL: "DEBUG"
+POWERTOOLS_DEV: true
+POWERTOOLS_DEBUG: true
+POWERTOOLS_TRACE_MIDDLEWARES: true
+POWERTOOLS_TRACE_DISABLED: false
+
+# SQLAlchemy config
+SQLALCHEMY_ECHO_SQL: false
+
+# AWS RDS config
+AWS_RDS_DATABASE_URL: postgresql+psycopg2://aska:aska@localhost:5433/app
+
+# AWS VPC
+vpc:
+  securityGroupIds:
+    - sg-04b6fb3078eadc820 # allow postgresql
+  subnetIds:
+    - subnet-0cd7c23f7289513a9 # app-private-subnet-ap-northeast-1a-dev
+    - subnet-02a9d2204149822a5 # app-private-subnet-ap-northeast-1c-dev
