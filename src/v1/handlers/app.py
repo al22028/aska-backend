@@ -22,7 +22,9 @@ app.include_router(user.router, prefix="/v1/users")
 
 
 class HealthCheckSchema(BaseModel):
-    status: str = Field(..., description="Health Check Status", example="ok")
+    status: str = Field(
+        ..., description="Health Check Status", examples=[{"value": "ok", "description": "ok"}]
+    )
 
 
 @app.get(

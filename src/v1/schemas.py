@@ -1,5 +1,5 @@
 # Third Party Library
-from pydantic import BaseModel, ConfigDict, Field, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from pydantic.alias_generators import to_camel
 
 
@@ -11,10 +11,18 @@ class BaseSchema(BaseModel):
 
 class TimeStampSchema(BaseSchema):
     created_at: str = Field(
-        ..., description="isoformated created datetime", example="2021-09-01T00:00:00.000Z"
+        ...,
+        description="isoformated created datetime",
+        examples=[
+            {"value": "2021-09-01T00:00:00.000Z", "description": "isoformated created datetime"}
+        ],
     )
     updated_at: str = Field(
-        ..., description="isoformated updated datetime", example="2021-09-01T00:00:00.000Z"
+        ...,
+        description="isoformated updated datetime",
+        examples=[
+            {"value": "2021-09-01T00:00:00.000Z", "description": "isoformated updated datetime"}
+        ],
     )
 
 
@@ -25,10 +33,15 @@ class UserCreateSchema(BaseSchema):
         max_length=256,
         title="ID",
         description="Same as Cognito sub",
-        example="44f97c86-d495-4afc-bdc6-f2443a159c28",
+        examples=[{"value": "44f97c86-d495-4afc-bdc6-f2443a159c28", "description": "ID"}],
     )
     name: str = Field(
-        ..., min_length=1, max_length=256, title="Name", description="Name", example="Tsubasa Taro"
+        ...,
+        min_length=1,
+        max_length=256,
+        title="Name",
+        description="Name",
+        examples=[{"value": "Tsubasa Taro", "description": "Name"}],
     )
     email: EmailStr = Field(
         ...,
@@ -38,6 +51,17 @@ class UserCreateSchema(BaseSchema):
         examples=[{"value": "tsubasa@world-wing.com", "description": "Email Address"}],
     )
     model_config = ConfigDict(from_attributes=True)
+
+
+class UserUpdateSchema(BaseSchema):
+    name: str = Field(
+        ...,
+        min_length=1,
+        max_length=256,
+        title="Name",
+        description="Name",
+        examples=[{"value": "Tsubasa Taro", "description": "Name"}],
+    )
 
 
 class UserSchema(UserCreateSchema, TimeStampSchema):
