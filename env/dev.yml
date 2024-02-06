@@ -20,6 +20,7 @@ AWS_RDS_DATABASE_URL: postgresql+psycopg2://postgres:postgres@aska-app-db-proxy.
 vpc:
   securityGroupIds:
     - sg-0e04a593ba030f3b2 # allow postgresql
+    - sg-04cc44eca5efba3b3 # allow http
   subnetIds:
     - subnet-07490af99721de89b # app-private-subnet-ap-northeast-1a-dev
     - subnet-0b813d5d3c902f887 # app-private-subnet-ap-northeast-1c-dev
