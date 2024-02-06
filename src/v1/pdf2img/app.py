@@ -1,8 +1,8 @@
 # Standard Library
 import json
 import os
-from typing import TypeVar
 import urllib.parse
+from typing import TypeVar
 
 # Third Party Library
 import boto3
