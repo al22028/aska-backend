@@ -50,12 +50,3 @@ class User(Base, TimestampMixin):
             "updatedAt": self.updated_at.isoformat(),  # type: ignore
             "createdAt": self.created_at.isoformat(),  # type: ignore
         }
-
-    def _serializer(self) -> dict:
-        return {
-            "id": self.id,
-            "name": self.name,
-            "email": self.email,
-            "updatedAt": self.updated_at.isoformat(),  # type: ignore
-            "createdAt": self.created_at.isoformat(),  # type: ignore
-        }
