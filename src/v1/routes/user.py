@@ -35,13 +35,7 @@ def fetch_all_users() -> List[UserSchema]:
     operation_id="fetchSingleUserById",
 )
 def fetch_user(userId: str) -> UserSchema:
-    return UserSchema(
-        id=userId,
-        name="John Doe",
-        email="sadc@mail.com",
-        created_at="2021-10-10",
-        updated_at="2021-10-10",
-    )
+    return controller.find_one_or_404(user_id=userId)
 
 
 @router.post(
@@ -63,6 +57,11 @@ def create_user(user: UserCreateSchema) -> UserSchema:
     summary="Update User",
     response_description="User",
     operation_id="updateSingleUserById",
+    responses={
+        200: {"description": "User Updated"},
+        400: {"description": "Bad Request"},
+        404: {"description": "User Not Found"},
+    },
 )
 def update_user(userId: str, user: UserUpdateSchema) -> UserSchema:
     updated_user = controller.update_one(user_id=userId, user_data=user)
