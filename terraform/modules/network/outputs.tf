@@ -3,5 +3,5 @@ output "private_subnet_ids" {
 }
 
 output "security_group_ids" {
-  value = [aws_security_group.allow_postgres.id]
+  value = [aws_security_group.allow_postgres.id, aws_security_group.allow_https.id]
 }
