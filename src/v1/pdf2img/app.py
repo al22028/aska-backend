@@ -1,12 +1,14 @@
 # Standard Library
 import json
 import os
-import urllib.parse
 from typing import TypeVar
 
 # Third Party Library
 import boto3
+import cv2
+import numpy as np
 from aws_lambda_powertools import Logger
+from aws_lambda_powertools.utilities.data_classes import S3Event, event_source
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from pdf2image import convert_from_bytes
 
@@ -24,6 +26,52 @@ T = TypeVar("T")
 # TODO: Refactor this function to use AWS Lambda Powertools
 
 
+def extract_feature_points(img: np.ndarray) -> dict:
+    """
+    1枚の画像から特徴点を抽出する関数
+
+    Args:
+      img (ndarray): 画像のndarray形式データ
+
+    Return:
+      list:
+        list[0] (cv2.Keypoint): 特徴点の座標等のデータのtuple
+        list[1]               : 1つの特徴点に対する特徴量記述子のデータのリスト
+    """
+    detector = cv2.AKAZE_create()  # type: ignore
+
+    kp, desc = detector.detectAndCompute(img, None)
+    kpt = []
+    # keypointをシリアライズ化してリストに格納
+    kpt = [keypoint_serializer(k) for k in kp]
+    res = {"keypoints": kpt, "descriptors": desc.tolist()}
+    return res
+
+
+def keypoint_serializer(kp: cv2.KeyPoint) -> dict:
+    """
+    JSONでデータを扱いたいため、cv2.Keypointをjsonにdumpsできる形にdecodeする
+    1つのcv2.Keypointからパラメータ x,y,size,angle,response,octave,calss_idを取りだす
+    取り出したパラメータを辞書型にして返す
+
+    Args:
+      kp (cv2.KeyPoint) : デコードするcv2.KeyPoint型のデータ
+
+    Return:
+      dict : cv2.KeyPointのパラメータを持った辞書
+    """
+
+    return {
+        "x": float(kp.pt[0]),
+        "y": float(kp.pt[1]),
+        "size": float(kp.size),
+        "angle": float(kp.angle),
+        "response": float(kp.response),
+        "octave": int(kp.octave),
+        "class_id": int(kp.class_id),
+    }
+
+
 def convert_to_images(id: str, pdf_file_data: bytes) -> None:
     if not os.path.exists("/tmp"):
         os.makedirs("/tmp")
@@ -32,17 +80,25 @@ def convert_to_images(id: str, pdf_file_data: bytes) -> None:
     for i, image in enumerate(images):
         image_path = f"/tmp/{i+1}.png"
         image.save(image_path, "PNG")
+        img = cv2.imread(image_path)
+        serialized_keypoints = extract_feature_points(img)
+        client.put_object(
+            Bucket=AWS_IMAGE_BUCKET,
+            Key=f"{id}/{i+1}.json",
+            Body=json.dumps(serialized_keypoints).encode(),
+        )
+        logger.info(f"Uploaded {AWS_IMAGE_BUCKET}/{id}/{i+1}.json")
         with open(image_path, "rb") as f:
             client.upload_fileobj(f, AWS_IMAGE_BUCKET, f"{id}/{i+1}.png")
             logger.info(f"Uploaded {image_path} to {AWS_IMAGE_BUCKET}/{id}/{i+1}.png")
-    os.removedirs("/tmp")
+        os.remove(image_path)
 
 
+@event_source(data_class=S3Event)
 @logger.inject_lambda_context(log_event=True)
-def lambda_handler(event: dict, context: LambdaContext) -> dict:
-    s3_event = event["Records"][0]["s3"]
-    bucket_name = s3_event["bucket"]["name"]
-    object_key = urllib.parse.unquote_plus(s3_event["object"]["key"], encoding="utf-8")
+def lambda_handler(event: S3Event, context: LambdaContext) -> dict:
+    bucket_name = event.bucket_name
+    object_key = event.object_key
     pdf_id, _ = object_key.split("/")
     response = client.get_object(Bucket=bucket_name, Key=object_key)
     pdf_file_data = response["Body"].read()
