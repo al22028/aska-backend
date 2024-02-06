@@ -14,7 +14,7 @@ POWERTOOLS_TRACE_DISABLED: false
 SQLALCHEMY_ECHO_SQL: false
 
 # AWS RDS config
-AWS_RDS_DATABASE_URL: postgresql+psycopg2://aska:aska@localhost:5433/app
+AWS_RDS_DATABASE_URL: postgresql+psycopg2://postgres:postgres@aska-app-db-proxy.proxy-cku5kitsuoky.ap-northeast-1.rds.amazonaws.com:5432/app
 
 # AWS VPC
 vpc:
