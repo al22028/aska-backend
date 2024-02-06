@@ -1,8 +1,11 @@
-from aws_lambda_powertools.utilities.data_classes import S3Event
-from aws.s3 import S3
+# Standard Library
+import json
+
+# Third Party Library
 import cv2
 import numpy as np
-import json
+from aws.s3 import S3
+from aws_lambda_powertools.utilities.data_classes import S3Event
 from features.keypoints import extract_feature_points
 
 

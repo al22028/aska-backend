@@ -76,7 +76,7 @@ provider:
   memorySize: 512
   # Default timeout for functions (default: 6 seconds)
   # Note: API Gateway has a maximum timeout of 30 seconds
-  timeout: 10
+  timeout: 20
 
   # VPC configuration
   vpc: ${file(./env/${opt:stage, self:custom.default.stage}.yml):vpc}
@@ -167,24 +167,16 @@ functions:
           path: /{proxy+}
           method: ANY
           cors: true
-  ImageWatchHandler:
-    description: Watch Image
-    handler: src/v1/handlers/s3watch.lambda_handler
-    events:
-      - s3:
-          bucket: aska-image-bucket-dev
-          event: s3:ObjectCreated:*
-          rules:
-            - suffix: .png
-          existing: true
 
-  PdfToImagesHandler:
+  PDFToImagesHandler:
     description: Convert PDF to Images
     image:
       name: PdfToImagesImage
-    timeout: 450
+    memorySize: 1024 # optional, in MB, default is 1024
+    timeout: 120 # optional, in seconds, default is 6
     events:
       - s3:
           bucket: aska-pdf-bucket-dev
           event: s3:ObjectCreated:*
           existing: true
+          forceDeploy: true
