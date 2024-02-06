@@ -1,6 +1,7 @@
 node_modules/
 .ruff_cache/
 .serverless/
+.venv/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
