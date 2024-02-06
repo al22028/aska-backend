@@ -45,6 +45,7 @@ custom:
       - ruff
       - alembic
       - tox
+      # - opencv-python
   # Serverless Deployment Bucket
   deploymentBucket:
     versioning: true
@@ -149,6 +150,7 @@ provider:
     AWS_PDF_BUCKET: aska-pdf-bucket-${self:provider.stage}
 
 package:
+  individually: true
   # package.json devDependencies are not included in the deployment package
   excludeDevDependencies: true
   exclude:
@@ -165,6 +167,15 @@ functions:
           path: /{proxy+}
           method: ANY
           cors: true
+  ImageWatchHandler:
+    description: Watch Image
+    handler: src/v1/handlers/s3watch.lambda_handler
+    events:
+      - s3:
+          bucket: aska-image-bucket-dev
+          event: s3:ObjectCreated:*
+          existing: true
+          suffix: .png
 
   PdfToImagesHandler:
     description: Convert PDF to Images
