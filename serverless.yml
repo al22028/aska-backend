@@ -75,7 +75,7 @@ provider:
   memorySize: 512
   # Default timeout for functions (default: 6 seconds)
   # Note: API Gateway has a maximum timeout of 30 seconds
-  timeout: 10
+  timeout: 60
 
   # VPC configuration
   vpc: ${file(./env/${opt:stage, self:custom.default.stage}.yml):vpc}
@@ -122,6 +122,12 @@ provider:
     name: ${self:service}-deployment-bucket-${self:provider.stage}
     serverSideEncryption: AES256
 
+  # ECR
+  ecr:
+    images:
+      PdfToImagesImage:
+        path: ./src/v1/pdf2img
+
   environment:
     TZ: Asia/Tokyo
     # api config
@@ -157,3 +163,8 @@ functions:
           path: /{proxy+}
           method: ANY
           cors: true
+
+  PdfToImagesHandler:
+    description: Convert PDF to Images
+    image:
+      name: PdfToImagesImage

@@ -1,0 +1,4 @@
+boto3
+pdf2image
+awslambdaric
+aws_lambda_powertools
