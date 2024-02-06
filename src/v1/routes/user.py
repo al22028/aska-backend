@@ -5,12 +5,15 @@ from typing import List
 from aws_lambda_powertools import Tracer
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.event_handler.api_gateway import Router
-from aws_lambda_powertools.utilities.validation import validator
+from controllers.user import UserController
 from schemas import UserCreateSchema, UserSchema, UserUpdateSchema
 
 app = APIGatewayRestResolver(debug=True)
 router = Router()
 tracer = Tracer()
+
+
+controller = UserController()
 
 
 @router.get(
@@ -21,16 +24,7 @@ tracer = Tracer()
     operation_id="fetchAllUsers",
 )
 def fetch_all_users() -> List[UserSchema]:
-    users = [
-        UserSchema(
-            id="1",
-            name="John Doe",
-            email="sadc@mail.com",
-            created_at="2021-10-10",
-            updated_at="2021-10-10",
-        ),
-    ]
-    return users
+    return controller.fetch_all_users()
 
 
 @router.get(
@@ -56,14 +50,12 @@ def fetch_user(userId: str) -> UserSchema:
     summary="Create User",
     response_description="User",
     operation_id="createSingleUser",
+    responses={201: {"description": "User Created"}},
 )
-@validator(request_body=UserCreateSchema)
 def create_user(user: UserCreateSchema) -> UserSchema:
-    return UserSchema(
-        **user.model_dump(),
-        created_at="2021-10-10",
-        updated_at="2021-10-10",
-    )
+    created_user = controller.create_one(user_data=user)
+
+    return created_user
 
 
 @router.put(
@@ -73,7 +65,6 @@ def create_user(user: UserCreateSchema) -> UserSchema:
     response_description="User",
     operation_id="updateSingleUserById",
 )
-@validator(request_body=UserUpdateSchema)
 def update_user(userId: str, user: UserUpdateSchema) -> UserSchema:
     return UserSchema(
         id=userId,

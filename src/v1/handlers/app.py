@@ -3,6 +3,7 @@ from aws_lambda_powertools import Logger, Tracer
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.event_handler.openapi.models import Server
 from aws_lambda_powertools.utilities.typing import LambdaContext
+from middlewares.common import handler_middleware
 from pydantic import BaseModel, Field
 from routes import user
 
@@ -39,6 +40,7 @@ def health_check() -> HealthCheckSchema:
     return HealthCheckSchema(**{"status": "ok"})
 
 
+@handler_middleware
 @tracer.capture_lambda_handler
 @logger.inject_lambda_context(log_event=True)
 def lambda_handler(event: dict, context: LambdaContext) -> dict[str, str | int]:
