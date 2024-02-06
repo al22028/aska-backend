@@ -75,7 +75,7 @@ provider:
   memorySize: 512
   # Default timeout for functions (default: 6 seconds)
   # Note: API Gateway has a maximum timeout of 30 seconds
-  timeout: 60
+  timeout: 10
 
   # VPC configuration
   vpc: ${file(./env/${opt:stage, self:custom.default.stage}.yml):vpc}
@@ -145,6 +145,8 @@ provider:
     SQLALCHEMY_ECHO_SQL: ${file(./env/${opt:stage, self:custom.default.stage}.yml):SQLALCHEMY_ECHO_SQL}
     # AWS RDS config
     AWS_RDS_DATABASE_URL: ${file(./env/${opt:stage, self:custom.default.stage}.yml):AWS_RDS_DATABASE_URL}
+    # S3
+    AWS_PDF_BUCKET: aska-pdf-bucket-${self:provider.stage}
 
 package:
   # package.json devDependencies are not included in the deployment package
@@ -168,3 +170,9 @@ functions:
     description: Convert PDF to Images
     image:
       name: PdfToImagesImage
+    timeout: 450
+    events:
+      - s3:
+          bucket: aska-pdf-bucket-dev
+          event: s3:ObjectCreated:*
+          existing: true
