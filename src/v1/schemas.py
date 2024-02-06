@@ -1,5 +1,5 @@
 # Third Party Library
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 
 
@@ -43,7 +43,7 @@ class UserCreateSchema(BaseSchema):
         description="Name",
         examples=[{"value": "Tsubasa Taro", "description": "Name"}],
     )
-    email: EmailStr = Field(
+    email: str = Field(
         ...,
         min_length=1,
         max_length=256,

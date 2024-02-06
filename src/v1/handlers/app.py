@@ -16,6 +16,11 @@ app.enable_swagger(
     title="Aska API",
     servers=[
         Server(url="http://localhost:3333", description="Local Development Server", variables=None),
+        Server(
+            url="https://zpkb2uywy5.execute-api.ap-northeast-1.amazonaws.com/dev",
+            description="Development",
+            variables=None,
+        ),
     ],
 )
 
