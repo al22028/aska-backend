@@ -110,5 +110,33 @@ class ProjectSchema(ProjectUpdateSchema, TimeStampSchema):
         ...,
         title="ID",
         description="Project ID",
-        examples=[{"value": "44f97c86-d495-4afc-bdc6-f2443a159c28", "description": "ID"}],
+        examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "ID"}],
+    )
+
+
+class PdfUpdateSchema(BaseSchema):
+    title: str = Field(
+        ...,
+        min_length=1,
+        max_length=256,
+        title="Title",
+        description="Title",
+        examples=[{"value": "PDF A", "description": "Title"}],
+    )
+    description: str = Field(
+        default="",
+        min_length=0,
+        max_length=512,
+        title="Description",
+        description="Description",
+        examples=[{"value": "description of the pdf", "description": "Description"}],
+    )
+
+
+class PdfCreateSchema(PdfUpdateSchema):
+    project_id: str = Field(
+        ...,
+        title="Project ID",
+        description="Project ID",
+        examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "Project ID"}],
     )
