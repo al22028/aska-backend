@@ -125,8 +125,10 @@ provider:
   # ECR
   ecr:
     images:
-      PdfToImagesImage:
+      PDFToImagesImage:
         path: ./src/v1/pdf2img
+      MatchingCalculatorImage:
+        path: ./src/v1/matching_calculator
 
   environment:
     TZ: Asia/Tokyo
@@ -182,7 +184,7 @@ functions:
   PDFToImagesHandler:
     description: Convert PDF to Images
     image:
-      name: PdfToImagesImage
+      name: PDFToImagesImage
     memorySize: 1024 # optional, in MB, default is 1024
     timeout: 120 # optional, in seconds, default is 6
     events:
@@ -191,3 +193,10 @@ functions:
           event: s3:ObjectCreated:*
           existing: true
           forceDeploy: true
+
+  MatchingCalculatHandler:
+    description: Image Matching Calculator
+    image:
+      name: MatchingCalculatorImage
+    memorySize: 1024 # optional, in MB, default is 1024
+    timeout: 120 # optional, in seconds, default is 6
