@@ -85,7 +85,7 @@ class ProjectCreateSchema(BaseSchema):
         description="Title",
         examples=[{"value": "Project A", "description": "Title"}],
     )
-    description: str = Field(
+    description: str | None = Field(
         ...,
         min_length=1,
         max_length=256,
@@ -93,7 +93,7 @@ class ProjectCreateSchema(BaseSchema):
         description="Description",
         examples=[{"value": "description of the project", "description": "Description"}],
     )
-    thumnail: str = Field(
+    thumnail: str | None = Field(
         ...,
         min_length=1,
         max_length=256,
@@ -112,7 +112,7 @@ class ProjectUpdateSchema(BaseSchema):
         description="Title",
         examples=[{"value": "Project A", "description": "Title"}],
     )
-    description: str = Field(
+    description: str | None = Field(
         ...,
         min_length=1,
         max_length=256,
@@ -120,7 +120,7 @@ class ProjectUpdateSchema(BaseSchema):
         description="Description",
         examples=[{"value": "description of the project", "description": "Description"}],
     )
-    thumnail: str = Field(
+    thumnail: str | None = Field(
         ...,
         min_length=1,
         max_length=256,
