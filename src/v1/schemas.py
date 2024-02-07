@@ -9,6 +9,15 @@ class BaseSchema(BaseModel):
         populate_by_name = True
 
 
+class DeletedSchema(BaseSchema):
+    message: str = Field(
+        default="Object deleted successfully",
+        title="Message",
+        description="Message",
+        examples=[{"value": "Object deleted successfully", "description": "Message"}],
+    )
+
+
 class TimeStampSchema(BaseSchema):
     created_at: str = Field(
         ...,

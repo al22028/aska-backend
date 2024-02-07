@@ -7,7 +7,7 @@ from aws_lambda_powertools.event_handler.exceptions import NotFoundError
 from database.base import Project
 from database.session import with_session
 from models.project import ProjectORM
-from schemas import ProjectCreateSchema, ProjectSchema, ProjectUpdateSchema
+from schemas import DeletedSchema, ProjectCreateSchema, ProjectSchema, ProjectUpdateSchema
 from sqlalchemy.orm.session import Session
 
 
@@ -51,8 +51,8 @@ class ProjectController:
         return ProjectSchema(**project.serializer())
 
     @with_session
-    def delete_one(self, session: Session, project_id: str) -> None:
+    def delete_one(self, session: Session, project_id: str) -> tuple[DeletedSchema, int]:
         if not self.projects.exists(db=session, project_id=project_id):
             raise NotFoundError
         self.projects.delete_one(db=session, project_id=project_id)
-        return None
+        return DeletedSchema(message="Project deleted successfully"), 200

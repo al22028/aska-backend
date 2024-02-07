@@ -6,7 +6,7 @@ from aws_lambda_powertools import Tracer
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.event_handler.api_gateway import Router
 from controllers.project import ProjectController
-from schemas import ProjectCreateSchema, ProjectSchema, ProjectUpdateSchema
+from schemas import DeletedSchema, ProjectCreateSchema, ProjectSchema, ProjectUpdateSchema
 
 app = APIGatewayRestResolver(debug=True)
 router = Router()
@@ -35,6 +35,7 @@ def fetch_all_projects() -> List[ProjectSchema]:
     description="特定のプロジェクトの詳細情報を取得します。",
     response_description="プロジェクト詳細",
     operation_id="fetchSingleProjectById",
+    responses={200: {"description": "プロジェクト詳細"}, 404: {"description": "Not found"}},
 )
 def fetch_project(projectId: str) -> ProjectSchema:
     return controller.find_one_or_404(project_id=projectId)
@@ -47,7 +48,10 @@ def fetch_project(projectId: str) -> ProjectSchema:
     description="新規にプロジェクトを追加します。",
     response_description="新規作成されたプロジェクト",
     operation_id="createSingleProject",
-    responses={201: {"description": "Project Created"}, 422: {"description": "Validation Error"}},
+    responses={
+        201: {"description": "新規作成されたプロジェクトの詳細"},
+        422: {"description": "Validation Error"},
+    },
 )
 def create_project(project: ProjectCreateSchema) -> ProjectSchema:
     created_project, status_code = controller.create_one(project_data=project)
@@ -62,7 +66,7 @@ def create_project(project: ProjectCreateSchema) -> ProjectSchema:
     response_description="更新されたプロジェクトの詳細",
     operation_id="updateSingleProjectById",
     responses={
-        200: {"description": "Project Updated"},
+        200: {"description": "更新されたプロジェクトの詳細"},
         400: {"description": "Bad Request"},
         404: {"description": "Project Not Found"},
     },
@@ -70,3 +74,20 @@ def create_project(project: ProjectCreateSchema) -> ProjectSchema:
 def update_project(projectId: str, project: ProjectUpdateSchema) -> ProjectSchema:
     updated_project = controller.update_one(project_id=projectId, project_data=project)
     return updated_project
+
+
+@router.delete(
+    "/<projectId>",
+    tags=["Project"],
+    summary="プロジェクトの削除",
+    description="特定のプロジェクトを削除します。",
+    response_description="削除されたプロジェクト",
+    operation_id="deleteSingleProjectById",
+    responses={
+        204: {"description": "削除されたプロジェクト"},
+        404: {"description": "Project Not Found"},
+    },
+)
+def delete_project(projectId: str) -> DeletedSchema:
+    delete_project, status_code = controller.delete_one(project_id=projectId)
+    return delete_project, status_code  # type: ignore
