@@ -1,4 +1,5 @@
 # Standard Library
+import uuid
 from datetime import datetime
 
 # Third Party Library
@@ -47,6 +48,41 @@ class User(Base, TimestampMixin):
             "id": self.id,
             "name": self.name,
             "email": self.email,
+            "updatedAt": self.updated_at.isoformat(),  # type: ignore
+            "createdAt": self.created_at.isoformat(),  # type: ignore
+        }
+
+
+class Project(Base, TimestampMixin):
+    __tablename__ = "projects"
+
+    id = Column(String, primary_key=True)
+    title = Column(String(256), nullable=False)
+    description = Column(String(256), nullable=True)
+    thumbnail = Column(String(256), nullable=True)
+
+    def __init__(
+        self, title: str, description: str | None = None, thumbnail: str | None = None
+    ) -> None:
+        self.id = str(uuid.uuid4())
+        self.title = title
+        self.description = description
+        self.thumbnail = thumbnail
+        self.updated_at = datetime.now()
+        self.created_at = datetime.now()
+
+    def __str__(self) -> str:
+        return f"<Project id={self.id}, title={self.title}>"
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
+    def serializer(self) -> dict:
+        return {
+            "id": self.id,
+            "title": self.title,
+            "description": self.description,
+            "thumbnail": self.thumbnail,
             "updatedAt": self.updated_at.isoformat(),  # type: ignore
             "createdAt": self.created_at.isoformat(),  # type: ignore
         }
