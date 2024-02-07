@@ -1,12 +1,10 @@
-#  type: ignore
+# type: ignore
 
+# Third Party Library
 import cv2
-
-
 from aws_lambda_powertools import Logger
+from aws_lambda_powertools.utilities.data_classes import LambdaFunctionUrlEvent, event_source
 from aws_lambda_powertools.utilities.typing import LambdaContext
-
-from aws_lambda_powertools.utilities.data_classes import event_source, LambdaFunctionUrlEvent
 
 logger = Logger(service="MatchingScoreCalculator")
 
