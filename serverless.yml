@@ -167,6 +167,18 @@ functions:
           method: ANY
           cors: true
 
+  S3WatchHandler:
+    description: Watch S3 Bucket
+    handler: src/v1/handlers/s3watch.lambda_handler
+    events:
+      - s3:
+          bucket: aska-image-bucket-dev
+          event: s3:ObjectCreated:*
+          rules:
+            - suffix: .png
+          existing: true
+          forceDeploy: true
+
   PDFToImagesHandler:
     description: Convert PDF to Images
     image:
