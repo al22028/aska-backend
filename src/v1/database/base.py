@@ -56,6 +56,7 @@ class User(Base, TimestampMixin):
 class Project(Base, TimestampMixin):
     __tablename__ = "projects"
 
+    id = Column(String, primary_key=True)
     title = Column(String(256), nullable=False)
     description = Column(String(256), nullable=True)
     thumbnail = Column(String(256), nullable=True)
