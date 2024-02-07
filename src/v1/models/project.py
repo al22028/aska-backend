@@ -1,5 +1,6 @@
 # Standard Library
 from typing import List
+import uuid
 
 # Third Party Library
 from database.base import Project
@@ -22,7 +23,7 @@ class ProjectORM(object):
         return False
 
     def create_one(self, db: Session, project_data: ProjectCreateSchema) -> Project:
-        create_project = Project(**project_data.model_dump())
+        create_project = Project(id=str(uuid.uuid4()).replace("-", ""), **project_data.model_dump())
         db.add(create_project)
         return create_project
 
@@ -32,7 +33,7 @@ class ProjectORM(object):
         project = self.find_one(db, project_id)
         project.title = project_data.title
         project.description = project_data.description
-        project.thumbnail = project_data.thumnail
+        project.thumbnail = project_data.thumbnail
         db.add(project)
         return project
 

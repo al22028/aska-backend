@@ -3,7 +3,7 @@ from http import HTTPStatus
 from typing import List
 
 # Third Party Library
-from aws_lambda_powertools.event_handler.exceptions import BadRequestError, NotFoundError
+from aws_lambda_powertools.event_handler.exceptions import NotFoundError
 from database.base import Project
 from database.session import with_session
 from models.project import ProjectORM
@@ -24,8 +24,6 @@ class ProjectController:
     def create_one(
         self, session: Session, project_data: ProjectCreateSchema
     ) -> tuple[ProjectSchema, int]:
-        if self.projects.exists(db=session, project_id=project_data.id):
-            raise BadRequestError("projectId already in use")
         project = self.projects.create_one(db=session, project_data=project_data)
         return ProjectSchema(**project.serializer()), HTTPStatus.CREATED.value
 

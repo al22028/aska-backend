@@ -44,7 +44,7 @@ def fetch_project(projectId: str) -> ProjectSchema:
     summary="Create Project",
     response_description="Project",
     operation_id="createSingleProject",
-    responses={201: {"description": "Project Created"}},
+    responses={201: {"description": "Project Created"}, 422: {"description": "Validation Error"}},
 )
 def create_project(project: ProjectCreateSchema) -> ProjectSchema:
     created_project, status_code = controller.create_one(project_data=project)

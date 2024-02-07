@@ -77,50 +77,29 @@ class ProjectCreateSchema(BaseSchema):
         description="Title",
         examples=[{"value": "Project A", "description": "Title"}],
     )
-    description: str | None = Field(
-        ...,
-        min_length=1,
-        max_length=256,
+    description: str = Field(
+        default="",
+        min_length=0,
+        max_length=512,
         title="Description",
         description="Description",
         examples=[{"value": "description of the project", "description": "Description"}],
     )
-    thumnail: str | None = Field(
+
+
+class ProjectUpdateSchema(ProjectCreateSchema):
+    thumbnail: str | None = Field(
         ...,
-        min_length=1,
-        max_length=256,
-        title="Thumnail",
-        description="Thumnail",
-        examples=[{"value": "https://example.com/thumnail.jpg", "description": "Thumnail"}],
+        title="Thumbnail",
+        description="Thumbnail",
+        examples=[{"value": "https://example.com/thumbnail.jpg", "description": "Thumbnail"}],
     )
 
 
-class ProjectUpdateSchema(BaseSchema):
-    title: str = Field(
+class ProjectSchema(ProjectUpdateSchema, TimeStampSchema):
+    id: str = Field(
         ...,
-        min_length=1,
-        max_length=256,
-        title="Title",
-        description="Title",
-        examples=[{"value": "Project A", "description": "Title"}],
+        title="ID",
+        description="Project ID",
+        examples=[{"value": "44f97c86-d495-4afc-bdc6-f2443a159c28", "description": "ID"}],
     )
-    description: str | None = Field(
-        ...,
-        min_length=1,
-        max_length=256,
-        title="Description",
-        description="Description",
-        examples=[{"value": "description of the project", "description": "Description"}],
-    )
-    thumnail: str | None = Field(
-        ...,
-        min_length=1,
-        max_length=256,
-        title="Thumnail",
-        description="Thumnail",
-        examples=[{"value": "https://example.com/thumnail.jpg", "description": "Thumnail"}],
-    )
-
-
-class ProjectSchema(ProjectCreateSchema, TimeStampSchema):
-    pass
