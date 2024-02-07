@@ -4,7 +4,6 @@ from typing import List
 
 # Third Party Library
 from database.base import Pdf
-
 from database.session import with_session
 from models.pdf import PdfORM
 from schemas import PdfCreateSchema, PdfSchema
