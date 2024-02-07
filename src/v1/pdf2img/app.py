@@ -15,7 +15,7 @@ from pdf2image import convert_from_bytes
 logger = Logger()
 
 
-AWS_IMAGE_BUCKET = "aska-image-bucket-dev"
+AWS_IMAGE_BUCKET = os.environ["AWS_IMAGE_BUCKET"]
 
 
 client = boto3.client("s3")
