@@ -45,7 +45,6 @@ custom:
       - ruff
       - alembic
       - tox
-      # - opencv-python
   # Serverless Deployment Bucket
   deploymentBucket:
     versioning: true
