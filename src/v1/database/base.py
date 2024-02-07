@@ -5,7 +5,7 @@ from datetime import datetime
 # Third Party Library
 from config.settings import AWS_RDS_DATABASE_URL, SQLALCHEMY_ECHO_SQL
 from sqlalchemy import JSON, Column, DateTime, ForeignKey, Integer, Numeric, String, create_engine
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import declarative_base, relationship
 
 Engine = create_engine(AWS_RDS_DATABASE_URL, echo=SQLALCHEMY_ECHO_SQL)
 Base = declarative_base()
@@ -62,8 +62,10 @@ class Project(Base, TimestampMixin):
 
     id = Column(String(36), primary_key=True)
     title = Column(String(256), nullable=False)
-    description = Column(String(256), nullable=True)
+    description = Column(String(512), nullable=True)
     thumbnail = Column(String(256), nullable=True)
+
+    child = relationship("Pdf", back_populates="parent", cascade="all, delete", passive_deletes=True)
 
     def __init__(
         self, title: str, description: str | None = None, thumbnail: str | None = None
@@ -99,8 +101,11 @@ class Pdf(Base, TimestampMixin):
     project_id = Column(String(36), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
     title = Column(String(256), nullable=True)
     thumbnail = Column(String(256), nullable=True)
-    description = Column(String(256), nullable=True)
+    description = Column(String(512), nullable=True)
     object_key = Column(String(256), nullable=False)
+
+    parent = relationship("Project", back_populates="child")
+    child = relationship("Page", back_populates="parent", cascade="all, delete", passive_deletes=True)
 
     def __init__(
         self,
@@ -143,6 +148,10 @@ class Page(Base, TimestampMixin):
     pdf_id = Column(String(36), ForeignKey("pdfs.id", ondelete="CASCADE"), nullable=False)
     status = Column(String(32), nullable=False)
 
+    parent = relationship("Pdf", back_populates="child")
+    child_image = relationship("Image", back_populates="parent", cascade="all, delete", passive_deletes=True)
+    child_paring = relationship("Pairing", back_populates="parent", cascade="all, delete", passive_deletes=True)
+
     def __init__(self, pdf_id: str, status: str) -> None:
         self.id = str(uuid.uuid4())
         self.pdf_id = pdf_id
@@ -172,6 +181,8 @@ class Pairing(Base, TimestampMixin):
     target_page_id = Column(String(36), ForeignKey("pages.id", ondelete="CASCADE"), nullable=False)
     threshold = Column(Integer, nullable=False)
     metadata = Column(JSON, nullable=False)
+
+    parent = relationship("Page", foreign_keys=[page_id, target_page_id], back_populates="child_paring")
 
     def __init__(
         self,
@@ -208,10 +219,13 @@ class Image(Base, TimestampMixin):
     __tablename__ = "images"
 
     id = Column(String(36), primary_key=True)
-    page_id = Column(String(36), ForeignKey("pages.id", ondelete="CASCADE"), nullable=False)
+    page_id = Column(String(36), ForeignKey("pages.id", ondelete="CASCADE"), nullable=True)
     object_key = Column(String(256), nullable=False)
     status = Column(String(32), nullable=False)
     key_points = Column(JSON, nullable=False)
+
+    child = relationship("Matching", back_populates="parent", cascade="all, delete", passive_deletes=True)
+    parent = relationship("Page", back_populates="child_image")
 
     def __init__(self, page_id: str, object_key: str, key_points: dict, status: str) -> None:
         self.id = str(uuid.uuid4())
@@ -246,8 +260,10 @@ class Matching(Base, TimestampMixin):
     target_image_id = Column(
         String(36), ForeignKey("images.id", ondelete="CASCADE"), nullable=False
     )
-    score = Column(Numeric(asdecimal=False), nullable=False)
+    score = Column(Numeric(asdecimal=False), nullable=True)
     status = Column(String(32), nullable=False)
+
+    parent = relationship("Image", foreign_keys=[image_id, target_image_id], back_populates="child")
 
     def __init__(self, image_id: str, target_image_id: str, score: float, status: str) -> None:
         self.id = str(uuid.uuid4())
