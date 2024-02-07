@@ -1,9 +1,8 @@
 # Standard Library
 import json
 
-from aws_lambda_powertools import Logger, Tracer
-
 # Third Party Library
+from aws_lambda_powertools import Logger, Tracer
 from aws_lambda_powertools.utilities.data_classes import S3Event, event_source
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from controllers.s3watch import WatchController
