@@ -99,10 +99,10 @@ class Pdf(Base, TimestampMixin):
 
     id = Column(String(36), primary_key=True)
     project_id = Column(String(36), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
-    title = Column(String(256), nullable=True)
-    thumbnail = Column(String(256), nullable=True)
+    title = Column(String(256), nullable=False)
     description = Column(String(512), nullable=True)
-    object_key = Column(String(256), nullable=False)
+    thumbnail = Column(String(256), nullable=True)
+    object_key = Column(String(256), nullable=True)
 
     project: Mapped["Project"] = relationship("Project", back_populates="pdfs")
     # pages: Relationship = relationship(
@@ -114,9 +114,9 @@ class Pdf(Base, TimestampMixin):
         id: str,
         project_id: str,
         object_key: str,
-        title: str | None = None,
+        title: str,
+        description: str,
         thumbnail: str | None = None,
-        description: str | None = None,
     ) -> None:
         self.id = id
         self.project_id = project_id
@@ -128,7 +128,7 @@ class Pdf(Base, TimestampMixin):
         self.created_at = datetime.now()
 
     def __str__(self) -> str:
-        return f"<pdf id={self.id}, peojct_id={self.project_id}, thumbnail={self.thumbnail}, description={self.description}, object_key={self.object_key}>"
+        return f"<pdf id={self.id}, project_id={self.project_id}, thumbnail={self.thumbnail}, description={self.description}, object_key={self.object_key}>"
 
     def __repr__(self) -> str:
         return self.__str__()
