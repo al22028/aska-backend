@@ -5,15 +5,17 @@ Revises: 8ec3ce737b04
 Create Date: 2024-02-07 16:22:34.967668
 
 """
+
+# Standard Library
 from typing import Sequence, Union
 
-from alembic import op
+# Third Party Library
 import sqlalchemy as sa
-
+from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = 'e130237cc163'
-down_revision: Union[str, None] = '8ec3ce737b04'
+revision: str = "e130237cc163"
+down_revision: Union[str, None] = "8ec3ce737b04"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

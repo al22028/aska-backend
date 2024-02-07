@@ -1,6 +1,6 @@
 # Standard Library
-from typing import List
 import uuid
+from typing import List
 
 # Third Party Library
 from database.base import Project

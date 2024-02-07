@@ -19,8 +19,9 @@ controller = ProjectController()
 @router.get(
     "/",
     tags=["Project"],
-    summary="Fetch All Projects",
-    response_description="List of Projects",
+    summary="全てのプロジェクトを取得",
+    description="全てのプロジェクトを取得します。",
+    response_description="全プロジェクト",
     operation_id="fetchAllProjects",
 )
 def fetch_all_projects() -> List[ProjectSchema]:
@@ -30,8 +31,9 @@ def fetch_all_projects() -> List[ProjectSchema]:
 @router.get(
     "/<projectId>",
     tags=["Project"],
-    summary="Fetch Project",
-    response_description="Project",
+    summary="プロジェクト詳細の取得",
+    description="特定のプロジェクトの詳細情報を取得します。",
+    response_description="プロジェクト詳細",
     operation_id="fetchSingleProjectById",
 )
 def fetch_project(projectId: str) -> ProjectSchema:
@@ -41,8 +43,9 @@ def fetch_project(projectId: str) -> ProjectSchema:
 @router.post(
     "/",
     tags=["Project"],
-    summary="Create Project",
-    response_description="Project",
+    summary="新規プロジェクトの追加",
+    description="新規にプロジェクトを追加します。",
+    response_description="新規作成されたプロジェクト",
     operation_id="createSingleProject",
     responses={201: {"description": "Project Created"}, 422: {"description": "Validation Error"}},
 )
@@ -54,8 +57,9 @@ def create_project(project: ProjectCreateSchema) -> ProjectSchema:
 @router.put(
     "/<projectId>",
     tags=["Project"],
-    summary="Update Project",
-    response_description="Project",
+    summary="プロジェクトの更新",
+    description="特定のプロジェクトを更新します。更新できるのはtitle, description, thumbnailだけです。",
+    response_description="更新されたプロジェクトの詳細",
     operation_id="updateSingleProjectById",
     responses={
         200: {"description": "Project Updated"},
