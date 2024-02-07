@@ -2,23 +2,19 @@
 import json
 
 # Third Party Library
-import cv2
-import numpy as np
 from aws.s3 import S3
 from aws_lambda_powertools.utilities.data_classes import S3Event
-from features.keypoints import extract_feature_points
 
 
 class WatchController:
     client = S3()
 
-    def extract_feature_point(self, event: S3Event) -> dict:
-        bucket_name = event.bucket_name
-        object_key = event.object_key
-        image_data = self.client.fetch_object(bucket_name, object_key)
-        image = cv2.imdecode(np.frombuffer(image_data, np.uint8), -1)
-        serialized_data = extract_feature_points(image)
-        self.client.upload_object(
-            bucket_name, f"{object_key.split('.')[0]}.json", json.dumps(serialized_data).encode()
-        )
-        return serialized_data
+    def __init__(self, event: S3Event) -> None:
+        self.event = event
+        self._bucket_name = self.event.bucket_name
+        self._object_key = self.event.object_key
+
+    def find_json_file_body(self) -> str:
+        json_object_key = self._object_key.split(".")[0] + ".json"
+        json_data = self.client.fetch_object(self._bucket_name, json_object_key).decode("utf-8")
+        return json.loads(json_data)
