@@ -66,3 +66,61 @@ class UserUpdateSchema(BaseSchema):
 
 class UserSchema(UserCreateSchema, TimeStampSchema):
     pass
+
+
+class ProjectCreateSchema(BaseSchema):
+    title: str = Field(
+        ...,
+        min_length=1,
+        max_length=256,
+        title="Title",
+        description="Title",
+        examples=[{"value": "Project A", "description": "Title"}],
+    )
+    description: str | None = Field(
+        ...,
+        min_length=1,
+        max_length=256,
+        title="Description",
+        description="Description",
+        examples=[{"value": "description of the project", "description": "Description"}],
+    )
+    thumnail: str | None = Field(
+        ...,
+        min_length=1,
+        max_length=256,
+        title="Thumnail",
+        description="Thumnail",
+        examples=[{"value": "https://example.com/thumnail.jpg", "description": "Thumnail"}],
+    )
+
+
+class ProjectUpdateSchema(BaseSchema):
+    title: str = Field(
+        ...,
+        min_length=1,
+        max_length=256,
+        title="Title",
+        description="Title",
+        examples=[{"value": "Project A", "description": "Title"}],
+    )
+    description: str | None = Field(
+        ...,
+        min_length=1,
+        max_length=256,
+        title="Description",
+        description="Description",
+        examples=[{"value": "description of the project", "description": "Description"}],
+    )
+    thumnail: str | None = Field(
+        ...,
+        min_length=1,
+        max_length=256,
+        title="Thumnail",
+        description="Thumnail",
+        examples=[{"value": "https://example.com/thumnail.jpg", "description": "Thumnail"}],
+    )
+
+
+class ProjectSchema(ProjectCreateSchema, TimeStampSchema):
+    pass
