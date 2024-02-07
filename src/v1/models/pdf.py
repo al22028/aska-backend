@@ -1,0 +1,38 @@
+# Standard Library
+from typing import List
+
+# Third Party Library
+from database.base import Pdf
+from schemas import PdfCreateSchema, PdfUpdateSchema
+from sqlalchemy.orm.session import Session
+
+
+class PdfORM(object):
+
+    def find_all(self, db: Session) -> List[Pdf]:
+        return db.query(Pdf).all()
+
+    def find_one(self, db: Session, pdf_id: str) -> Pdf:
+        return db.query(Pdf).filter(Pdf.id == pdf_id).one()
+
+    def exists(self, db: Session, pdf_id: str) -> bool:
+        user = db.query(Pdf).filter(Pdf.id == pdf_id).first()
+        if user:
+            return True
+        return False
+
+    def create_one(self, db: Session, pdf_data: PdfCreateSchema) -> Pdf:
+        created_pdf = Pdf(**pdf_data.model_dump())
+        db.add(created_pdf)
+        return created_pdf
+
+    def update_one(self, db: Session, pdf_id: str, pdf_data: PdfUpdateSchema) -> Pdf:
+        updated_pdf = self.find_one(db, pdf_id)
+        updated_pdf.title = pdf_data.title
+        db.add(updated_pdf)
+        return updated_pdf
+
+    def delete_one(self, db: Session, pdf_id: str) -> None:
+        deleted_pdf = self.find_one(db, pdf_id)
+        db.delete(deleted_pdf)
+        return None
