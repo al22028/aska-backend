@@ -69,14 +69,6 @@ class UserSchema(UserCreateSchema, TimeStampSchema):
 
 
 class ProjectCreateSchema(BaseSchema):
-    id: str = Field(
-        ...,
-        min_length=1,
-        max_length=256,
-        title="ID",
-        description="ID",
-        examples=[{"value": "44f97c86-d495-4afc-bdc6-f2443a159c28", "description": "ID"}],
-    )
     title: str = Field(
         ...,
         min_length=1,
