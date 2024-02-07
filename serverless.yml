@@ -148,7 +148,8 @@ provider:
     # AWS RDS config
     AWS_RDS_DATABASE_URL: ${file(./env/${opt:stage, self:custom.default.stage}.yml):AWS_RDS_DATABASE_URL}
     # S3
-    AWS_PDF_BUCKET: aska-pdf-bucket-${self:provider.stage}
+    AWS_PDF_BUCKET: ${file(./env/${opt:stage, self:custom.default.stage}.yml):AWS_RDS_DATABASE_URL}
+    AWS_IMAGE_BUCKET: ${file(./env/${opt:stage, self:custom.default.stage}.yml):AWS_IMAGE_BUCKET}
 
 package:
   individually: true
