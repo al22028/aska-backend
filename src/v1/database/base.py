@@ -3,8 +3,8 @@ from datetime import datetime
 
 # Third Party Library
 from config.settings import AWS_RDS_DATABASE_URL, SQLALCHEMY_ECHO_SQL
-from sqlalchemy import Column, DateTime, String, create_engine
-from sqlalchemy.orm import declarative_base
+from sqlalchemy import Column, DateTime, ForeignKey, String, create_engine
+from sqlalchemy.orm import Mapped, declarative_base, relationship
 
 Engine = create_engine(AWS_RDS_DATABASE_URL, echo=SQLALCHEMY_ECHO_SQL)
 Base = declarative_base()
@@ -64,9 +64,9 @@ class Project(Base, TimestampMixin):
     description = Column(String(512), nullable=False)
     thumbnail = Column(String(256), nullable=True)
 
-    # pdfs: Relationship = relationship(
-    #     "Pdf", back_populates="parent", cascade="all, delete", passive_deletes=True
-    # )
+    pdfs: Mapped[list["Pdf"]] = relationship(
+        "Pdf", back_populates="project", cascade="all, delete", passive_deletes=True
+    )
 
     def __init__(self, id: str, title: str, description: str, thumbnail: str | None = None) -> None:
         self.id = id
@@ -90,56 +90,60 @@ class Project(Base, TimestampMixin):
             "thumbnail": self.thumbnail,
             "updatedAt": self.updated_at.isoformat(),  # type: ignore
             "createdAt": self.created_at.isoformat(),  # type: ignore
+            "pdfs": [pdf.serializer() for pdf in self.pdfs],
         }
 
 
-# class Pdf(Base, TimestampMixin):
-#     __tablename__ = "pdfs"
+class Pdf(Base, TimestampMixin):
+    __tablename__ = "pdfs"
 
-#     id = Column(String(36), primary_key=True)
-#     project_id = Column(String(36), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
-#     title = Column(String(256), nullable=True)
-#     thumbnail = Column(String(256), nullable=True)
-#     description = Column(String(512), nullable=True)
-#     object_key = Column(String(256), nullable=False)
+    id = Column(String(36), primary_key=True)
+    project_id = Column(String(36), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
+    title = Column(String(256), nullable=True)
+    thumbnail = Column(String(256), nullable=True)
+    description = Column(String(512), nullable=True)
+    object_key = Column(String(256), nullable=False)
 
-#     project: Relationship = relationship("Project", back_populates="pdfs")
-#     pages: Relationship = relationship(
-#         "Page", back_populates="pdf", cascade="all, delete", passive_deletes=True
-#     )
+    project: Mapped["Project"] = relationship("Project", back_populates="pdfs")
+    # pages: Relationship = relationship(
+    #     "Page", back_populates="pdf", cascade="all, delete", passive_deletes=True
+    # )
 
-#     def __init__(
-#         self,
-#         project_id: str,
-#         object_key: str,
-#         title: str | None = None,
-#         thumbnail: str | None = None,
-#         description: str | None = None,
-#     ) -> None:
-#         self.id = str(uuid.uuid4())
-#         self.project_id = project_id
-#         self.title = title
-#         self.thumbnail = thumbnail
-#         self.description = description
-#         self.object_key = object_key
+    def __init__(
+        self,
+        id: str,
+        project_id: str,
+        object_key: str,
+        title: str | None = None,
+        thumbnail: str | None = None,
+        description: str | None = None,
+    ) -> None:
+        self.id = id
+        self.project_id = project_id
+        self.title = title
+        self.thumbnail = thumbnail
+        self.description = description
+        self.object_key = object_key
+        self.updated_at = datetime.now()
+        self.created_at = datetime.now()
 
-#     def __str__(self) -> str:
-#         return f"<pdf id={self.id}, peojct_id={self.project_id}, thumbnail={self.thumbnail}, description={self.description}, object_key={self.object_key}>"
+    def __str__(self) -> str:
+        return f"<pdf id={self.id}, peojct_id={self.project_id}, thumbnail={self.thumbnail}, description={self.description}, object_key={self.object_key}>"
 
-#     def __repr__(self) -> str:
-#         return self.__str__()
+    def __repr__(self) -> str:
+        return self.__str__()
 
-#     def serializer(self) -> dict:
-#         return {
-#             "id": self.id,
-#             "projectId": self.project_id,
-#             "title": self.title,
-#             "thumbnail": self.thumbnail,
-#             "description": self.description,
-#             "objectKey": self.object_key,
-#             "updatedAt": self.updated_at.isoformat(),  # type: ignore
-#             "createdAt": self.created_at.isoformat(),  # type: ignore
-#         }
+    def serializer(self) -> dict:
+        return {
+            "id": self.id,
+            "projectId": self.project_id,
+            "title": self.title,
+            "thumbnail": self.thumbnail,
+            "description": self.description,
+            "objectKey": self.object_key,
+            "updatedAt": self.updated_at.isoformat(),  # type: ignore
+            "createdAt": self.created_at.isoformat(),  # type: ignore
+        }
 
 
 # class Page(Base, TimestampMixin):
