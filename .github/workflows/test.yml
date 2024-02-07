@@ -28,4 +28,4 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-root
       - name: Run tests
-        run: poetry run test
+        run: poetry run task test
