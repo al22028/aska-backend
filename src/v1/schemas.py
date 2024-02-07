@@ -140,3 +140,12 @@ class PdfCreateSchema(PdfUpdateSchema):
         description="Project ID",
         examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "Project ID"}],
     )
+
+
+class PdfSchema(PdfCreateSchema, PdfUpdateSchema, TimeStampSchema):
+    id: str = Field(
+        ...,
+        title="ID",
+        description="PDF ID",
+        examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "ID"}],
+    )
