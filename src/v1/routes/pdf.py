@@ -36,7 +36,7 @@ def fetch_all_pdfs() -> List[PdfSchema]:
     summary="PDFを作成",
     description="PDFを作成します。",
     response_description="作成したPDF",
-    operation_id="createOnePdf",
+    operation_id="createSinglePdf",
     responses={
         201: {"description": "成功"},
         400: {"description": "Bad Request"},
@@ -55,7 +55,7 @@ def create_one_pdf(pdf_data: PdfCreateSchema) -> PdfCreateResponseSchema:
     summary="PDFを取得",
     description="PDFを取得します。",
     response_description="PDF",
-    operation_id="fetchOnePdf",
+    operation_id="fetchSinglePdf",
     responses={
         200: {"description": "成功"},
         404: {"description": "Not Found"},
@@ -72,7 +72,7 @@ def fetch_single_pdf(pdfId: str) -> PdfSchema:
     summary="PDFを更新",
     description="PDFを更新します。",
     response_description="更新したPDF",
-    operation_id="updateOnePdf",
+    operation_id="updateSinglePdf",
     responses={
         200: {"description": "成功"},
         404: {"description": "Not Found"},
