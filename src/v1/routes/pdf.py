@@ -6,7 +6,7 @@ from aws_lambda_powertools import Tracer
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.event_handler.api_gateway import Router
 from controllers.pdf import PdfController
-from schemas import PdfCreateResponseSchema, PdfCreateSchema, PdfSchema
+from schemas import PdfCreateResponseSchema, PdfCreateSchema, PdfSchema, PdfUpdateSchema
 
 app = APIGatewayRestResolver(debug=True)
 router = Router()
@@ -64,3 +64,20 @@ def create_one_pdf(pdf_data: PdfCreateSchema) -> PdfCreateResponseSchema:
 )
 def fetch_single_pdf(pdfId: str) -> PdfSchema:
     return controller.find_one(pdf_id=pdfId)
+
+
+@router.put(
+    "/<pdfId>",
+    tags=["Pdf"],
+    summary="PDFを更新",
+    description="PDFを更新します。",
+    response_description="更新したPDF",
+    operation_id="updateOnePdf",
+    responses={
+        200: {"description": "成功"},
+        404: {"description": "Not Found"},
+        500: {"description": "Internal Server Error"},
+    },
+)
+def update_single_pdf(pdfId: str, pdf_data: PdfUpdateSchema) -> PdfSchema:
+    return controller.update_one(pdf_id=pdfId, pdf_data=pdf_data)

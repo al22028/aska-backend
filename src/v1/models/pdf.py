@@ -31,6 +31,7 @@ class PdfORM(object):
     def update_one(self, db: Session, pdf_id: str, pdf_data: PdfUpdateSchema) -> Pdf:
         updated_pdf = self.find_one(db, pdf_id)
         updated_pdf.title = pdf_data.title
+        updated_pdf.description = pdf_data.description
         db.add(updated_pdf)
         return updated_pdf
 
