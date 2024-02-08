@@ -6,7 +6,13 @@ from aws_lambda_powertools import Tracer
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.event_handler.api_gateway import Router
 from controllers.pdf import PdfController
-from schemas import PdfCreateResponseSchema, PdfCreateSchema, PdfSchema, PdfUpdateSchema
+from schemas import (
+    DeletedSchema,
+    PdfCreateResponseSchema,
+    PdfCreateSchema,
+    PdfSchema,
+    PdfUpdateSchema,
+)
 
 app = APIGatewayRestResolver(debug=True)
 router = Router()
@@ -81,3 +87,20 @@ def fetch_single_pdf(pdfId: str) -> PdfSchema:
 )
 def update_single_pdf(pdfId: str, pdf_data: PdfUpdateSchema) -> PdfSchema:
     return controller.update_one(pdf_id=pdfId, pdf_data=pdf_data)
+
+
+@router.delete(
+    "/<pdfId>",
+    tags=["Pdf"],
+    summary="PDFを削除",
+    description="PDFを削除します。",
+    response_description="None",
+    operation_id="deleteSinglePdf",
+    responses={
+        204: {"description": "成功"},
+        404: {"description": "Not Found"},
+        500: {"description": "Internal Server Error"},
+    },
+)
+def delete_single_pdf(pdfId: str) -> DeletedSchema:
+    return controller.delete_one(pdf_id=pdfId)
