@@ -158,3 +158,12 @@ class PdfCreateResponseSchema(PdfSchema):
         description="Presigned URL for PUT pdf file",
         examples=[{"value": "https://example.com/presigned_url", "description": "Presigned URL"}],
     )
+
+
+class DownloadURLSchema(BaseSchema):
+    presigned_url: str = Field(
+        ...,
+        title="Download URL",
+        description="Download URL",
+        examples=[{"value": "https://example.com/download_url", "description": "Download URL"}],
+    )

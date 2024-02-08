@@ -11,6 +11,7 @@ from database.session import with_session
 from models.pdf import PdfORM
 from schemas import (
     DeletedSchema,
+    DownloadURLSchema,
     PdfCreateResponseSchema,
     PdfCreateSchema,
     PdfSchema,
@@ -66,3 +67,17 @@ class PdfController:
             raise NotFoundError("pdf not found")
         self.pdfs.delete_one(db=session, pdf_id=pdf_id)
         return DeletedSchema(message="pdf deleted successfully")
+
+    @with_session
+    def generate_download_url(self, session: Session, pdf_id: str) -> DownloadURLSchema:
+        if not self.pdfs.exists(db=session, pdf_id=pdf_id):
+            raise NotFoundError("pdf not found")
+        pdf = self.pdfs.find_one(db=session, pdf_id=pdf_id)
+        return DownloadURLSchema(
+            presigned_url=s3.create_presigned_url(
+                client_method="get_object",
+                bucket_name=AWS_PDF_BUCKET,
+                object_key=pdf.object_key,  # type: ignore
+                expiration=3600,
+            )
+        )

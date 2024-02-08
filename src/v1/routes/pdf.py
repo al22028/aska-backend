@@ -8,6 +8,7 @@ from aws_lambda_powertools.event_handler.api_gateway import Router
 from controllers.pdf import PdfController
 from schemas import (
     DeletedSchema,
+    DownloadURLSchema,
     PdfCreateResponseSchema,
     PdfCreateSchema,
     PdfSchema,
@@ -70,6 +71,23 @@ def create_one_pdf(pdf_data: PdfCreateSchema) -> PdfCreateResponseSchema:
 )
 def fetch_single_pdf(pdfId: str) -> PdfSchema:
     return controller.find_one(pdf_id=pdfId)
+
+
+@router.get(
+    "/<pdfId>/download",
+    tags=["Pdf"],
+    summary="PDFのダウンロードURLを取得",
+    description="PDFのダウンロードURLを取得します。",
+    response_description="ダウンロードURL",
+    operation_id="fetchSinglePdfDownloadURL",
+    responses={
+        200: {"description": "成功"},
+        404: {"description": "Not Found"},
+        500: {"description": "Internal Server Error"},
+    },
+)
+def fetch_single_pdf_download_url(pdfId: str) -> DownloadURLSchema:
+    return controller.generate_download_url(pdf_id=pdfId)
 
 
 @router.put(
