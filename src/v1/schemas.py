@@ -149,3 +149,21 @@ class PdfSchema(PdfCreateSchema, PdfUpdateSchema, TimeStampSchema):
         description="PDF ID",
         examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "ID"}],
     )
+
+
+class PdfCreateResponseSchema(PdfSchema):
+    presigned_url: str = Field(
+        ...,
+        title="(PUT) Presigned URL",
+        description="Presigned URL for PUT pdf file",
+        examples=[{"value": "https://example.com/presigned_url", "description": "Presigned URL"}],
+    )
+
+
+class DownloadURLSchema(BaseSchema):
+    presigned_url: str = Field(
+        ...,
+        title="Download URL",
+        description="Download URL",
+        examples=[{"value": "https://example.com/download_url", "description": "Download URL"}],
+    )

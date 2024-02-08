@@ -5,7 +5,7 @@ from aws_lambda_powertools.event_handler.openapi.models import Server
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from middlewares.common import handler_middleware
 from pydantic import BaseModel, Field
-from routes import project, user
+from routes import pdf, project, user
 
 tracer = Tracer()
 logger = Logger()
@@ -15,17 +15,18 @@ app.enable_swagger(
     path="/swagger",
     title="Aska API",
     servers=[
+        Server(url="http://localhost:3333", description="Local Development Server", variables=None),
         Server(
             url="https://api-dev.u10.teba-saki.net",
             description="Development Server",
             variables=None,
         ),
-        Server(url="http://localhost:3333", description="Local Development Server", variables=None),
     ],
 )
 
 app.include_router(user.router, prefix="/v1/users")
 app.include_router(project.router, prefix="/v1/projects")
+app.include_router(pdf.router, prefix="/v1/pdfs")
 
 
 class HealthCheckSchema(BaseModel):
