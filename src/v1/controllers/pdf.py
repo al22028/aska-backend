@@ -32,7 +32,7 @@ class PdfController:
         presigned_url = s3.create_presigned_url(
             client_method="put_object",
             bucket_name=AWS_PDF_BUCKET,
-            object_key=pdf.title,  # type: ignore
+            object_key=pdf.object_key,  # type: ignore
             expiration=3600,
         )
         return (

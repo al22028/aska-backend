@@ -24,7 +24,11 @@ class PdfORM(object):
 
     def create_one(self, db: Session, pdf_data: PdfCreateSchema) -> Pdf:
         id = str(uuid.uuid4()).replace("-", "")
-        created_pdf = Pdf(**pdf_data.model_dump(), id=id, object_key=f"{id}/{pdf_data.title}.pdf")
+        created_pdf = Pdf(
+            **pdf_data.model_dump(),
+            id=id,
+            object_key=f'{id}/{pdf_data.title.replace(" ", "_")}.pdf',
+        )
         db.add(created_pdf)
         return created_pdf
 
