@@ -10,5 +10,5 @@
     "editor.detectIndentation": true,
     "editor.tabSize": 4
   },
-  "python.analysis.extraPaths": ["./src/v1"]
+  "python.analysis.extraPaths": ["./src/v1", "./src/ecr"]
 }

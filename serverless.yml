@@ -126,9 +126,9 @@ provider:
   ecr:
     images:
       PDFToImagesImage:
-        path: ./src/v1/pdf2img
+        path: ./src/ecr/pdf2img
       MatchingCalculatorImage:
-        path: ./src/v1/matching_calculator
+        path: ./src/ecr/matching_calculator
 
   environment:
     TZ: Asia/Tokyo
