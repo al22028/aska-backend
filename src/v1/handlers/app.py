@@ -15,12 +15,12 @@ app.enable_swagger(
     path="/swagger",
     title="Aska API",
     servers=[
+        Server(url="http://localhost:3333", description="Local Development Server", variables=None),
         Server(
             url="https://api-dev.u10.teba-saki.net",
             description="Development Server",
             variables=None,
         ),
-        Server(url="http://localhost:3333", description="Local Development Server", variables=None),
     ],
 )
 

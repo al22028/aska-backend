@@ -1,4 +1,5 @@
 # Standard Library
+import uuid
 from typing import List
 
 # Third Party Library
@@ -22,7 +23,8 @@ class PdfORM(object):
         return False
 
     def create_one(self, db: Session, pdf_data: PdfCreateSchema) -> Pdf:
-        created_pdf = Pdf(**pdf_data.model_dump())
+        id = str(uuid.uuid4()).replace("-", "")
+        created_pdf = Pdf(**pdf_data.model_dump(), id=id, object_key=f"{id}/{pdf_data.title}.pdf")
         db.add(created_pdf)
         return created_pdf
 
