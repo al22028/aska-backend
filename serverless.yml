@@ -45,6 +45,7 @@ custom:
       - ruff
       - alembic
       - tox
+      - pdf2image
   # Serverless Deployment Bucket
   deploymentBucket:
     versioning: true
