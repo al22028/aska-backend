@@ -10,7 +10,7 @@ from schemas import PdfCreateSchema, PdfSchema
 from sqlalchemy.orm.session import Session
 
 
-class ProjectController:
+class PdfController:
 
     pdfs = PdfORM()
 
