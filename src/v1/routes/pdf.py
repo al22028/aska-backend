@@ -47,3 +47,20 @@ def fetch_all_pdfs() -> List[PdfSchema]:
 def create_one_pdf(pdf_data: PdfCreateSchema) -> PdfCreateResponseSchema:
     created_pdf, status_code = controller.create_one(pdf_data=pdf_data)
     return created_pdf, status_code  # type: ignore
+
+
+@router.get(
+    "/<pdfId>",
+    tags=["Pdf"],
+    summary="PDFを取得",
+    description="PDFを取得します。",
+    response_description="PDF",
+    operation_id="fetchOnePdf",
+    responses={
+        200: {"description": "成功"},
+        404: {"description": "Not Found"},
+        500: {"description": "Internal Server Error"},
+    },
+)
+def fetch_single_pdf(pdfId: str) -> PdfSchema:
+    return controller.find_one(pdf_id=pdfId)

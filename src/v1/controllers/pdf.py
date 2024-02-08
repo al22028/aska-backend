@@ -4,6 +4,7 @@ from typing import List
 
 # Third Party Library
 from aws.s3 import S3
+from aws_lambda_powertools.event_handler.exceptions import NotFoundError
 from config.settings import AWS_PDF_BUCKET
 from database.base import Pdf
 from database.session import with_session
@@ -38,3 +39,10 @@ class PdfController:
             PdfCreateResponseSchema(**pdf.serializer(), presigned_url=presigned_url),
             HTTPStatus.CREATED.value,
         )
+
+    @with_session
+    def find_one(self, session: Session, pdf_id: str) -> PdfSchema:
+        if not self.pdfs.exists(db=session, pdf_id=pdf_id):
+            raise NotFoundError("pdf not found")
+        pdf = self.pdfs.find_one(db=session, pdf_id=pdf_id)
+        return PdfSchema(**pdf.serializer())
