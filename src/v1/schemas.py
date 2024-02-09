@@ -97,12 +97,7 @@ class ProjectCreateSchema(BaseSchema):
 
 
 class ProjectUpdateSchema(ProjectCreateSchema):
-    thumbnail: str | None = Field(
-        ...,
-        title="Thumbnail",
-        description="Thumbnail",
-        examples=[{"value": "https://example.com/thumbnail.jpg", "description": "Thumbnail"}],
-    )
+    pass
 
 
 class ProjectSchema(ProjectUpdateSchema, TimeStampSchema):
@@ -148,6 +143,12 @@ class PdfSchema(PdfCreateSchema, PdfUpdateSchema, TimeStampSchema):
         title="ID",
         description="PDF ID",
         examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "ID"}],
+    )
+    thumbnail: str | None = Field(
+        ...,
+        title="Thumbnail",
+        description="Thumbnail",
+        examples=[{"value": "https://example.com/thumbnail.jpg", "description": "Thumbnail"}],
     )
 
 
