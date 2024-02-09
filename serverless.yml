@@ -151,6 +151,8 @@ provider:
     # S3
     AWS_PDF_BUCKET: ${file(./env/${opt:stage, self:custom.default.stage}.yml):AWS_PDF_BUCKET}
     AWS_IMAGE_BUCKET: ${file(./env/${opt:stage, self:custom.default.stage}.yml):AWS_IMAGE_BUCKET}
+    # CloudFront
+    AWS_IMAGE_HOST_DOMAIN: ${file(./env/${opt:stage, self:custom.default.stage}.yml):AWS_IMAGE_HOST_DOMAIN}
 
 package:
   individually: true

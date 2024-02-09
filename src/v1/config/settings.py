@@ -22,3 +22,8 @@ SQLALCHEMY_ECHO_SQL = config("SQLALCHEMY_ECHO_SQL", default=False, cast=bool)
 
 # AWS S3
 AWS_PDF_BUCKET = config("AWS_PDF_BUCKET", default="aska-pdf-bucket-dev", cast=str)
+
+# AWS CloudFront
+AWS_IMAGE_HOST_DOMAIN = config(
+    "AWS_IMAGE_HOST_DOMAIN", default="https://d3jn185gjojza6.cloudfront.net/", cast=str
+)
