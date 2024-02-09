@@ -88,9 +88,13 @@ def convert_to_images(id: str, pdf_file_data: bytes) -> None:
             Body=json.dumps(serialized_keypoints).encode(),
         )
         logger.info(f"Uploaded {AWS_IMAGE_BUCKET}/{id}/{i+1}.json")
-        with open(image_path, "rb") as f:
-            client.upload_fileobj(f, AWS_IMAGE_BUCKET, f"{id}/{i+1}.png")
-            logger.info(f"Uploaded {image_path} to {AWS_IMAGE_BUCKET}/{id}/{i+1}.png")
+        client.upload_file(
+            Filename=image_path,
+            Bucket=AWS_IMAGE_BUCKET,
+            Key=f"{id}/{i+1}.png",
+            ExtraArgs={"ContentType": "image/png"},
+        )
+        logger.info(f"Uploaded {image_path} to {AWS_IMAGE_BUCKET}/{id}/{i+1}.png")
         os.remove(image_path)
 
 

@@ -33,7 +33,6 @@ class ProjectORM(object):
         project = self.find_one(db, project_id)
         project.title = project_data.title
         project.description = project_data.description
-        project.thumbnail = project_data.thumbnail
         db.add(project)
         return project
 

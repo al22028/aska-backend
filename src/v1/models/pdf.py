@@ -16,6 +16,9 @@ class PdfORM(object):
     def find_one(self, db: Session, pdf_id: str) -> Pdf:
         return db.query(Pdf).filter(Pdf.id == pdf_id).one()
 
+    def find_many_by_project_id(self, db: Session, project_id: str) -> List[Pdf]:
+        return db.query(Pdf).filter(Pdf.project_id == project_id).all()
+
     def exists(self, db: Session, pdf_id: str) -> bool:
         user = db.query(Pdf).filter(Pdf.id == pdf_id).first()
         if user:
@@ -36,6 +39,12 @@ class PdfORM(object):
         updated_pdf = self.find_one(db, pdf_id)
         updated_pdf.title = pdf_data.title
         updated_pdf.description = pdf_data.description
+        db.add(updated_pdf)
+        return updated_pdf
+
+    def update_thumbnail(self, db: Session, pdf_id: str, thumbnail: str) -> Pdf:
+        updated_pdf = self.find_one(db, pdf_id)
+        updated_pdf.thumbnail = thumbnail
         db.add(updated_pdf)
         return updated_pdf
 

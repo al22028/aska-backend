@@ -62,22 +62,25 @@ class Project(Base, TimestampMixin):
     id = Column(String(256), primary_key=True)
     title = Column(String(256), nullable=False)
     description = Column(String(512), nullable=False)
-    thumbnail = Column(String(256), nullable=True)
 
     pdfs: Mapped[list["Pdf"]] = relationship(
         "Pdf", back_populates="project", cascade="all, delete", passive_deletes=True
     )
 
-    def __init__(self, id: str, title: str, description: str, thumbnail: str | None = None) -> None:
+    def __init__(
+        self,
+        id: str,
+        title: str,
+        description: str,
+    ) -> None:
         self.id = id
         self.title = title
         self.description = description
-        self.thumbnail = thumbnail
         self.updated_at = datetime.now()
         self.created_at = datetime.now()
 
     def __str__(self) -> str:
-        return f"<project id={self.id}, title={self.title}, descripton={self.description}, thumbnail={self.thumbnail}>"
+        return f"<project id={self.id}, title={self.title}, descripton={self.description}>"
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -87,7 +90,6 @@ class Project(Base, TimestampMixin):
             "id": self.id,
             "title": self.title,
             "description": self.description,
-            "thumbnail": self.thumbnail,
             "updatedAt": self.updated_at.isoformat(),  # type: ignore
             "createdAt": self.created_at.isoformat(),  # type: ignore
             "pdfs": [pdf.serializer() for pdf in self.pdfs],
@@ -98,7 +100,6 @@ class Project(Base, TimestampMixin):
             "id": self.id,
             "title": self.title,
             "description": self.description,
-            "thumbnail": self.thumbnail,
             "updatedAt": self.updated_at.isoformat(),  # type: ignore
             "createdAt": self.created_at.isoformat(),  # type: ignore
             "pdfs": [pdf.serializer() for pdf in self.pdfs],

@@ -3,6 +3,7 @@ from aws_lambda_powertools import Logger, Tracer
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.event_handler.openapi.models import Server
 from aws_lambda_powertools.utilities.typing import LambdaContext
+from config.settings import STAGE
 from middlewares.common import handler_middleware
 from pydantic import BaseModel, Field
 from routes import pdf, project, user
@@ -10,18 +11,35 @@ from routes import pdf, project, user
 tracer = Tracer()
 logger = Logger()
 
-app = APIGatewayRestResolver(enable_validation=True)
-app.enable_swagger(
-    path="/swagger",
-    title="Aska API",
-    servers=[
+
+if STAGE == "local":
+    servers = [
         Server(url="http://localhost:3333", description="Local Development Server", variables=None),
+    ]
+
+elif STAGE == "dev":
+    servers = [
         Server(
             url="https://api-dev.u10.teba-saki.net",
             description="Development Server",
             variables=None,
         ),
-    ],
+    ]
+else:
+    servers = [
+        Server(
+            url="https://api-dev.u10.teba-saki.net",
+            description="Development Server",
+            variables=None,
+        ),
+        Server(url="http://localhost:3333", description="Local Development Server", variables=None),
+    ]
+
+app = APIGatewayRestResolver(enable_validation=True)
+app.enable_swagger(
+    path="/swagger",
+    title="Aska API",
+    servers=servers,
 )
 
 app.include_router(user.router, prefix="/v1/users")
