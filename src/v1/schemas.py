@@ -170,4 +170,4 @@ class DownloadURLSchema(BaseSchema):
 
 
 class ProjectDetailSchema(ProjectSchema):
-    pdfs: list[PdfSchema] = []
+    pdfs: list[PdfSchema]
