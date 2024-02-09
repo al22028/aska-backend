@@ -1,8 +1,10 @@
 # Standard Library
-from typing import Callable, TypeVar
+from typing import Callable, Dict, TypeVar
 
 # Third Party Library
+from aws_lambda_powertools.event_handler.exceptions import UnauthorizedError
 from aws_lambda_powertools.middleware_factory import lambda_handler_decorator
+from config.settings import APP_API_CORS_ALLOWED_ORIGIN_LIST
 
 T = TypeVar("T")
 
@@ -23,15 +25,15 @@ def handler_middleware(handler: Callable[..., T], event: dict, context: dict) ->
     if not body:
         body = {}
 
-    # origin = event["headers"].get("origin")
-    # if origin not in APP_API_CORS_ALLOWED_ORIGIN_LIST or not origin:
-    #     raise UnauthorizedError("Invalid origin")
+    origin = event["headers"].get("origin")
+    if origin not in APP_API_CORS_ALLOWED_ORIGIN_LIST or not origin:
+        raise UnauthorizedError("Invalid origin")
     response = handler(event, context)
 
     # headers
-    # response["headers"]: Dict[str, list[str] | str] = {  # type: ignore
-    #     "Content-Type": "application/json",
-    #     "Access-Control-Allow-Origin": origin,
-    # }
+    response["headers"]: Dict[str, list[str] | str] = {  # type: ignore
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": origin,
+    }
 
     return response
