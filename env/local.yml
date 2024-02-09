@@ -20,6 +20,9 @@ AWS_RDS_DATABASE_URL: postgresql+psycopg2://aska:aska@localhost:5433/app
 AWS_PDF_BUCKET: aska-pdf-bucket-dev
 AWS_IMAGE_BUCKET: aska-image-bucket-dev
 
+# AWS CloudFront
+AWS_IMAGE_HOST_DOMAIN: "https://d3jn185gjojza6.cloudfront.net"
+
 # AWS VPC
 vpc:
   securityGroupIds:

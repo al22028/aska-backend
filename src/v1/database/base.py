@@ -2,7 +2,7 @@
 from datetime import datetime
 
 # Third Party Library
-from config.settings import AWS_RDS_DATABASE_URL, SQLALCHEMY_ECHO_SQL
+from config.settings import AWS_IMAGE_HOST_DOMAIN, AWS_RDS_DATABASE_URL, SQLALCHEMY_ECHO_SQL
 from sqlalchemy import Column, DateTime, ForeignKey, String, create_engine
 from sqlalchemy.orm import Mapped, declarative_base, relationship
 
@@ -113,7 +113,7 @@ class Pdf(Base, TimestampMixin):
     project_id = Column(String(36), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
     title = Column(String(256), nullable=False)
     description = Column(String(512), nullable=True)
-    thumbnail = Column(String(256), nullable=True)
+    thumbnail = Column(String(256), nullable=False, default="default.png")
     object_key = Column(String(256), nullable=True)
 
     project: Mapped["Project"] = relationship("Project", back_populates="pdfs")
@@ -128,7 +128,7 @@ class Pdf(Base, TimestampMixin):
         object_key: str,
         title: str,
         description: str,
-        thumbnail: str | None = None,
+        thumbnail: str = "default.png",
     ) -> None:
         self.id = id
         self.project_id = project_id
@@ -150,7 +150,7 @@ class Pdf(Base, TimestampMixin):
             "id": self.id,
             "projectId": self.project_id,
             "title": self.title,
-            "thumbnail": self.thumbnail,
+            "thumbnail": AWS_IMAGE_HOST_DOMAIN + "/" + self.thumbnail,
             "description": self.description,
             "objectKey": self.object_key,
             "updatedAt": self.updated_at.isoformat(),  # type: ignore
