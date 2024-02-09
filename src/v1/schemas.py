@@ -144,7 +144,7 @@ class PdfSchema(PdfCreateSchema, PdfUpdateSchema, TimeStampSchema):
         description="PDF ID",
         examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "ID"}],
     )
-    thumbnail: str | None = Field(
+    thumbnail: str = Field(
         ...,
         title="Thumbnail",
         description="Thumbnail",
