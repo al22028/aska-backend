@@ -7,7 +7,13 @@ from aws_lambda_powertools.event_handler.exceptions import NotFoundError
 from database.base import Project
 from database.session import with_session
 from models.project import ProjectORM
-from schemas import DeletedSchema, ProjectCreateSchema, ProjectSchema, ProjectUpdateSchema
+from schemas import (
+    DeletedSchema,
+    ProjectCreateSchema,
+    ProjectDetailSchema,
+    ProjectSchema,
+    ProjectUpdateSchema,
+)
 from sqlalchemy.orm.session import Session
 
 
@@ -23,32 +29,32 @@ class ProjectController:
     @with_session
     def create_one(
         self, session: Session, project_data: ProjectCreateSchema
-    ) -> tuple[ProjectSchema, int]:
+    ) -> tuple[ProjectDetailSchema, int]:
         project = self.projects.create_one(db=session, project_data=project_data)
-        return ProjectSchema(**project.serializer()), HTTPStatus.CREATED.value
+        return ProjectDetailSchema(**project.detail_serializer()), HTTPStatus.CREATED.value
 
     @with_session
-    def find_one(self, session: Session, project_id: str) -> ProjectSchema:
+    def find_one(self, session: Session, project_id: str) -> ProjectDetailSchema:
         project = self.projects.find_one(db=session, project_id=project_id)
-        return ProjectSchema(**project.serializer())
+        return ProjectDetailSchema(**project.detail_serializer())
 
     @with_session
-    def find_one_or_404(self, session: Session, project_id: str) -> ProjectSchema:
+    def find_one_or_404(self, session: Session, project_id: str) -> ProjectDetailSchema:
         if not self.projects.exists(db=session, project_id=project_id):
             raise NotFoundError
         project = self.projects.find_one(db=session, project_id=project_id)
-        return ProjectSchema(**project.serializer())
+        return ProjectDetailSchema(**project.detail_serializer())
 
     @with_session
     def update_one(
         self, session: Session, project_id: str, project_data: ProjectUpdateSchema
-    ) -> ProjectSchema:
+    ) -> ProjectDetailSchema:
         if not self.projects.exists(db=session, project_id=project_id):
             raise NotFoundError
         project = self.projects.update_one(
             db=session, project_id=project_id, project_data=project_data
         )
-        return ProjectSchema(**project.serializer())
+        return ProjectDetailSchema(**project.detail_serializer())
 
     @with_session
     def delete_one(self, session: Session, project_id: str) -> tuple[DeletedSchema, int]:
