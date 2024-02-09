@@ -93,6 +93,17 @@ class Project(Base, TimestampMixin):
             "pdfs": [pdf.serializer() for pdf in self.pdfs],
         }
 
+    def detail_serializer(self) -> dict:
+        return {
+            "id": self.id,
+            "title": self.title,
+            "description": self.description,
+            "thumbnail": self.thumbnail,
+            "updatedAt": self.updated_at.isoformat(),  # type: ignore
+            "createdAt": self.created_at.isoformat(),  # type: ignore
+            "pdfs": [pdf.serializer() for pdf in self.pdfs],
+        }
+
 
 class Pdf(Base, TimestampMixin):
     __tablename__ = "pdfs"

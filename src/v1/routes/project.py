@@ -6,7 +6,13 @@ from aws_lambda_powertools import Tracer
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.event_handler.api_gateway import Router
 from controllers.project import ProjectController
-from schemas import DeletedSchema, ProjectCreateSchema, ProjectSchema, ProjectUpdateSchema
+from schemas import (
+    DeletedSchema,
+    ProjectCreateSchema,
+    ProjectDetailSchema,
+    ProjectSchema,
+    ProjectUpdateSchema,
+)
 
 app = APIGatewayRestResolver(debug=True)
 router = Router()
@@ -37,7 +43,7 @@ def fetch_all_projects() -> List[ProjectSchema]:
     operation_id="fetchSingleProjectById",
     responses={200: {"description": "プロジェクト詳細"}, 404: {"description": "Not found"}},
 )
-def fetch_project(projectId: str) -> ProjectSchema:
+def fetch_project(projectId: str) -> ProjectDetailSchema:
     return controller.find_one_or_404(project_id=projectId)
 
 
@@ -53,7 +59,7 @@ def fetch_project(projectId: str) -> ProjectSchema:
         422: {"description": "Validation Error"},
     },
 )
-def create_project(project: ProjectCreateSchema) -> ProjectSchema:
+def create_project(project: ProjectCreateSchema) -> ProjectDetailSchema:
     created_project, status_code = controller.create_one(project_data=project)
     return created_project, status_code  # type: ignore
 
@@ -71,7 +77,7 @@ def create_project(project: ProjectCreateSchema) -> ProjectSchema:
         404: {"description": "Project Not Found"},
     },
 )
-def update_project(projectId: str, project: ProjectUpdateSchema) -> ProjectSchema:
+def update_project(projectId: str, project: ProjectUpdateSchema) -> ProjectDetailSchema:
     updated_project = controller.update_one(project_id=projectId, project_data=project)
     return updated_project
 

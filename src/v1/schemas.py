@@ -167,3 +167,7 @@ class DownloadURLSchema(BaseSchema):
         description="Download URL",
         examples=[{"value": "https://example.com/download_url", "description": "Download URL"}],
     )
+
+
+class ProjectDetailSchema(ProjectSchema):
+    pdfs: list[PdfSchema]
