@@ -32,7 +32,7 @@ controller = PdfController()
     summary="プロジェクトに関する全てのPDFを取得",
     description="プロジェクトに関する全てのPDFを取得します。",
     response_description="全PDF",
-    operation_id="fetchAllPdfs",
+    operation_id="fetchProjectPdfs",
     responses={200: {"description": "成功"}, 500: {"description": "Internal Server Error"}},
 )
 def fetch_project_pdfs(projectId: Annotated[str, Query]) -> List[PdfSchema]:
