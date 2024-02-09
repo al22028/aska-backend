@@ -16,6 +16,9 @@ class PdfORM(object):
     def find_one(self, db: Session, pdf_id: str) -> Pdf:
         return db.query(Pdf).filter(Pdf.id == pdf_id).one()
 
+    def find_many_by_project_id(self, db: Session, project_id: str) -> List[Pdf]:
+        return db.query(Pdf).filter(Pdf.project_id == project_id).all()
+
     def exists(self, db: Session, pdf_id: str) -> bool:
         user = db.query(Pdf).filter(Pdf.id == pdf_id).first()
         if user:

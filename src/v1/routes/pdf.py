@@ -5,6 +5,8 @@ from typing import List
 from aws_lambda_powertools import Tracer
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.event_handler.api_gateway import Router
+from aws_lambda_powertools.event_handler.openapi.params import Query
+from aws_lambda_powertools.shared.types import Annotated
 from controllers.pdf import PdfController
 from schemas import (
     DeletedSchema,
@@ -27,8 +29,21 @@ controller = PdfController()
 @router.get(
     "/",
     tags=["Pdf"],
-    summary="全てのPDFを取得",
-    description="全てのPDFを取得します。",
+    summary="プロジェクトに関する全てのPDFを取得",
+    description="プロジェクトに関する全てのPDFを取得します。",
+    response_description="全PDF",
+    operation_id="fetchAllPdfs",
+    responses={200: {"description": "成功"}, 500: {"description": "Internal Server Error"}},
+)
+def fetch_project_pdfs(projectId: Annotated[str, Query]) -> List[PdfSchema]:
+    return controller.fetch_project_pdfs(project_id=projectId)
+
+
+@router.get(
+    "/all",
+    tags=["Pdf"],
+    summary="すべてのプロジェクトのPDFを取得",
+    description="すべてのプロジェクトのPDFを取得します。",
     response_description="全PDF",
     operation_id="fetchAllPdfs",
     responses={200: {"description": "成功"}, 500: {"description": "Internal Server Error"}},

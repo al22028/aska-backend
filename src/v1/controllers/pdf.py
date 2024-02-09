@@ -9,6 +9,7 @@ from config.settings import AWS_PDF_BUCKET
 from database.base import Pdf
 from database.session import with_session
 from models.pdf import PdfORM
+from models.project import ProjectORM
 from schemas import (
     DeletedSchema,
     DownloadURLSchema,
@@ -25,10 +26,19 @@ s3 = S3()
 class PdfController:
 
     pdfs = PdfORM()
+    projects = ProjectORM()
 
     @with_session
     def fetch_all_pdfs(self, session: Session) -> list[PdfSchema]:
         pdfs: List[Pdf] = self.pdfs.find_all(db=session)
+        return [PdfSchema(**pdf.serializer()) for pdf in pdfs]
+
+    @with_session
+    def fetch_project_pdfs(self, session: Session, project_id: str) -> list[PdfSchema]:
+        project = self.projects.exists(db=session, project_id=project_id)
+        if not project:
+            raise NotFoundError("project not found")
+        pdfs: List[Pdf] = self.pdfs.find_many_by_project_id(db=session, project_id=project_id)
         return [PdfSchema(**pdf.serializer()) for pdf in pdfs]
 
     @with_session
