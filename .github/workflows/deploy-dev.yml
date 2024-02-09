@@ -2,16 +2,16 @@ name: CI/CD for development
 
 on:
   workflow_dispatch:
-  pull_request:
-    types:
-      - closed
-    branches:
-      - develop
+  # pull_request:
+  #   types:
+  #     - closed
+  #   branches:
+  #     - develop
 
 jobs:
   deploy:
     name: CI/CD for development
-    if: github.event.pull_request.merged == true
+    # if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment:
