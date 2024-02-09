@@ -42,6 +42,12 @@ class PdfORM(object):
         db.add(updated_pdf)
         return updated_pdf
 
+    def update_thumbnail(self, db: Session, pdf_id: str, thumbnail: str) -> Pdf:
+        updated_pdf = self.find_one(db, pdf_id)
+        updated_pdf.thumbnail = thumbnail
+        db.add(updated_pdf)
+        return updated_pdf
+
     def delete_one(self, db: Session, pdf_id: str) -> None:
         deleted_pdf = self.find_one(db, pdf_id)
         db.delete(deleted_pdf)
