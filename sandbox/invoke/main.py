@@ -18,13 +18,19 @@ def invoke_lambda():
     payload = {
         "body": {
             "bucket_name": "aska-image-bucket-dev",
-            "before": "id231321/1.json",
-            "after": "id231321/2.json",
+            "before": {"json_object_key":"id231321/1.json","image_object_key":"id231321/1.png"},
+            "after": {"json_object_key":"id231321/2.json","image_object_key":"id231321/2.png"},
+            "params" : {
+                "match_thrshold" : 0.85,
+                "threshold" : 220,
+                "eps" : 20,
+                "min_samples" : 50,
+            },
         }
     }
 
     response = client.invoke(
-        FunctionName="aska-api-dev-MatchingCalculateHandler",
+        FunctionName="aska-api-dev-ImageDiffHandler",
         InvocationType="RequestResponse",
         LogType="Tail",
         Payload=bytes(json.dumps(payload).encode()),
