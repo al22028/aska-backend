@@ -130,6 +130,8 @@ provider:
         path: ./src/ecr/pdf2img
       MatchingCalculatorImage:
         path: ./src/ecr/matching_calculator
+      ImageDiffImage:
+        path: ./src/ecr/makediff
 
   environment:
     TZ: Asia/Tokyo
@@ -202,5 +204,12 @@ functions:
     description: Image Matching Calculator
     image:
       name: MatchingCalculatorImage
+    memorySize: 1024 # optional, in MB, default is 1024
+    timeout: 120 # optional, in seconds, default is 6
+
+  ImageDiffHandler:
+    description: Make diff Image
+    image:
+      name: ImageDiffImage
     memorySize: 1024 # optional, in MB, default is 1024
     timeout: 120 # optional, in seconds, default is 6
