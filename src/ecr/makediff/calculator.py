@@ -52,7 +52,7 @@ class Calculator:
         bf = cv2.BFMatcher(cv2.NORM_HAMMING)
         try:
             matches = bf.knnMatch(
-                self.before_json.descriptors(), self.after_json.descriptors(), k=2
+                np.array(self.before_json.descriptors(),dtype=np.uint8), np.array(self.after_json.descriptors(),dtype=np.uint8), k=2
             )
             good_matches = []
             for m, n in matches:
@@ -64,7 +64,7 @@ class Calculator:
 
     def homography_matrix(self, min_matches: int) -> cv2.typing.MatLike:
         matches = self.matching(threshhold=THRESHOLD)
-        if len(matches) < min_matches:
+        if len(matches) > min_matches:
             src_pts = np.float32(
                 [
                     (
@@ -96,7 +96,7 @@ class Calculator:
         mask = np.ones((rows, cols), dtype=np.uint8)
         warped_mask = cv2.warpPerspective(mask, matrix, before_image.shape[1::-1])
         warped_after_image = cv2.warpPerspective(
-            self.after_image, matrix, before_image.shape[1::-1]
+            after_image, matrix, before_image.shape[1::-1]
         )
         warped_after_image[warped_mask == 0] = 255
 
@@ -104,7 +104,7 @@ class Calculator:
         _, threshdiff = cv2.threshold(diff_image, threshold, 255, cv2.THRESH_BINARY)
         threshdiff = 255 - threshdiff
 
-        image_path = "./tmp/diff.png"
+        image_path = "/tmp/diff.png"
         cv2.imwrite(image_path, threshdiff)
         client.upload_file(
             Filename=image_path,

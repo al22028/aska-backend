@@ -47,7 +47,7 @@ class ImageModel:
 
     def image_data(self) -> np.ndarray:
         data = np.frombuffer(self.data, np.uint8)
-        return cv2.imdecode(data, cv2.IMREAD_COLOR)
+        return cv2.imdecode(data, cv2.IMREAD_GRAYSCALE)
 
 
 """

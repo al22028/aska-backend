@@ -14,7 +14,6 @@ from image import ImageModel, JsonModel
 logger = Logger(service="ImageDiffCalculator")
 
 MIN_MACHTES = 10
-THRESHOLD = 200
 
 
 @event_source(data_class=LambdaFunctionUrlEvent)
@@ -29,6 +28,7 @@ def lambda_handler(event: LambdaFunctionUrlEvent, context: LambdaContext) -> dic
         event.body["before"]["image_object_key"],
         event.body["after"]["image_object_key"],
     )
+    THRESHOLD = event.body["params"]["threshold"]
     before_json = JsonModel(bucket_name, before_json_object_key)
     after_json = JsonModel(bucket_name, after_json_object_key)
     before_image = ImageModel(bucket_name, before_image_object_key)

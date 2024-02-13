@@ -20,6 +20,12 @@ def invoke_lambda():
             "bucket_name": "aska-image-bucket-dev",
             "before": {"json_object_key":"id231321/1.json","image_object_key":"id231321/1.png"},
             "after": {"json_object_key":"id231321/2.json","image_object_key":"id231321/2.png"},
+            "params" : {
+                "match_thrshold" : 0.85,
+                "threshold" : 220,
+                "eps" : 20,
+                "min_samples" : 50,
+            },
         }
     }
 
