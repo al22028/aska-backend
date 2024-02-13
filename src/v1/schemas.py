@@ -1,3 +1,6 @@
+# Standard Library
+from enum import Enum
+
 # Third Party Library
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
@@ -172,3 +175,57 @@ class DownloadURLSchema(BaseSchema):
 
 class ProjectDetailSchema(ProjectSchema):
     pdfs: list[PdfSchema]
+
+
+class Status(Enum):
+    """Status Enum"""
+
+    pending = "PENDING"
+    preprocessing = "PREPROCESSING"
+    processing = "PROCESSING"
+    completed = "COMPLETED"
+    failed = "FAILED"
+
+
+class PageCreateSchema(BaseSchema):
+    """Page Create Schema"""
+
+    pdf_id = Field(
+        ...,
+        title="PDF ID",
+        description="PDF ID",
+        examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "PDF ID"}],
+    )
+    status: Status = Field(
+        default=Status.pending,
+        title="Status",
+        description="Status",
+        examples=[{"value": "PENDING", "description": "Status"}],
+    )
+    index: int = Field(
+        ...,
+        title="Index",
+        description="Index",
+        examples=[{"value": 0, "description": "Index"}],
+    )
+
+
+class PageUpdateSchema(BaseSchema):
+    """Page Update Schema"""
+
+    status: Status = Field(
+        title="Status",
+        description="Status",
+        examples=[{"value": "PREPROCESSING", "description": "Status"}],
+    )
+
+
+class PageSchema(PageCreateSchema, TimeStampSchema):
+    """Page Schema"""
+
+    id: str = Field(
+        ...,
+        title="ID",
+        description="Page ID",
+        examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "ID"}],
+    )
