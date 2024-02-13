@@ -9,7 +9,7 @@ import cv2
 import numpy as np
 
 # Local Library
-from .image import ImageModel, JsonModel
+from image import ImageModel, JsonModel
 
 AWS_IMAGE_BUCKET = os.environ["AWS_IMAGE_BUCKET"]
 
@@ -51,7 +51,9 @@ class Calculator:
         """
         bf = cv2.BFMatcher(cv2.NORM_HAMMING)
         try:
-            matches = bf.knnMatch(self.before_json.descriptors, self.after_json.descriptors, k=2)
+            matches = bf.knnMatch(
+                self.before_json.descriptors(), self.after_json.descriptors(), k=2
+            )
             good_matches = []
             for m, n in matches:
                 if m.distance < threshhold * n.distance:
@@ -66,8 +68,8 @@ class Calculator:
             src_pts = np.float32(
                 [
                     (
-                        self.before_json.key_points[m.queryIdx]["x"],
-                        self.before_json.key_points[m.queryIdx]["y"],
+                        self.before_json.key_points()[m.queryIdx]["x"],
+                        self.before_json.key_points()[m.queryIdx]["y"],
                     )
                     for m in matches
                 ]
@@ -75,8 +77,8 @@ class Calculator:
             dst_pts = np.float32(
                 [
                     (
-                        self.after_json.key_points[m.trainIdx]["x"],
-                        self.after_json.key_points[m.trainIdx]["y"],
+                        self.after_json.key_points()[m.trainIdx]["x"],
+                        self.after_json.key_points()[m.trainIdx]["y"],
                     )
                     for m in matches
                 ]
@@ -87,8 +89,8 @@ class Calculator:
             raise ValueError("The number of matches is less than the minimum number of matches.")
 
     def create_image_diff(self, matrix: list, threshold: int) -> None:
-        before_image = self.before_image.image_data
-        after_image = self.after_image.image_data
+        before_image = self.before_image.image_data()
+        after_image = self.after_image.image_data()
         threshold = 0 if threshold > 255 or 0 > threshold else threshold
         rows, cols = after_image.shape
         mask = np.ones((rows, cols), dtype=np.uint8)
@@ -102,7 +104,7 @@ class Calculator:
         _, threshdiff = cv2.threshold(diff_image, threshold, 255, cv2.THRESH_BINARY)
         threshdiff = 255 - threshdiff
 
-        image_path = "/tmp/diff.png"
+        image_path = "./tmp/diff.png"
         cv2.imwrite(image_path, threshdiff)
         client.upload_file(
             Filename=image_path,

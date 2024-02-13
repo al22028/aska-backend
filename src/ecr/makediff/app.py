@@ -29,18 +29,10 @@ def lambda_handler(event: LambdaFunctionUrlEvent, context: LambdaContext) -> dic
         event.body["before"]["image_object_key"],
         event.body["after"]["image_object_key"],
     )
-    print(before_image_object_key)
-    print(after_image_object_key)
-
-
     before_json = JsonModel(bucket_name, before_json_object_key)
     after_json = JsonModel(bucket_name, after_json_object_key)
-    before_image = ImageModel(bucket_name, before_image_object_key, "tmp/before.png")
-    after_image = ImageModel(bucket_name, after_image_object_key, "tmp/after.png")
-
-    print(before_json)
-    print(after_json)
-
+    before_image = ImageModel(bucket_name, before_image_object_key)
+    after_image = ImageModel(bucket_name, after_image_object_key)
     pdf_id, image_name = before_image_object_key.split("/")
     page, _ = image_name.split(".")
 
