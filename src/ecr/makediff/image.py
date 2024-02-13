@@ -1,9 +1,9 @@
 # Standard Library
 import json
-import cv2
 
 # Third Party Library
 import boto3
+import cv2
 import numpy as np
 
 

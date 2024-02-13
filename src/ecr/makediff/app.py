@@ -6,8 +6,6 @@ import json
 from aws_lambda_powertools import Logger
 from aws_lambda_powertools.utilities.data_classes import LambdaFunctionUrlEvent, event_source
 from aws_lambda_powertools.utilities.typing import LambdaContext
-
-# Local Library
 from calculator import Calculator
 from image import ImageModel, JsonModel
 

@@ -7,8 +7,6 @@ import os
 import boto3
 import cv2
 import numpy as np
-
-# Local Library
 from image import ImageModel, JsonModel
 
 AWS_IMAGE_BUCKET = os.environ["AWS_IMAGE_BUCKET"]
@@ -52,7 +50,9 @@ class Calculator:
         bf = cv2.BFMatcher(cv2.NORM_HAMMING)
         try:
             matches = bf.knnMatch(
-                np.array(self.before_json.descriptors(),dtype=np.uint8), np.array(self.after_json.descriptors(),dtype=np.uint8), k=2
+                np.array(self.before_json.descriptors(), dtype=np.uint8),
+                np.array(self.after_json.descriptors(), dtype=np.uint8),
+                k=2,
             )
             good_matches = []
             for m, n in matches:
@@ -95,9 +95,7 @@ class Calculator:
         rows, cols = after_image.shape
         mask = np.ones((rows, cols), dtype=np.uint8)
         warped_mask = cv2.warpPerspective(mask, matrix, before_image.shape[1::-1])
-        warped_after_image = cv2.warpPerspective(
-            after_image, matrix, before_image.shape[1::-1]
-        )
+        warped_after_image = cv2.warpPerspective(after_image, matrix, before_image.shape[1::-1])
         warped_after_image[warped_mask == 0] = 255
 
         diff_image = cv2.absdiff(warped_after_image, before_image)
