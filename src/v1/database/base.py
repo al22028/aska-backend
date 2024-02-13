@@ -3,7 +3,7 @@ from datetime import datetime
 
 # Third Party Library
 from config.settings import AWS_IMAGE_HOST_DOMAIN, AWS_RDS_DATABASE_URL, SQLALCHEMY_ECHO_SQL
-from sqlalchemy import Column, DateTime, ForeignKey, String, create_engine
+from sqlalchemy import JSON, Column, DateTime, Float, ForeignKey, String, create_engine
 from sqlalchemy.orm import Mapped, declarative_base, relationship
 
 Engine = create_engine(AWS_RDS_DATABASE_URL, echo=SQLALCHEMY_ECHO_SQL)
@@ -256,6 +256,60 @@ class Page(Base, TimestampMixin):
             "index": self.index,
             "image": self.image.serializer(),
             "json": self.json.serializer(),
+            "updatedAt": self.updated_at.isoformat(),  # type: ignore
+            "createdAt": self.created_at.isoformat(),  # type: ignore
+        }
+
+
+class Matching(Base, TimestampMixin):
+    __tablename__ = "matchings"
+
+    id = Column(String, primary_key=True)
+    image1_id = Column(String, ForeignKey("images.id", ondelete="CASCADE"), nullable=False)
+    image2_id = Column(String, ForeignKey("images.id", ondelete="CASCADE"), nullable=False)
+    score = Column(Float, nullable=True)
+    status = Column(String, nullable=False)
+    params = Column(JSON, nullable=False)
+    bounding_boxes = Column(JSON, nullable=True)
+
+    image1: Mapped["Image"] = relationship("Image", foreign_keys=[image1_id])
+    image2: Mapped["Image"] = relationship("Image", foreign_keys=[image2_id])
+
+    def __init__(
+        self,
+        id: str,
+        image1_id: str,
+        image2_id: str,
+        score: float,
+        status: str,
+        params: dict,
+        bounding_boxes: dict,
+    ) -> None:
+        self.id = id
+        self.image1_id = image1_id
+        self.image2_id = image2_id
+        self.score = score  # type: ignore
+        self.status = status
+        self.params = params
+        self.bounding_boxes = bounding_boxes
+        self.updated_at = datetime.now()
+        self.created_at = datetime.now()
+
+    def __str__(self) -> str:
+        return f"<Matching id={self.id}, image1_id={self.image1_id}, image2_id={self.image2_id}>"
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
+    def serializer(self) -> dict:
+        return {
+            "id": self.id,
+            "image1": self.image1.serializer(),
+            "image2": self.image2.serializer(),
+            "score": self.score,
+            "status": self.status,
+            "params": self.params,
+            "boundingBoxes": self.bounding_boxes,
             "updatedAt": self.updated_at.isoformat(),  # type: ignore
             "createdAt": self.created_at.isoformat(),  # type: ignore
         }
