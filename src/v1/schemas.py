@@ -190,7 +190,7 @@ class Status(Enum):
 class PageCreateSchema(BaseSchema):
     """Page Create Schema"""
 
-    pdf_id = Field(
+    pdf_id: str = Field(
         ...,
         title="PDF ID",
         description="PDF ID",
