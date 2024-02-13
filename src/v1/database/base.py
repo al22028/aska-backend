@@ -117,7 +117,7 @@ class Pdf(Base, TimestampMixin):
     object_key = Column(String, nullable=True)
 
     project: Mapped["Project"] = relationship("Project", back_populates="pdfs")
-    pages: Mapped["Page"] = relationship(
+    pages: Mapped[list["Page"]] = relationship(
         "Page", back_populates="pdf", cascade="all, delete", passive_deletes=True, uselist=True
     )
 
@@ -158,6 +158,70 @@ class Pdf(Base, TimestampMixin):
         }
 
 
+class Image(Base, TimestampMixin):
+    __tablename__ = "images"
+
+    id = Column(String, primary_key=True)
+    page_id = Column(String, ForeignKey("pages.id", ondelete="CASCADE"), nullable=False)
+    object_key = Column(String, nullable=False)
+    status = Column(String, nullable=False)
+
+    page: Mapped["Page"] = relationship("Page", back_populates="image")
+
+    def __init__(self, id: str, page_id: str, object_key: str, status: str) -> None:
+        self.id = id
+        self.page_id = page_id
+        self.object_key = object_key
+        self.status = status
+        self.updated_at = datetime.now()
+        self.created_at = datetime.now()
+
+    def serializer(self) -> dict:
+        return {
+            "id": self.id,
+            "pageId": self.page_id,
+            "objectKey": self.object_key,
+            "status": self.status,
+            "updatedAt": self.updated_at.isoformat(),  # type: ignore
+            "createdAt": self.created_at.isoformat(),  # type: ignore
+        }
+
+
+class Json(Base, TimestampMixin):
+    __tablename__ = "jsons"
+
+    id = Column(String, primary_key=True)
+    page_id = Column(String, ForeignKey("pages.id", ondelete="CASCADE"), nullable=False)
+    object_key = Column(String, nullable=False)
+    status = Column(String, nullable=False)
+
+    page: Mapped["Page"] = relationship("Page", back_populates="json")
+
+    def __init__(self, id: str, project_id: str, object_key: str, status: str) -> None:
+        self.id = id
+        self.project_id = project_id
+        self.object_key = object_key
+        self.status = status
+        self.updated_at = datetime.now()
+        self.created_at = datetime.now()
+
+    def __str__(self) -> str:
+        return f"<Json id={self.id}, project_id={self.project_id}, object_key={self.object_key}>"
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
+    def serializer(self) -> dict:
+        return {
+            "id": self.id,
+            "projectId": self.project_id,
+            "objectKey": self.object_key,
+            "status": self.status,
+            "updatedAt": self.updated_at.isoformat(),  # type: ignore
+            "createdAt": self.created_at.isoformat(),  # type: ignore
+        }
+
+
 class Page(Base, TimestampMixin):
     __tablename__ = "pages"
 
@@ -167,6 +231,8 @@ class Page(Base, TimestampMixin):
     index = Column(String, nullable=False)
 
     pdf: Mapped["Pdf"] = relationship("Pdf", back_populates="pages")
+    image: Mapped["Image"] = relationship("Image", cascade="all, delete", passive_deletes=True)
+    json: Mapped["Json"] = relationship("Json", cascade="all, delete", passive_deletes=True)
 
     def __init__(self, id: str, pdf_id: str, index: str, status: str) -> None:
         self.id = id
@@ -188,6 +254,8 @@ class Page(Base, TimestampMixin):
             "pdfId": self.pdf_id,
             "status": self.status,
             "index": self.index,
+            "image": self.image.serializer(),
+            "json": self.json.serializer(),
             "updatedAt": self.updated_at.isoformat(),  # type: ignore
             "createdAt": self.created_at.isoformat(),  # type: ignore
         }
