@@ -4,7 +4,7 @@ from typing import List
 
 # Third Party Library
 from aws_lambda_powertools import Logger
-from database.base import Image
+from database.base import Image, Page
 from schemas import ImageCreateSchema, ImageUpdateSchema
 from sqlalchemy.orm.session import Session
 from views.console import log_function_execution
@@ -40,7 +40,10 @@ class ImageORM(object):
     @log_function_execution(logger=logger)
     def create_one(self, db: Session, image_data: ImageCreateSchema) -> Image:
         id = str(uuid.uuid4()).replace("-", "")
-        object_key = f"{id}/image.png"
+        page = db.query(Page).filter(Page.id == image_data.page_id).one()
+        pdf_id = page.pdf_id
+        page_index = page.index
+        object_key = f"{pdf_id}/{page_index}.png"
         created_image = Image(
             **image_data.model_dump(),
             id=id,
