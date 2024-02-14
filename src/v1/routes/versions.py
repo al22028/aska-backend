@@ -7,14 +7,14 @@ from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.event_handler.api_gateway import Router
 from aws_lambda_powertools.event_handler.openapi.params import Query
 from aws_lambda_powertools.shared.types import Annotated
-from controllers.pdf import PdfController
+from controllers.version import PdfController
 from schemas import (
     DeletedSchema,
     DownloadURLSchema,
-    PdfCreateResponseSchema,
-    PdfCreateSchema,
-    PdfSchema,
-    PdfUpdateSchema,
+    VersionCreateResponseSchema,
+    VersionCreateSchema,
+    VersionSchema,
+    VersionUpdateSchema,
 )
 
 app = APIGatewayRestResolver(debug=True)
@@ -35,7 +35,7 @@ controller = PdfController()
     operation_id="fetchProjectVersions",
     responses={200: {"description": "成功"}, 500: {"description": "Internal Server Error"}},
 )
-def fetch_project_versions(projectId: Annotated[str, Query]) -> List[PdfSchema]:
+def fetch_project_versions(projectId: Annotated[str, Query]) -> List[VersionSchema]:
     return controller.fetch_project_pdfs(project_id=projectId)
 
 
@@ -48,7 +48,7 @@ def fetch_project_versions(projectId: Annotated[str, Query]) -> List[PdfSchema]:
     operation_id="fetchAllVersions",
     responses={200: {"description": "成功"}, 500: {"description": "Internal Server Error"}},
 )
-def fetch_all_versions() -> List[PdfSchema]:
+def fetch_all_versions() -> List[VersionSchema]:
     return controller.fetch_all_pdfs()
 
 
@@ -66,8 +66,8 @@ def fetch_all_versions() -> List[PdfSchema]:
         500: {"description": "Internal Server Error"},
     },
 )
-def create_single_version(pdf_data: PdfCreateSchema) -> PdfCreateResponseSchema:
-    created_pdf, status_code = controller.create_one(pdf_data=pdf_data)
+def create_single_version(version_data: VersionCreateSchema) -> VersionCreateResponseSchema:
+    created_pdf, status_code = controller.create_one(version_data=version_data)
     return created_pdf, status_code  # type: ignore
 
 
@@ -84,7 +84,7 @@ def create_single_version(pdf_data: PdfCreateSchema) -> PdfCreateResponseSchema:
         500: {"description": "Internal Server Error"},
     },
 )
-def fetch_single_version_by_id(versionId: str) -> PdfSchema:
+def fetch_single_version_by_id(versionId: str) -> VersionSchema:
     return controller.find_one(pdf_id=versionId)
 
 
@@ -118,8 +118,8 @@ def fetch_single_pdf_download_url(versionId: str) -> DownloadURLSchema:
         500: {"description": "Internal Server Error"},
     },
 )
-def update_single_version(versionId: str, pdf_data: PdfUpdateSchema) -> PdfSchema:
-    return controller.update_one(pdf_id=versionId, pdf_data=pdf_data)
+def update_single_version(versionId: str, version_data: VersionUpdateSchema) -> VersionSchema:
+    return controller.update_one(pdf_id=versionId, version_data=version_data)
 
 
 @router.delete(
