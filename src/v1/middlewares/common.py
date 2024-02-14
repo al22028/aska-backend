@@ -28,10 +28,10 @@ def handler_middleware(handler: Callable[..., T], event: dict, context: dict) ->
     #     raise UnauthorizedError("Invalid origin")
     response = handler(event, context)
 
-    # # headers
-    # response["headers"]: Dict[str, list[str] | str] = {  # type: ignore
-    #     "Content-Type": "application/json",
-    #     "Access-Control-Allow-Origin": origin,
-    # }
+    # headers
+    response["headers"] = {  # type: ignore
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "http://localhost:5173",
+    }
 
     return response
