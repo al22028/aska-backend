@@ -20,7 +20,7 @@ if STAGE == "local":
 elif STAGE == "dev":
     servers = [
         Server(
-            url="https://api-dev.u10.teba-saki.net/v1",
+            url="https://api-dev.u10.teba-saki.net",
             description="Development Server",
             variables=None,
         ),
@@ -28,7 +28,7 @@ elif STAGE == "dev":
 else:
     servers = [
         Server(
-            url="https://api-dev.u10.teba-saki.net/v1",
+            url="https://api-dev.u10.teba-saki.net",
             description="Development Server",
             variables=None,
         ),
