@@ -7,7 +7,7 @@ from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.event_handler.api_gateway import Router
 from aws_lambda_powertools.event_handler.openapi.params import Query
 from aws_lambda_powertools.shared.types import Annotated
-from controllers.version import PdfController
+from controllers.version import VersionController
 from schemas import (
     DeletedSchema,
     DownloadURLSchema,
@@ -23,7 +23,7 @@ tracer = Tracer()
 
 app = APIGatewayRestResolver()
 
-controller = PdfController()
+controller = VersionController()
 
 
 @router.get(
@@ -49,7 +49,7 @@ def fetch_project_versions(projectId: Annotated[str, Query]) -> List[VersionSche
     responses={200: {"description": "成功"}, 500: {"description": "Internal Server Error"}},
 )
 def fetch_all_versions() -> List[VersionSchema]:
-    return controller.fetch_all_pdfs()
+    return controller.fetch_all_versions()
 
 
 @router.post(

@@ -24,24 +24,21 @@ class User(Base, TimestampMixin):
     id = Column(String, primary_key=True)
     email = Column(String(256), nullable=False, unique=True)
     name = Column(String(256), nullable=False)
-    status = Column(String, nullable=False)
 
     def __init__(
         self,
         id: str,
         name: str,
         email: str,
-        status: str,
     ) -> None:
         self.id = id
         self.name = name
         self.email = email
-        self.status = status
         self.updated_at = datetime.now()
         self.created_at = datetime.now()
 
     def __str__(self) -> str:
-        return f"<user id={self.id}, name={self.name}, email={self.email}, status={self.status}>"
+        return f"<user id={self.id}, name={self.name}, email={self.email}>"
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -51,7 +48,6 @@ class User(Base, TimestampMixin):
             "id": self.id,
             "name": self.name,
             "email": self.email,
-            "status": self.status,
             "updatedAt": self.updated_at.isoformat(),  # type: ignore
             "createdAt": self.created_at.isoformat(),  # type: ignore
         }
@@ -97,7 +93,7 @@ class Project(Base, TimestampMixin):
             "description": self.description,
             "updatedAt": self.updated_at.isoformat(),  # type: ignore
             "createdAt": self.created_at.isoformat(),  # type: ignore
-            "pdfs": [version.serializer() for version in self.versions],
+            "versions": [version.serializer() for version in self.versions],
         }
 
     def detail_serializer(self) -> dict:
@@ -157,7 +153,6 @@ class Version(Base, TimestampMixin):
             "title": self.title,
             "thumbnail": AWS_IMAGE_HOST_DOMAIN + "/" + self.thumbnail,
             "description": self.description,
-            "project": self.project.serializer(),
             "objectKey": self.object_key,
             "updatedAt": self.updated_at.isoformat(),  # type: ignore
             "createdAt": self.created_at.isoformat(),  # type: ignore
