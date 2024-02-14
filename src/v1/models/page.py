@@ -30,6 +30,23 @@ class PageORM(object):
         return db.query(Page).filter(Page.pdf_id == pdf_id).all()
 
     @log_function_execution(logger=logger)
+    def pdf_page_not_found(self, db: Session, pdf_id: str, page_index: str) -> bool:
+        """Check if the page exists in the database.
+
+        Args:
+            db (Session): Session
+            pdf_id (str): pdf id
+            page_index (str): index of the page
+
+        Returns:
+            bool: if the page does not exist in the database return True else False
+        """
+        page = db.query(Page).filter(Page.pdf_id == pdf_id, Page.index == page_index).first()
+        if not page:
+            return True
+        return False
+
+    @log_function_execution(logger=logger)
     def exists(self, db: Session, page_id: str) -> bool:
         page = db.query(Page).filter(Page.id == page_id).first()
         if page:
