@@ -6,7 +6,7 @@ from aws_lambda_powertools.utilities.typing import LambdaContext
 from config.settings import STAGE
 from middlewares.common import handler_middleware
 from pydantic import BaseModel, Field
-from routes import image, pdf, project, user, versions
+from routes import project, user, version
 
 tracer = Tracer()
 logger = Logger()
@@ -44,9 +44,7 @@ app.enable_swagger(
 
 app.include_router(user.router, prefix="/users")
 app.include_router(project.router, prefix="/projects")
-app.include_router(pdf.router, prefix="/pdfs")
-app.include_router(image.router, prefix="/images")
-app.include_router(versions.router, prefix="/versions")
+app.include_router(version.router, prefix="/versions")
 
 
 class HealthCheckSchema(BaseModel):

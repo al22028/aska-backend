@@ -117,17 +117,17 @@ class VersionUpdateSchema(BaseSchema):
         ...,
         min_length=1,
         max_length=256,
-        title="Title",
-        description="Title",
-        examples=[{"value": "PDF A", "description": "Title"}],
+        title="タイトル",
+        description="バージョンタイトル",
+        examples=[{"value": "K12345_V1", "description": "Title"}],
     )
     description: str = Field(
         default="",
         min_length=0,
         max_length=512,
-        title="Description",
-        description="Description",
-        examples=[{"value": "description of the pdf", "description": "Description"}],
+        title="詳細情報",
+        description="バージョンの詳細情報",
+        examples=[{"value": "5月末時点のバージョン", "description": "Description"}],
     )
 
 
@@ -144,7 +144,7 @@ class VersionSchema(VersionCreateSchema, VersionUpdateSchema, TimeStampSchema):
     id: str = Field(
         ...,
         title="ID",
-        description="PDF ID",
+        description="Version ID",
         examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "ID"}],
     )
     thumbnail: str = Field(
@@ -174,7 +174,7 @@ class DownloadURLSchema(BaseSchema):
 
 
 class ProjectDetailSchema(ProjectSchema):
-    pdfs: list[VersionSchema]
+    versions: list[VersionSchema]
 
 
 class Status(Enum):
@@ -190,11 +190,11 @@ class Status(Enum):
 class PageCreateSchema(BaseSchema):
     """Page Create Schema"""
 
-    pdf_id: str = Field(
+    version_id: str = Field(
         ...,
-        title="PDF ID",
-        description="PDF ID",
-        examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "PDF ID"}],
+        title="Version ID",
+        description="Version ID",
+        examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "Version ID"}],
     )
     status: Status = Field(
         default=Status.pending,

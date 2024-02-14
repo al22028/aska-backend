@@ -6,7 +6,7 @@ from aws_lambda_powertools import Tracer
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.event_handler.api_gateway import Router
 from controllers.user import UserController
-from schemas import UserCreateSchema, UserSchema, UserUpdateSchema
+from schemas import DeletedSchema, UserCreateSchema, UserSchema, UserUpdateSchema
 
 app = APIGatewayRestResolver(debug=True)
 router = Router()
@@ -66,3 +66,19 @@ def create_user(user: UserCreateSchema) -> UserSchema:
 def update_user(userId: str, user: UserUpdateSchema) -> UserSchema:
     updated_user = controller.update_one(user_id=userId, user_data=user)
     return updated_user
+
+
+@router.delete(
+    "/<userId>",
+    tags=["User"],
+    summary="Delete User",
+    response_description="User",
+    operation_id="deleteSingleUserById",
+    responses={
+        200: {"description": "User Deleted"},
+        404: {"description": "User Not Found"},
+    },
+)
+def delete_single_user(userId: str) -> DeletedSchema:
+    controller.delete_one(user_id=userId)
+    return DeletedSchema(message="User deleted successfully"), 200  # type: ignore

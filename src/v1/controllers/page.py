@@ -1,7 +1,7 @@
 # Third Party Library
 from database.session import with_session
 from models.page import PageORM
-from models.pdf import PdfORM
+from models.version import PdfORM
 from schemas import PageSchema
 from sqlalchemy.orm.session import Session
 

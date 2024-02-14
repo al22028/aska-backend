@@ -7,7 +7,7 @@ from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.event_handler.api_gateway import Router
 from aws_lambda_powertools.event_handler.openapi.params import Query
 from aws_lambda_powertools.shared.types import Annotated
-from controllers.version import PdfController
+from controllers.version import VersionController
 from schemas import (
     DeletedSchema,
     DownloadURLSchema,
@@ -23,7 +23,7 @@ tracer = Tracer()
 
 app = APIGatewayRestResolver()
 
-controller = PdfController()
+controller = VersionController()
 
 
 @router.get(
@@ -49,7 +49,7 @@ def fetch_project_versions(projectId: Annotated[str, Query]) -> List[VersionSche
     responses={200: {"description": "成功"}, 500: {"description": "Internal Server Error"}},
 )
 def fetch_all_versions() -> List[VersionSchema]:
-    return controller.fetch_all_pdfs()
+    return controller.fetch_all_versions()
 
 
 @router.post(
@@ -101,7 +101,7 @@ def fetch_single_version_by_id(versionId: str) -> VersionSchema:
         500: {"description": "Internal Server Error"},
     },
 )
-def fetch_single_pdf_download_url(versionId: str) -> DownloadURLSchema:
+def fetch_single_version_download_url(versionId: str) -> DownloadURLSchema:
     return controller.generate_download_url(pdf_id=versionId)
 
 
@@ -135,5 +135,5 @@ def update_single_version(versionId: str, version_data: VersionUpdateSchema) -> 
         500: {"description": "Internal Server Error"},
     },
 )
-def delete_single_pdf(versionId: str) -> DeletedSchema:
+def delete_single_version(versionId: str) -> DeletedSchema:
     return controller.delete_one(pdf_id=versionId)
