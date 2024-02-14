@@ -35,8 +35,7 @@ class PdfController:
 
     @with_session
     def fetch_project_pdfs(self, session: Session, project_id: str) -> list[VersionSchema]:
-        project = self.projects.exists(db=session, project_id=project_id)
-        if not project:
+        if not self.projects.exists(db=session, project_id=project_id):
             raise NotFoundError("project not found")
         pdfs: List[Pdf] = self.pdfs.find_many_by_project_id(db=session, project_id=project_id)
         return [VersionSchema(**pdf.serializer()) for pdf in pdfs]
@@ -45,6 +44,9 @@ class PdfController:
     def create_one(
         self, session: Session, version_data: VersionCreateSchema
     ) -> tuple[VersionCreateResponseSchema, int]:
+
+        if not self.projects.exists(db=session, project_id=version_data.project_id):
+            raise NotFoundError("project not found")
         pdf = self.pdfs.create_one(db=session, pdf_data=version_data)
         presigned_url = s3.create_presigned_url(
             client_method="put_object",
