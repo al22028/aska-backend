@@ -64,8 +64,12 @@ class Project(Base, TimestampMixin):
     title = Column(String(256), nullable=False)
     description = Column(String(512), nullable=False)
 
-    pdfs: Mapped[list["Pdf"]] = relationship(
-        "Pdf", back_populates="project", cascade="all, delete", passive_deletes=True, uselist=True
+    versions: Mapped[list["Version"]] = relationship(
+        "Version",
+        back_populates="project",
+        cascade="all, delete",
+        passive_deletes=True,
+        uselist=True,
     )
 
     def __init__(
@@ -93,7 +97,7 @@ class Project(Base, TimestampMixin):
             "description": self.description,
             "updatedAt": self.updated_at.isoformat(),  # type: ignore
             "createdAt": self.created_at.isoformat(),  # type: ignore
-            "pdfs": [pdf.serializer() for pdf in self.pdfs],
+            "pdfs": [version.serializer() for version in self.versions],
         }
 
     def detail_serializer(self) -> dict:
@@ -103,12 +107,12 @@ class Project(Base, TimestampMixin):
             "description": self.description,
             "updatedAt": self.updated_at.isoformat(),  # type: ignore
             "createdAt": self.created_at.isoformat(),  # type: ignore
-            "pdfs": [pdf.serializer() for pdf in self.pdfs],
+            "versions": [version.serializer() for version in self.versions],
         }
 
 
-class Pdf(Base, TimestampMixin):
-    __tablename__ = "pdfs"
+class Version(Base, TimestampMixin):
+    __tablename__ = "versions"
 
     id = Column(String, primary_key=True)
     project_id = Column(String, ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
@@ -117,9 +121,9 @@ class Pdf(Base, TimestampMixin):
     thumbnail = Column(String, nullable=False, default="default.png")
     object_key = Column(String, nullable=True)
 
-    project: Mapped["Project"] = relationship("Project", back_populates="pdfs")
+    project: Mapped["Project"] = relationship("Project", back_populates="versions")
     pages: Mapped[list["Page"]] = relationship(
-        "Page", back_populates="pdf", cascade="all, delete", passive_deletes=True, uselist=True
+        "Page", back_populates="version", cascade="all, delete", passive_deletes=True, uselist=True
     )
 
     def __init__(
@@ -141,7 +145,7 @@ class Pdf(Base, TimestampMixin):
         self.created_at = datetime.now()
 
     def __str__(self) -> str:
-        return f"<pdf id={self.id}, title={self.title}, object_key={self.object_key}>"
+        return f"<version id={self.id}, title={self.title}, object_key={self.object_key}>"
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -153,6 +157,7 @@ class Pdf(Base, TimestampMixin):
             "title": self.title,
             "thumbnail": AWS_IMAGE_HOST_DOMAIN + "/" + self.thumbnail,
             "description": self.description,
+            "project": self.project.serializer(),
             "objectKey": self.object_key,
             "updatedAt": self.updated_at.isoformat(),  # type: ignore
             "createdAt": self.created_at.isoformat(),  # type: ignore
@@ -227,11 +232,11 @@ class Page(Base, TimestampMixin):
     __tablename__ = "pages"
 
     id = Column(String, primary_key=True)
-    pdf_id = Column(String, ForeignKey("pdfs.id", ondelete="CASCADE"), nullable=False)
+    pdf_id = Column(String, ForeignKey("versions.id", ondelete="CASCADE"), nullable=False)
     status = Column(String, nullable=False)
     index = Column(Integer, nullable=False)
 
-    pdf: Mapped["Pdf"] = relationship("Pdf", back_populates="pages")
+    version: Mapped["Version"] = relationship("Version", back_populates="pages")
     image: Mapped["Image"] = relationship("Image", cascade="all, delete", passive_deletes=True)
     json: Mapped["Json"] = relationship("Json", cascade="all, delete", passive_deletes=True)
 
@@ -255,6 +260,7 @@ class Page(Base, TimestampMixin):
             "pdfId": self.pdf_id,
             "status": self.status,
             "index": self.index,
+            "version": self.version.serializer(),
             "image": self.image.serializer(),
             "json": self.json.serializer(),
             "updatedAt": self.updated_at.isoformat(),  # type: ignore
