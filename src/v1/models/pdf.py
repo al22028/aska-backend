@@ -4,7 +4,7 @@ from typing import List
 
 # Third Party Library
 from database.base import Pdf
-from schemas import PdfCreateSchema, PdfUpdateSchema
+from schemas import VersionCreateSchema, VersionUpdateSchema
 from sqlalchemy.orm.session import Session
 
 
@@ -25,7 +25,7 @@ class PdfORM(object):
             return True
         return False
 
-    def create_one(self, db: Session, pdf_data: PdfCreateSchema) -> Pdf:
+    def create_one(self, db: Session, pdf_data: VersionCreateSchema) -> Pdf:
         id = str(uuid.uuid4()).replace("-", "")
         created_pdf = Pdf(
             **pdf_data.model_dump(),
@@ -35,7 +35,7 @@ class PdfORM(object):
         db.add(created_pdf)
         return created_pdf
 
-    def update_one(self, db: Session, pdf_id: str, pdf_data: PdfUpdateSchema) -> Pdf:
+    def update_one(self, db: Session, pdf_id: str, pdf_data: VersionUpdateSchema) -> Pdf:
         updated_pdf = self.find_one(db, pdf_id)
         updated_pdf.title = pdf_data.title
         updated_pdf.description = pdf_data.description

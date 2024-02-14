@@ -112,7 +112,7 @@ class ProjectSchema(ProjectUpdateSchema, TimeStampSchema):
     )
 
 
-class PdfUpdateSchema(BaseSchema):
+class VersionUpdateSchema(BaseSchema):
     title: str = Field(
         ...,
         min_length=1,
@@ -131,7 +131,7 @@ class PdfUpdateSchema(BaseSchema):
     )
 
 
-class PdfCreateSchema(PdfUpdateSchema):
+class VersionCreateSchema(VersionUpdateSchema):
     project_id: str = Field(
         ...,
         title="Project ID",
@@ -140,7 +140,7 @@ class PdfCreateSchema(PdfUpdateSchema):
     )
 
 
-class PdfSchema(PdfCreateSchema, PdfUpdateSchema, TimeStampSchema):
+class VersionSchema(VersionCreateSchema, VersionUpdateSchema, TimeStampSchema):
     id: str = Field(
         ...,
         title="ID",
@@ -155,7 +155,7 @@ class PdfSchema(PdfCreateSchema, PdfUpdateSchema, TimeStampSchema):
     )
 
 
-class PdfCreateResponseSchema(PdfSchema):
+class VersionCreateResponseSchema(VersionSchema):
     presigned_url: str = Field(
         ...,
         title="(PUT) Presigned URL",
@@ -174,7 +174,7 @@ class DownloadURLSchema(BaseSchema):
 
 
 class ProjectDetailSchema(ProjectSchema):
-    pdfs: list[PdfSchema]
+    pdfs: list[VersionSchema]
 
 
 class Status(Enum):
