@@ -20,7 +20,7 @@ if STAGE == "local":
 elif STAGE == "dev":
     servers = [
         Server(
-            url="https://api-dev.u10.teba-saki.net",
+            url="https://api-dev.u10.teba-saki.net/v1",
             description="Development Server",
             variables=None,
         ),
@@ -28,7 +28,7 @@ elif STAGE == "dev":
 else:
     servers = [
         Server(
-            url="https://api-dev.u10.teba-saki.net",
+            url="https://api-dev.u10.teba-saki.net/v1",
             description="Development Server",
             variables=None,
         ),
@@ -42,9 +42,9 @@ app.enable_swagger(
     servers=servers,
 )
 
-app.include_router(user.router, prefix="/v1/users")
-app.include_router(project.router, prefix="/v1/projects")
-app.include_router(pdf.router, prefix="/v1/pdfs")
+app.include_router(user.router, prefix="/users")
+app.include_router(project.router, prefix="/projects")
+app.include_router(pdf.router, prefix="/pdfs")
 
 
 class HealthCheckSchema(BaseModel):
