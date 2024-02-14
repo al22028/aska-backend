@@ -229,3 +229,52 @@ class PageSchema(PageCreateSchema, TimeStampSchema):
         description="Page ID",
         examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "ID"}],
     )
+
+
+class ImageCreateSchema(BaseSchema):
+    """Image Create Schema"""
+
+    page_id: str = Field(
+        ...,
+        title="Page ID",
+        description="Page ID",
+        examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "Page ID"}],
+    )
+    status: Status = Field(
+        default=Status.pending,
+        title="Status",
+        description="Status",
+        examples=[{"value": "PENDING", "description": "Status"}],
+    )
+
+
+class ImageCreateResponseSchema(BaseSchema):
+    """Image Create Response Schema"""
+
+    presigned_url: str = Field(
+        ...,
+        title="(PUT) Presigned URL",
+        description="Presigned URL for PUT image file",
+        examples=[{"value": "https://example.com/presigned_url", "description": "Presigned URL"}],
+    )
+
+
+class ImageUpdateSchema(BaseSchema):
+    """Image Update Schema"""
+
+    status: Status = Field(
+        title="Status",
+        description="Status",
+        examples=[{"value": "PREPROCESSING", "description": "Status"}],
+    )
+
+
+class ImageSchema(ImageCreateSchema, TimeStampSchema):
+    """Image Schema"""
+
+    id: str = Field(
+        ...,
+        title="ID",
+        description="Image ID",
+        examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "ID"}],
+    )
