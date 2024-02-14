@@ -5,7 +5,7 @@ from typing import List
 # Third Party Library
 from aws.s3 import S3
 from aws_lambda_powertools.event_handler.exceptions import NotFoundError
-from config.settings import AWS_IMAGE_BACKET
+from config.settings import AWS_IMAGE_BUCKET
 from database.base import Image
 from database.session import with_session
 from models.image import ImageORM
@@ -48,7 +48,7 @@ class ImageController:
         image = self.images.create_one(db=session, image_data=image_data)
         presigned_url = s3.create_presigned_url(
             client_method="put_object",
-            bucket_name=AWS_IMAGE_BACKET,
+            bucket_name=AWS_IMAGE_BUCKET,
             object_key=image.object_key,  # type: ignore
             expiration=3600,
         )
@@ -88,7 +88,7 @@ class ImageController:
         return DownloadURLSchema(
             presigned_url=s3.create_presigned_url(
                 client_method="get_object",
-                bucket_name=AWS_IMAGE_BACKET,
+                bucket_name=AWS_IMAGE_BUCKET,
                 object_key=image.object_key,  # type: ignore
                 expiration=3600,
             )
