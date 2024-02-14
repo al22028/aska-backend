@@ -5,6 +5,7 @@ from datetime import datetime
 from config.settings import AWS_IMAGE_HOST_DOMAIN, AWS_RDS_DATABASE_URL, SQLALCHEMY_ECHO_SQL
 from sqlalchemy import JSON, Column, DateTime, Float, ForeignKey, String, create_engine
 from sqlalchemy.orm import Mapped, declarative_base, relationship
+from sqlalchemy.types import Integer
 
 Engine = create_engine(AWS_RDS_DATABASE_URL, echo=SQLALCHEMY_ECHO_SQL)
 Base = declarative_base()
@@ -228,13 +229,13 @@ class Page(Base, TimestampMixin):
     id = Column(String, primary_key=True)
     pdf_id = Column(String, ForeignKey("pdfs.id", ondelete="CASCADE"), nullable=False)
     status = Column(String, nullable=False)
-    index = Column(String, nullable=False)
+    index = Column(Integer, nullable=False)
 
     pdf: Mapped["Pdf"] = relationship("Pdf", back_populates="pages")
     image: Mapped["Image"] = relationship("Image", cascade="all, delete", passive_deletes=True)
     json: Mapped["Json"] = relationship("Json", cascade="all, delete", passive_deletes=True)
 
-    def __init__(self, id: str, pdf_id: str, index: str, status: str) -> None:
+    def __init__(self, id: str, pdf_id: str, index: int, status: str) -> None:
         self.id = id
         self.pdf_id = pdf_id
         self.status = status
