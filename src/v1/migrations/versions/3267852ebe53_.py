@@ -5,15 +5,17 @@ Revises: cf912eaff4f9
 Create Date: 2024-02-14 18:07:02.392505
 
 """
+
+# Standard Library
 from typing import Sequence, Union
 
-from alembic import op
+# Third Party Library
 import sqlalchemy as sa
-
+from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = '3267852ebe53'
-down_revision: Union[str, None] = 'cf912eaff4f9'
+revision: str = "3267852ebe53"
+down_revision: Union[str, None] = "cf912eaff4f9"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
