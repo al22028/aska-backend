@@ -62,6 +62,7 @@ class Calculator:
         except Exception as e:
             raise e
 
+    # TODO: Refactor this method
     def homography_matrix(self, min_matches: int) -> cv2.typing.MatLike:
         matches = self.matching(threshhold=THRESHOLD)
         if len(matches) > min_matches:
@@ -103,6 +104,7 @@ class Calculator:
         threshdiff = 255 - threshdiff
 
         image_path = "/tmp/diff.png"
+        # FIXME: DO NOT SAVE LOCAL AS FILE
         cv2.imwrite(image_path, threshdiff)
         client.upload_file(
             Filename=image_path,
