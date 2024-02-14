@@ -47,10 +47,9 @@ class VersionController:
         self, session: Session, version_data: VersionCreateSchema
     ) -> tuple[VersionCreateResponseSchema, int]:
 
-        # if not self.projects.exists(db=session, project_id=version_data.project_id):
-        #     raise NotFoundError("project not found")
+        if not self.projects.exists(db=session, project_id=version_data.project_id):
+            raise NotFoundError("project not found")
         version = self.versions.create_one(db=session, version_data=version_data)
-        print("project", version.project)
         presigned_url = s3.create_presigned_url(
             client_method="put_object",
             bucket_name=AWS_PDF_BUCKET,
