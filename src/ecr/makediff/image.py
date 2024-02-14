@@ -48,21 +48,3 @@ class ImageModel:
     def image_data(self) -> np.ndarray:
         data = np.frombuffer(self.data, np.uint8)
         return cv2.imdecode(data, cv2.IMREAD_GRAYSCALE)
-
-
-"""
-todo
-現状のImageModelはjsonデータをとってきている。
-画像を加工して表示したいので、画像をfetchするmodelを作成
-ImageModelはJsonModelにリネーム
-
-Imageをfetchしてjsonにシリアライズしたほうが早いのか、IOのほうが早いのか、見極めどころさん
- - 実験して確かめるしかないのかな
-
-makediff/app.py,image.py,calculator.pyを基本いじっていく感じ
-
-画像をfetchする方法
-
-
-
-"""
