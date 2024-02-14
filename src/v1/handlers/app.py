@@ -42,9 +42,9 @@ app.enable_swagger(
     servers=servers,
 )
 
-app.include_router(user.router, prefix="/v1/users")
-app.include_router(project.router, prefix="/v1/projects")
-app.include_router(pdf.router, prefix="/v1/pdfs")
+app.include_router(user.router, prefix="/users")
+app.include_router(project.router, prefix="/projects")
+app.include_router(pdf.router, prefix="/pdfs")
 
 
 class HealthCheckSchema(BaseModel):
