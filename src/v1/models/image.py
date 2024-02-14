@@ -27,8 +27,8 @@ class ImageORM(object):
         return db.query((Image)).filter(Image.id == image_id).first()
 
     @log_function_execution(logger=logger)
-    def find_by_page_id(self, db: Session, page_id: str) -> List[Image]:
-        return db.query((Image)).filter(Image.page_id == page_id).first()
+    def find_by_page_id(self, db: Session, page_id: str) -> Image:
+        return db.query((Image)).filter(Image.page_id == page_id).one()
 
     @log_function_execution(logger=logger)
     def exists(self, db: Session, image_id: str) -> bool:
