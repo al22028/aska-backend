@@ -28,37 +28,37 @@ controller = PdfController()
 
 @router.get(
     "/",
-    tags=["Pdf"],
-    summary="プロジェクトに関する全てのPDFを取得",
-    description="プロジェクトに関する全てのPDFを取得します。",
-    response_description="全PDF",
-    operation_id="fetchProjectPdfs",
+    tags=["Version"],
+    summary="プロジェクトに関する全てのPDF(バージョン)を取得",
+    description="プロジェクトに関する全てのPDF(バージョン)を取得します。",
+    response_description="全PDF(バージョン)",
+    operation_id="fetchProjectVersions",
     responses={200: {"description": "成功"}, 500: {"description": "Internal Server Error"}},
 )
-def fetch_project_pdfs(projectId: Annotated[str, Query]) -> List[PdfSchema]:
+def fetch_project_versions(projectId: Annotated[str, Query]) -> List[PdfSchema]:
     return controller.fetch_project_pdfs(project_id=projectId)
 
 
 @router.get(
     "/all",
-    tags=["Pdf"],
-    summary="すべてのプロジェクトのPDFを取得",
-    description="すべてのプロジェクトのPDFを取得します。",
+    tags=["Version"],
+    summary="すべてのプロジェクトのPDF(バージョン)を取得",
+    description="すべてのプロジェクトのPDF(バージョン)を取得します。",
     response_description="全PDF",
-    operation_id="fetchAllPdfs",
+    operation_id="fetchAllVersions",
     responses={200: {"description": "成功"}, 500: {"description": "Internal Server Error"}},
 )
-def fetch_all_pdfs() -> List[PdfSchema]:
+def fetch_all_versions() -> List[PdfSchema]:
     return controller.fetch_all_pdfs()
 
 
 @router.post(
     "/",
-    tags=["Pdf"],
-    summary="PDFを作成",
-    description="PDFを作成します。",
-    response_description="作成したPDF",
-    operation_id="createSinglePdf",
+    tags=["Version"],
+    summary="PDF(バージョン)を作成",
+    description="PDF(バージョン)を作成します。",
+    response_description="作成したPDF(バージョン)",
+    operation_id="createSingleVersion",
     responses={
         201: {"description": "成功"},
         400: {"description": "Bad Request"},
@@ -66,31 +66,31 @@ def fetch_all_pdfs() -> List[PdfSchema]:
         500: {"description": "Internal Server Error"},
     },
 )
-def create_one_pdf(pdf_data: PdfCreateSchema) -> PdfCreateResponseSchema:
+def create_single_version(pdf_data: PdfCreateSchema) -> PdfCreateResponseSchema:
     created_pdf, status_code = controller.create_one(pdf_data=pdf_data)
     return created_pdf, status_code  # type: ignore
 
 
 @router.get(
-    "/<pdfId>",
-    tags=["Pdf"],
-    summary="PDFを取得",
-    description="PDFを取得します。",
-    response_description="PDF",
-    operation_id="fetchSinglePdf",
+    "/<versionId>",
+    tags=["Version"],
+    summary="PDF(バージョン)を取得",
+    description="PDF(バージョン)を取得します。",
+    response_description="PDF(バージョン)",
+    operation_id="fetchSingleVersion",
     responses={
         200: {"description": "成功"},
         404: {"description": "Not Found"},
         500: {"description": "Internal Server Error"},
     },
 )
-def fetch_single_pdf(pdfId: str) -> PdfSchema:
-    return controller.find_one(pdf_id=pdfId)
+def fetch_single_version_by_id(versionId: str) -> PdfSchema:
+    return controller.find_one(pdf_id=versionId)
 
 
 @router.get(
-    "/<pdfId>/download",
-    tags=["Pdf"],
+    "/<versionId>/download",
+    tags=["Version"],
     summary="PDFのダウンロードURLを取得",
     description="PDFのダウンロードURLを取得します。",
     response_description="ダウンロードURL",
@@ -101,39 +101,39 @@ def fetch_single_pdf(pdfId: str) -> PdfSchema:
         500: {"description": "Internal Server Error"},
     },
 )
-def fetch_single_pdf_download_url(pdfId: str) -> DownloadURLSchema:
-    return controller.generate_download_url(pdf_id=pdfId)
+def fetch_single_pdf_download_url(versionId: str) -> DownloadURLSchema:
+    return controller.generate_download_url(pdf_id=versionId)
 
 
 @router.put(
-    "/<pdfId>",
-    tags=["Pdf"],
-    summary="PDFを更新",
-    description="PDFを更新します。",
-    response_description="更新したPDF",
-    operation_id="updateSinglePdf",
+    "/<versionId>",
+    tags=["Version"],
+    summary="PDF(バージョン)を更新",
+    description="PDF(バージョン)を更新します。",
+    response_description="更新したPDF(バージョン)",
+    operation_id="updateSingleVersion",
     responses={
         200: {"description": "成功"},
         404: {"description": "Not Found"},
         500: {"description": "Internal Server Error"},
     },
 )
-def update_single_pdf(pdfId: str, pdf_data: PdfUpdateSchema) -> PdfSchema:
-    return controller.update_one(pdf_id=pdfId, pdf_data=pdf_data)
+def update_single_version(versionId: str, pdf_data: PdfUpdateSchema) -> PdfSchema:
+    return controller.update_one(pdf_id=versionId, pdf_data=pdf_data)
 
 
 @router.delete(
-    "/<pdfId>",
-    tags=["Pdf"],
-    summary="PDFを削除",
-    description="PDFを削除します。",
+    "/<versionId>",
+    tags=["Version"],
+    summary="PDF(バージョン)を削除",
+    description="PDF(バージョン)を削除します。",
     response_description="None",
-    operation_id="deleteSinglePdf",
+    operation_id="deleteSingleVersionById",
     responses={
         204: {"description": "成功"},
         404: {"description": "Not Found"},
         500: {"description": "Internal Server Error"},
     },
 )
-def delete_single_pdf(pdfId: str) -> DeletedSchema:
-    return controller.delete_one(pdf_id=pdfId)
+def delete_single_pdf(versionId: str) -> DeletedSchema:
+    return controller.delete_one(pdf_id=versionId)
