@@ -101,7 +101,7 @@ def fetch_single_version_by_id(versionId: str) -> VersionSchema:
         500: {"description": "Internal Server Error"},
     },
 )
-def fetch_single_pdf_download_url(versionId: str) -> DownloadURLSchema:
+def fetch_single_version_download_url(versionId: str) -> DownloadURLSchema:
     return controller.generate_download_url(pdf_id=versionId)
 
 
@@ -135,5 +135,5 @@ def update_single_version(versionId: str, version_data: VersionUpdateSchema) -> 
         500: {"description": "Internal Server Error"},
     },
 )
-def delete_single_pdf(versionId: str) -> DeletedSchema:
+def delete_single_version(versionId: str) -> DeletedSchema:
     return controller.delete_one(pdf_id=versionId)
