@@ -45,6 +45,7 @@ class ImageORM(object):
             id=id,
         )
         db.add(created_image)
+        db.commit()
         return created_image
 
     @log_function_execution(logger=logger)

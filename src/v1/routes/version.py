@@ -85,7 +85,7 @@ def create_single_version(version_data: VersionCreateSchema) -> VersionCreateRes
     },
 )
 def fetch_single_version_by_id(versionId: str) -> VersionSchema:
-    return controller.find_one(pdf_id=versionId)
+    return controller.find_one(version_id=versionId)
 
 
 @router.get(
@@ -136,4 +136,4 @@ def update_single_version(versionId: str, version_data: VersionUpdateSchema) -> 
     },
 )
 def delete_single_version(versionId: str) -> DeletedSchema:
-    return controller.delete_one(pdf_id=versionId)
+    return controller.delete_one(version_id=versionId)

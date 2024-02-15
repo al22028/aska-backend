@@ -27,7 +27,7 @@ class PageORM(object):
         return db.query(Page).filter(Page.id == page_id).first()
 
     @log_function_execution(logger=logger)
-    def find_many_by_pdf_id(self, db: Session, version_id: str) -> List[Page]:
+    def find_many_by_version_id(self, db: Session, version_id: str) -> List[Page]:
         return db.query(Page).filter(Page.version_id == version_id).all()
 
     @log_function_execution(logger=logger)
@@ -36,7 +36,7 @@ class PageORM(object):
 
         Args:
             db (Session): Session
-            pdf_id (str): pdf id
+            version_id (str): version id
             page_index (str): index of the page
 
         Returns:
@@ -60,6 +60,7 @@ class PageORM(object):
     def create_one(self, db: Session, page_data: PageCreateSchema) -> Page:
         created_page = Page(**page_data.model_dump())
         db.add(created_page)
+        db.commit()
         return created_page
 
     @log_function_execution(logger=logger)

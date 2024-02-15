@@ -41,6 +41,7 @@ class JsonORM(object):
             id=id,
         )
         db.add(created_json)
+        db.commit()
         return created_json
 
     @log_function_execution(logger=logger)

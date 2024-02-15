@@ -16,6 +16,19 @@ class VersionORM(object):
     def find_one(self, db: Session, version_id: str) -> Version:
         return db.query(Version).filter(Version.id == version_id).one()
 
+    def find_previous_version(self, db: Session, project_id: str) -> Version | None:
+        # Projectのバージョンをcreated_atが降順になるように取得し、その中から最新のバージョンを取得する
+        project_versions = (
+            db.query(Version)
+            .filter(Version.project_id == project_id)
+            .order_by(Version.created_at)
+            .all()
+        )
+        if len(project_versions) == 1:
+            return None
+        else:
+            return project_versions[-2]
+
     def find_many_by_project_id(self, db: Session, project_id: str) -> List[Version]:
         return db.query(Version).filter(Version.project_id == project_id).all()
 
@@ -49,6 +62,6 @@ class VersionORM(object):
         return updated_pdf
 
     def delete_one(self, db: Session, version_id: str) -> None:
-        deleted_pdf = self.find_one(db, version_id)
+        deleted_pdf = self.find_one(db=db, version_id=version_id)
         db.delete(deleted_pdf)
         return None
