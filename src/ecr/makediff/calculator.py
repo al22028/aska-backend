@@ -140,18 +140,18 @@ class Calculator:
         gc.collect()
 
         unique_labels = np.unique(labels[labels != -1])
-        result = {}
+        result = []
         for i in unique_labels:
             idx = np.where(labels == i)
             p = np_data[idx]
-            result[str(i)] = {
-                "position": {
+            result.append(
+                {
                     "max_x": int(np.max(p[:, 0])),
                     "max_y": int(np.max(p[:, 1])),
                     "min_x": int(np.min(p[:, 0])),
                     "min_y": int(np.min(p[:, 1])),
                 }
-            }
+            )
         client.put_object(
             Bucket="aska-tmp-dir",
             Key=f"{self.id}/clusters_{self.page}.json",

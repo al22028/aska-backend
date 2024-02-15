@@ -13,8 +13,6 @@ from pydantic import BaseModel
 logger = Logger(service="ImageDiffCalculator")
 
 MIN_MACHTES = 10
-EPS = 20
-MIN_SAMPLES = 50
 
 
 class ObjectKeys(BaseModel):
@@ -24,6 +22,8 @@ class ObjectKeys(BaseModel):
 
 class Params(BaseModel):
     threshold: float
+    eps: float
+    min_samples: int
 
 
 class EventBody(BaseModel):
@@ -49,6 +49,9 @@ def lambda_handler(event: LambdaFunctionUrlEvent, context: LambdaContext) -> dic
         event_body.after.image_object_key,
     )
     THRESHOLD = event_body.params.threshold
+    EPS = event_body.params.eps
+    MIN_SAMPLES = event_body.params.min_samples
+
     before_json = JsonModel(bucket_name, before_json_object_key)
     after_json = JsonModel(bucket_name, after_json_object_key)
     before_image = ImageModel(bucket_name, before_image_object_key)
