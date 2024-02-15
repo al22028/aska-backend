@@ -211,5 +211,5 @@ functions:
     description: Make diff Image
     image:
       name: ImageDiffImage
-    memorySize: 1024 # optional, in MB, default is 1024
+    memorySize: 4096 # optional, in MB, default is 1024
     timeout: 120 # optional, in seconds, default is 6

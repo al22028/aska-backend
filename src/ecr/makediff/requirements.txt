@@ -4,3 +4,5 @@ aws_lambda_powertools
 aws_xray_sdk
 opencv-python
 numpy
+scipy
+scikit-learn

@@ -1,6 +1,8 @@
 # type: ignore
 
 # Standard Library
+import gc
+import json
 import os
 
 # Third Party Library
@@ -8,6 +10,8 @@ import boto3
 import cv2
 import numpy as np
 from image import ImageModel, JsonModel
+from scipy.sparse import coo_matrix
+from sklearn.cluster import DBSCAN
 
 AWS_IMAGE_BUCKET = os.environ["AWS_IMAGE_BUCKET"]
 
@@ -15,6 +19,8 @@ client = boto3.client("s3")
 
 
 THRESHOLD = 0.85
+
+diff_image_path = "/tmp/diff.png"
 
 
 class Calculator:
@@ -102,12 +108,48 @@ class Calculator:
         _, threshdiff = cv2.threshold(diff_image, threshold, 255, cv2.THRESH_BINARY)
         threshdiff = 255 - threshdiff
 
-        image_path = "/tmp/diff.png"
-        cv2.imwrite(image_path, threshdiff)
+        cv2.imwrite(diff_image_path, threshdiff)
         client.upload_file(
-            Filename=image_path,
+            Filename=diff_image_path,
             Bucket="aska-tmp-dir",
             Key=f"{self.id}/diff_{self.page}.png",
             ExtraArgs={"ContentType": "image/png"},
         )
-        os.remove(image_path)
+
+    def image_to_clusters(self,eps: float, min_samples: int) -> None:
+        data = []
+        img = cv2.imread(diff_image_path, cv2.IMREAD_GRAYSCALE)
+        transformed_image = np.where(img == 0, 1, 0)
+        sparse_transformed_matxi = coo_matrix(transformed_image)
+        for i in range(len(sparse_transformed_matxi.row)):
+            m = sparse_transformed_matxi.col[i]
+            n = sparse_transformed_matxi.row[i]
+            data.append([m, n])
+
+        np_data = np.array(data)
+
+        db = DBSCAN(eps=eps, min_samples=min_samples).fit(np_data)
+        labels = db.labels_
+
+        del db, data
+        gc.collect()
+
+        unique_labels = np.unique(labels[labels != -1])
+        result = {}
+        for i in unique_labels:
+            idx = np.where(labels == i)
+            p = np_data[idx]
+            result[str(i)] = {
+                "position": {
+                    "max_x": int(np.max(p[:, 0])),
+                    "max_y": int(np.max(p[:, 1])),
+                    "min_x": int(np.min(p[:, 0])),
+                    "min_y": int(np.min(p[:, 1])),
+                }
+            }
+        client.put_object(
+            Bucket="aska-tmp-dir",
+            Key=f"{self.id}/clusters_{self.page}.json",
+            Body=json.dumps(result).encode(),
+        )
+        os.remove(diff_image_path)
