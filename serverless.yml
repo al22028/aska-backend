@@ -172,17 +172,22 @@ functions:
           method: ANY
           cors: true
 
-  S3WatchHandler:
+  S3JsonWatchHandler:
     description: Watch S3 Bucket
-    handler: src/v1/handlers/s3watch.lambda_handler
+    handler: src/v1/handlers/s3watch.json_watch_lambda_handler
     events:
       - s3:
           bucket: aska-image-bucket-dev
           event: s3:ObjectCreated:*
           rules:
-            - suffix: .png
+            - suffix: .json
           existing: true
           forceDeploy: true
+
+  S3ImageWatchHandler:
+    description: Watch S3 Bucket
+    handler: src/v1/handlers/s3watch.image_watch_lambda_handler
+    events:
       - s3:
           bucket: aska-image-bucket-dev
           event: s3:ObjectCreated:*
