@@ -46,4 +46,5 @@ def lambda_handler(event: LambdaFunctionUrlEvent, context: LambdaContext) -> dic
         np.array(after_descripter[:desc_num], dtype=np.uint8),
         np.array(before_descriptor[:desc_num], dtype=np.uint8),
     )
+    logger.info(f"Matching score: {score}")
     return {"statusCode": 200, "score": score}
