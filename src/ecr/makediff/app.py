@@ -13,6 +13,8 @@ from pydantic import BaseModel
 logger = Logger(service="ImageDiffCalculator")
 
 MIN_MACHTES = 10
+EPS = 20
+MIN_SAMPLES = 50
 
 
 class ObjectKeys(BaseModel):
@@ -57,4 +59,5 @@ def lambda_handler(event: LambdaFunctionUrlEvent, context: LambdaContext) -> dic
     calculator = Calculator(before_json, after_json, before_image, after_image, pdf_id, page)
     homography_matrix = calculator.homography_matrix(min_matches=MIN_MACHTES)
     calculator.create_image_diff(homography_matrix, THRESHOLD)
+    calculator.image_to_clusters(EPS, MIN_SAMPLES)
     return {"statusCode": 200, "body": json.dumps({"message": "Created and sdaved diff image"})}
