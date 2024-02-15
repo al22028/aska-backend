@@ -342,3 +342,7 @@ class JsonSchema(JsonCreateSchema, TimeStampSchema):
         description="Json ID",
         examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "ID"}],
     )
+
+
+class LambdaInvokePayload(BaseModel):
+    body: dict
