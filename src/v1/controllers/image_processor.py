@@ -1,3 +1,5 @@
+# type: ignore
+
 # Third Party Library
 from aws_lambda_powertools.utilities.data_classes import S3Event
 from aws.lambda_client import LambdaClient
