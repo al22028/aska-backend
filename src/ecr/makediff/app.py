@@ -69,4 +69,4 @@ def lambda_handler(event: LambdaFunctionUrlEvent, context: LambdaContext) -> dic
     homography_matrix = calculator.homography_matrix()
     calculator.create_image_diff(homography_matrix, THRESHOLD)
     calculator.image_to_clusters(EPS, MIN_SAMPLES)
-    return {"statusCode": 200, "body": json.dumps({"message": "Created and sdaved diff image"})}
+    return {"statusCode": 200, "body": json.dumps({"message": "Created and saved diff image"})}
