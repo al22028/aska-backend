@@ -1,4 +1,5 @@
 # Standard Library
+import io
 import json
 import os
 from typing import TypeVar
@@ -73,14 +74,10 @@ def keypoint_serializer(kp: cv2.KeyPoint) -> dict:
 
 
 def convert_to_images(id: str, pdf_file_data: bytes) -> None:
-    if not os.path.exists("/tmp"):
-        os.makedirs("/tmp")
     logger.info("Convert PDF to Images")
     images = convert_from_bytes(pdf_file_data)
     for i, image in enumerate(images):
-        image_path = f"/tmp/{i+1}.png"
-        image.save(image_path, "PNG")
-        img = cv2.imread(image_path)
+        img = np.array(image)
         serialized_keypoints = extract_feature_points(img)
         client.put_object(
             Bucket=AWS_IMAGE_BUCKET,
@@ -88,14 +85,16 @@ def convert_to_images(id: str, pdf_file_data: bytes) -> None:
             Body=json.dumps(serialized_keypoints).encode(),
         )
         logger.info(f"Uploaded {AWS_IMAGE_BUCKET}/{id}/{i+1}.json")
-        client.upload_file(
-            Filename=image_path,
+        buffer = io.BytesIO()
+        image.save(buffer, format="PNG")
+        buffer.seek(0)
+        client.upload_fileobj(
+            Fileobj=buffer,
             Bucket=AWS_IMAGE_BUCKET,
             Key=f"{id}/{i+1}.png",
             ExtraArgs={"ContentType": "image/png"},
         )
-        logger.info(f"Uploaded {image_path} to {AWS_IMAGE_BUCKET}/{id}/{i+1}.png")
-        os.remove(image_path)
+        logger.info(f"Uploaded {i+1}.png to {AWS_IMAGE_BUCKET}/{id}/{i+1}.png")
 
 
 @event_source(data_class=S3Event)
