@@ -227,7 +227,7 @@ class Page(Base, TimestampMixin):
     __tablename__ = "pages"
 
     id = Column(String, primary_key=True)
-    pdf_id = Column(String, ForeignKey("versions.id", ondelete="CASCADE"), nullable=False)
+    version_id = Column(String, ForeignKey("versions.id", ondelete="CASCADE"), nullable=False)
     status = Column(String, nullable=False)
     index = Column(Integer, nullable=False)
 
@@ -235,16 +235,16 @@ class Page(Base, TimestampMixin):
     image: Mapped["Image"] = relationship("Image", cascade="all, delete", passive_deletes=True)
     json: Mapped["Json"] = relationship("Json", cascade="all, delete", passive_deletes=True)
 
-    def __init__(self, id: str, pdf_id: str, index: int, status: str) -> None:
+    def __init__(self, id: str, version_id: str, index: int, status: str) -> None:
         self.id = id
-        self.pdf_id = pdf_id
+        self.version_id = version_id
         self.status = status
         self.index = index
         self.updated_at = datetime.now()
         self.created_at = datetime.now()
 
     def __str__(self) -> str:
-        return f"<Page id={self.id}, pdf_id={self.pdf_id}, index={self.index}>"
+        return f"<Page id={self.id}, version_id={self.version_id}, index={self.index}>"
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -252,7 +252,7 @@ class Page(Base, TimestampMixin):
     def serializer(self) -> dict:
         return {
             "id": self.id,
-            "pdfId": self.pdf_id,
+            "versionId": self.version_id,
             "status": self.status,
             "index": self.index,
             "version": self.version.serializer(),

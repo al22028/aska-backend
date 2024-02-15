@@ -261,6 +261,12 @@ class ImageCreateSchema(BaseSchema):
         description="Status",
         examples=[{"value": "PENDING", "description": "Status"}],
     )
+    object_key: str = Field(
+        ...,
+        title="Object Key",
+        description="Object Key",
+        examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28/1.png", "description": "Object Key"}],
+    )
 
 
 class ImageCreateResponseSchema(BaseSchema):
@@ -342,3 +348,7 @@ class JsonSchema(JsonCreateSchema, TimeStampSchema):
         description="Json ID",
         examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "ID"}],
     )
+
+
+class LambdaInvokePayload(BaseModel):
+    body: dict

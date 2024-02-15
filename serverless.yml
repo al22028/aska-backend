@@ -76,7 +76,7 @@ provider:
   memorySize: 512
   # Default timeout for functions (default: 6 seconds)
   # Note: API Gateway has a maximum timeout of 30 seconds
-  timeout: 20
+  timeout: 150
 
   # VPC configuration
   vpc: ${file(./env/${opt:stage, self:custom.default.stage}.yml):vpc}
@@ -91,13 +91,10 @@ provider:
             - "s3:*"
           Resource:
             - "*"
-        # Allow functions to read/write message in a queue (SQS)
+        # Allow functions to invoke other functions
         - Effect: Allow
           Action:
-            - "sqs:ReceiveMessage"
-            - "sqs:SendMessage"
-            - "sqs:DeleteMessage"
-            - "sqs:GetQueueAttributes"
+            - "lambda:InvokeFunction"
           Resource:
             - "*"
         # Allow functions to operate network interfaces on EC2 stuff
