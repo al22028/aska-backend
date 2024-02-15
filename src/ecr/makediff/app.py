@@ -8,13 +8,9 @@ from aws_lambda_powertools.utilities.data_classes import LambdaFunctionUrlEvent,
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from calculator import Calculator
 from image import ImageModel, JsonModel
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 logger = Logger(service="ImageDiffCalculator")
-
-MIN_MACHTES = 10
-EPS = 20
-MIN_SAMPLES = 50
 
 
 class ObjectKeys(BaseModel):
@@ -23,7 +19,10 @@ class ObjectKeys(BaseModel):
 
 
 class Params(BaseModel):
-    threshold: float
+    match_threshold: float
+    threshold: int
+    eps: float
+    min_samples: int
 
 
 class EventBody(BaseModel):
@@ -36,9 +35,16 @@ class EventBody(BaseModel):
 @event_source(data_class=LambdaFunctionUrlEvent)
 @logger.inject_lambda_context(log_event=True)
 def lambda_handler(event: LambdaFunctionUrlEvent, context: LambdaContext) -> dict:
-    # TODO: fixing validation check
-    event_body = EventBody(event.body)
+    try:
+        if isinstance(event.body, str):
+            event_body_dict = json.loads(event.body)
+        else:
+            event_body_dict = event.body
 
+        event_body = EventBody(**event_body_dict)
+    except ValidationError as e:
+        logger(e)
+        raise e
     bucket_name = event_body.bucket_name
     before_json_object_key, after_json_object_key = (
         event_body.before.json_object_key,
@@ -49,6 +55,9 @@ def lambda_handler(event: LambdaFunctionUrlEvent, context: LambdaContext) -> dic
         event_body.after.image_object_key,
     )
     THRESHOLD = event_body.params.threshold
+    EPS = event_body.params.eps
+    MIN_SAMPLES = event_body.params.min_samples
+
     before_json = JsonModel(bucket_name, before_json_object_key)
     after_json = JsonModel(bucket_name, after_json_object_key)
     before_image = ImageModel(bucket_name, before_image_object_key)
@@ -57,7 +66,7 @@ def lambda_handler(event: LambdaFunctionUrlEvent, context: LambdaContext) -> dic
     page, _ = image_name.split(".")
 
     calculator = Calculator(before_json, after_json, before_image, after_image, pdf_id, page)
-    homography_matrix = calculator.homography_matrix(min_matches=MIN_MACHTES)
+    homography_matrix = calculator.homography_matrix()
     calculator.create_image_diff(homography_matrix, THRESHOLD)
     calculator.image_to_clusters(EPS, MIN_SAMPLES)
     return {"statusCode": 200, "body": json.dumps({"message": "Created and sdaved diff image"})}
