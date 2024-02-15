@@ -21,7 +21,7 @@ def invoke_lambda():
             "before": {"json_object_key":"id231321/1.json","image_object_key":"id231321/1.png"},
             "after": {"json_object_key":"id231321/2.json","image_object_key":"id231321/2.png"},
             "params" : {
-                "match_thrshold" : 0.85,
+                "match_threshold" : 0.85,
                 "threshold" : 220,
                 "eps" : 20,
                 "min_samples" : 50,

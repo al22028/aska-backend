@@ -20,7 +20,7 @@ client = boto3.client("s3")
 
 
 THRESHOLD = 0.85
-MIN_SAMPLES = 10
+MIN_MACHTES = 10
 
 
 class Calculator:
@@ -74,7 +74,7 @@ class Calculator:
         self,
     ) -> cv2.typing.MatLike:
         matches = self.matching(threshhold=THRESHOLD)
-        if len(matches) <= MIN_SAMPLES:
+        if len(matches) <= MIN_MACHTES:
             raise ValueError("The number of matches is less than the minimum number of matches.")
         src_pts = np.float32(
             [
