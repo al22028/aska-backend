@@ -4,7 +4,7 @@
 from aws_lambda_powertools import Logger, Tracer
 from aws_lambda_powertools.utilities.data_classes import S3Event, event_source
 from aws_lambda_powertools.utilities.typing import LambdaContext
-from controllers.image_processor import calculate_matching_score
+from controllers.json_processor import calculate_matching_score
 
 logger = Logger()
 tracer = Tracer()
