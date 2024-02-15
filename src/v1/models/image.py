@@ -9,7 +9,6 @@ from schemas import ImageCreateSchema, ImageUpdateSchema, Status
 from sqlalchemy.orm.session import Session
 from views.console import log_function_execution
 
-
 logger = Logger("ImageORM")
 
 

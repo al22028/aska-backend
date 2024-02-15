@@ -1,6 +1,6 @@
 # Standard Library
-from typing import List
 import uuid
+from typing import List
 
 # Third Party Library
 from aws_lambda_powertools import Logger
@@ -8,7 +8,6 @@ from database.base import Page
 from schemas import PageCreateSchema, PageUpdateSchema, Status
 from sqlalchemy.orm.session import Session
 from views.console import log_function_execution
-
 
 logger = Logger("PageORM")
 

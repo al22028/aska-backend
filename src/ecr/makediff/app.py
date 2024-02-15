@@ -1,6 +1,7 @@
 # type: ignore
 # Standard Library
 import json
+import time
 
 # Third Party Library
 from aws_lambda_powertools import Logger
@@ -64,9 +65,16 @@ def lambda_handler(event: LambdaFunctionUrlEvent, context: LambdaContext) -> dic
     after_image = ImageModel(bucket_name, after_image_object_key)
     pdf_id, image_name = before_image_object_key.split("/")
     page, _ = image_name.split(".")
-
+    print(f"start : {time.time()}")
+    now = time.time()
     calculator = Calculator(before_json, after_json, before_image, after_image, pdf_id, page)
     homography_matrix = calculator.homography_matrix()
+    print(f"homography : {time.time() - now}")
+    now = time.time()
     calculator.create_image_diff(homography_matrix, THRESHOLD)
+    print(f"create image diff : {time.time() - now}")
+    now = time.time()
     calculator.image_to_clusters(EPS, MIN_SAMPLES)
-    return {"statusCode": 200, "body": json.dumps({"message": "Created and sdaved diff image"})}
+    print(f"image to cluster : {time.time() - now}")
+    now = time.time()
+    return {"statusCode": 200, "body": json.dumps({"message": "Created and saved diff image"})}

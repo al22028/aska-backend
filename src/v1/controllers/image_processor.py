@@ -1,15 +1,15 @@
 # type: ignore
 
 # Third Party Library
-from aws_lambda_powertools.utilities.data_classes import S3Event
 from aws.lambda_client import LambdaClient
-from database.base import Image, Version, Page
-from models.version import VersionORM
-from models.page import PageORM
-from models.image import ImageORM
+from aws_lambda_powertools.utilities.data_classes import S3Event
+from database.base import Image, Page, Version
 from database.session import with_session
+from models.image import ImageORM
+from models.page import PageORM
+from models.version import VersionORM
+from schemas import ImageCreateSchema, LambdaInvokePayload, Status
 from sqlalchemy.orm.session import Session
-from schemas import ImageCreateSchema, Status, LambdaInvokePayload
 
 
 class ImageProcessor:
