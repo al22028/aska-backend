@@ -21,8 +21,6 @@ client = boto3.client("s3")
 
 THRESHOLD = 0.85
 
-diff_image_path = "/tmp/diff.png"
-
 
 class Calculator:
 
@@ -120,7 +118,7 @@ class Calculator:
         )
         self.diff_img = threshdiff
 
-    def image_to_clusters(self, img: np.ndarray, eps: float, min_samples: int) -> None:
+    def image_to_clusters(self, eps: float, min_samples: int) -> None:
         data = []
         img = self.diff_img
         transformed_image = np.where(img == 0, 1, 0)
@@ -156,4 +154,3 @@ class Calculator:
             Key=f"{self.id}/clusters_{self.page}.json",
             Body=json.dumps(result).encode(),
         )
-        os.remove(diff_image_path)
