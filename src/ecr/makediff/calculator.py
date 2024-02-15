@@ -2,6 +2,7 @@
 
 # Standard Library
 import gc
+import io
 import json
 import os
 
@@ -40,6 +41,7 @@ class Calculator:
         self.after_image = after_image
         self.id = id
         self.page = page
+        self.diff_img = None
 
     def matching(self, threshhold: float) -> list[cv2.DMatch]:
         """2 枚の画像から得られた特徴量記述子の距離(ここではハミング距離)を総当たりで計算。近さが閾値以下になるようなマッチングのリストを返す。
@@ -107,18 +109,20 @@ class Calculator:
         diff_image = cv2.absdiff(warped_after_image, before_image)
         _, threshdiff = cv2.threshold(diff_image, threshold, 255, cv2.THRESH_BINARY)
         threshdiff = 255 - threshdiff
-
-        cv2.imwrite(diff_image_path, threshdiff)
-        client.upload_file(
-            Filename=diff_image_path,
+        buffer = io.BytesIO()
+        np.save(buffer, threshdiff)
+        buffer.seek(0)
+        client.upload_fileobj(
+            Fileobj=buffer,
             Bucket="aska-tmp-dir",
             Key=f"{self.id}/diff_{self.page}.png",
             ExtraArgs={"ContentType": "image/png"},
         )
+        self.diff_img = threshdiff
 
-    def image_to_clusters(self,eps: float, min_samples: int) -> None:
+    def image_to_clusters(self, img: np.ndarray, eps: float, min_samples: int) -> None:
         data = []
-        img = cv2.imread(diff_image_path, cv2.IMREAD_GRAYSCALE)
+        img = self.diff_img
         transformed_image = np.where(img == 0, 1, 0)
         sparse_transformed_matxi = coo_matrix(transformed_image)
         for i in range(len(sparse_transformed_matxi.row)):
