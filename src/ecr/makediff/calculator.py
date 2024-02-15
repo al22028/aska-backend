@@ -20,6 +20,7 @@ client = boto3.client("s3")
 
 
 THRESHOLD = 0.85
+MIN_SAMPLES = 10
 
 
 class Calculator:
@@ -68,31 +69,33 @@ class Calculator:
         except Exception as e:
             raise e
 
-    def homography_matrix(self, min_matches: int) -> cv2.typing.MatLike:
+    # TODO: Refactor this method
+    def homography_matrix(
+        self,
+    ) -> cv2.typing.MatLike:
         matches = self.matching(threshhold=THRESHOLD)
-        if len(matches) > min_matches:
-            src_pts = np.float32(
-                [
-                    (
-                        self.before_json.key_points()[m.queryIdx]["x"],
-                        self.before_json.key_points()[m.queryIdx]["y"],
-                    )
-                    for m in matches
-                ]
-            ).reshape(-1, 1, 2)
-            dst_pts = np.float32(
-                [
-                    (
-                        self.after_json.key_points()[m.trainIdx]["x"],
-                        self.after_json.key_points()[m.trainIdx]["y"],
-                    )
-                    for m in matches
-                ]
-            ).reshape(-1, 1, 2)
-            M, _ = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
-            return M
-        else:
+        if len(matches) <= MIN_SAMPLES:
             raise ValueError("The number of matches is less than the minimum number of matches.")
+        src_pts = np.float32(
+            [
+                (
+                    self.before_json.key_points()[m.queryIdx]["x"],
+                    self.before_json.key_points()[m.queryIdx]["y"],
+                )
+                for m in matches
+            ]
+        ).reshape(-1, 1, 2)
+        dst_pts = np.float32(
+            [
+                (
+                    self.after_json.key_points()[m.trainIdx]["x"],
+                    self.after_json.key_points()[m.trainIdx]["y"],
+                )
+                for m in matches
+            ]
+        ).reshape(-1, 1, 2)
+        M, _ = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
+        return M
 
     def create_image_diff(self, matrix: list, threshold: int) -> None:
         before_image = self.before_image.image_data()

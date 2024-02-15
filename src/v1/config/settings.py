@@ -22,6 +22,7 @@ SQLALCHEMY_ECHO_SQL = config("SQLALCHEMY_ECHO_SQL", default=False, cast=bool)
 
 # AWS S3
 AWS_PDF_BUCKET = config("AWS_PDF_BUCKET", default="aska-pdf-bucket-dev", cast=str)
+AWS_IMAGE_BUCKET = config("AWS_IMAGE_BUCKET", default="aska-image-bucket-dev", cast=str)
 
 # AWS CloudFront
 AWS_IMAGE_HOST_DOMAIN = config(
