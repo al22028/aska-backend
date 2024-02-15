@@ -316,6 +316,14 @@ class JsonCreateSchema(BaseSchema):
         description="Status",
         examples=[{"value": "PENDING", "description": "Status"}],
     )
+    object_key: str = Field(
+        ...,
+        title="Object Key",
+        description="Object Key",
+        examples=[
+            {"value": "44f97c86d4954afcbdc6f2443a159c28/1.json", "description": "Object Key"}
+        ],
+    )
 
 
 class JsonCreateResponseSchema(BaseSchema):
