@@ -12,7 +12,7 @@ from sqlalchemy.orm.session import Session
 from schemas import ImageCreateSchema, Status, LambdaInvokePayload
 
 
-class ImageProceccor:
+class ImageProcessor:
 
     lambda_client = LambdaClient()
     versions = VersionORM()
@@ -81,5 +81,5 @@ class ImageProceccor:
 
 
 def calculate_matching_score(event: S3Event) -> None:
-    processor = ImageProceccor(event)
+    processor = ImageProcessor(event)
     processor.calculate_macthing_score("id231321/1.json")
