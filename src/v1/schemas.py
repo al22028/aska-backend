@@ -182,6 +182,7 @@ class Status(Enum):
 
     pending = "PENDING"  # 待機状態
     preprocessing = "PREPROCESSING"  # 前処理中
+    preprocessed = "PREPROCESSED"  # 前処理完了
     preprocessing_timedout = "PREPROCESSING_TIMEDOUT"  # 前処理タイムアウト
     preprocessing_failed = "PREPROCESSING_FAILED"  # 前処理失敗
     matching_calculation = "MATCHING_CALCULATION_IN_PROGRESS"  # マッチング計算中
