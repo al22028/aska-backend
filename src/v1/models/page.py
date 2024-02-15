@@ -1,12 +1,14 @@
 # Standard Library
 from typing import List
+import uuid
 
 # Third Party Library
 from aws_lambda_powertools import Logger
 from database.base import Page
-from schemas import PageCreateSchema, PageUpdateSchema
+from schemas import PageCreateSchema, PageUpdateSchema, Status
 from sqlalchemy.orm.session import Session
 from views.console import log_function_execution
+
 
 logger = Logger("PageORM")
 
@@ -26,11 +28,11 @@ class PageORM(object):
         return db.query(Page).filter(Page.id == page_id).first()
 
     @log_function_execution(logger=logger)
-    def find_many_by_pdf_id(self, db: Session, pdf_id: str) -> List[Page]:
-        return db.query(Page).filter(Page.pdf_id == pdf_id).all()
+    def find_many_by_pdf_id(self, db: Session, version_id: str) -> List[Page]:
+        return db.query(Page).filter(Page.version_id == version_id).all()
 
     @log_function_execution(logger=logger)
-    def pdf_page_not_found(self, db: Session, pdf_id: str, page_index: str) -> bool:
+    def pdf_page_not_found(self, db: Session, version_id: str, page_index: str) -> bool:
         """Check if the page exists in the database.
 
         Args:
@@ -41,7 +43,9 @@ class PageORM(object):
         Returns:
             bool: if the page does not exist in the database return True else False
         """
-        page = db.query(Page).filter(Page.pdf_id == pdf_id, Page.index == page_index).first()
+        page = (
+            db.query(Page).filter(Page.version_id == version_id, Page.index == page_index).first()
+        )
         if not page:
             return True
         return False
@@ -72,3 +76,21 @@ class PageORM(object):
             return False
         db.query(Page).filter(Page.id == page_id).delete()
         return True
+
+    @log_function_execution(logger=logger)
+    def find_page_by_index(self, db: Session, version_id: str, index: int) -> Page:
+        selected_page = (
+            db.query(Page).filter(Page.version_id == version_id, Page.index == index).first()
+        )
+        if selected_page:
+            return selected_page
+        else:
+            created_page = Page(
+                id=str(uuid.uuid4()).replace("-", ""),
+                version_id=version_id,
+                index=index,
+                status=Status.preprocessing.value,
+            )
+            db.flush()
+            db.commit()
+            return created_page

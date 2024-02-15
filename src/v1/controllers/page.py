@@ -1,13 +1,11 @@
 # Third Party Library
 from database.session import with_session
 from models.page import PageORM
-from models.version import PdfORM
 from schemas import PageSchema
 from sqlalchemy.orm.session import Session
 
 
 class PageController:
-    pdfs = PdfORM()
     pages = PageORM()
 
     @with_session
