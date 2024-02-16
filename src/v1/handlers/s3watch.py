@@ -8,7 +8,7 @@ from aws_lambda_powertools import Logger, Tracer
 from aws_lambda_powertools.middleware_factory import lambda_handler_decorator
 from aws_lambda_powertools.utilities.data_classes import S3Event, event_source
 from aws_lambda_powertools.utilities.typing import LambdaContext
-from controllers.processor import calculate_matching_score
+from controllers.processor import ImageProcessor, calculate_matching_score
 
 logger = Logger()
 tracer = Tracer()
@@ -30,18 +30,13 @@ def middleware(
 @logger.inject_lambda_context(log_event=True)
 @middleware
 @event_source(data_class=S3Event)
-def json_watch_lambda_handler(event: S3Event, context: LambdaContext) -> dict:
-    calculate_matching_score(event)
-    return {
-        "statusCode": 200,
-    }
-
-
-@tracer.capture_lambda_handler
-@logger.inject_lambda_context(log_event=True)
-@middleware
-@event_source(data_class=S3Event)
-def image_watch_lambda_handler(event: S3Event, context: LambdaContext) -> dict:
-    return {
-        "statusCode": 200,
-    }
+def lambda_handler(event: S3Event, context: LambdaContext) -> dict:
+    is_json = event.object_key.endswith(".json")
+    if is_json:
+        logger.info("Processing JSON")
+        calculate_matching_score(event)
+    else:
+        logger.info("Processing Image")
+        image_processor = ImageProcessor(event)
+        image_processor.create_image()
+    return {"statusCode": 200}

@@ -45,12 +45,13 @@ class ImageORM(object):
             id=id,
         )
         db.add(created_image)
+        logger.info(f"Created Image: {created_image}")
         return created_image
 
     @log_function_execution(logger=logger)
     def update_one(self, db: Session, image_id: str, image_data: ImageUpdateSchema) -> Image:
         selected_image = self.find_one(db, image_id)
-        selected_image.status = image_data.status.value
+        selected_image.status = image_data.status
         db.add(selected_image)
         return selected_image
 
@@ -65,5 +66,5 @@ class ImageORM(object):
     def delete_one(self, db: Session, image_id: str) -> bool:
         if not self.exists(db, image_id):
             return False
-        db.query((Image)).filter(Image.id == image_id).delete()
+        db.query(Image).filter(Image.id == image_id).delete()
         return True

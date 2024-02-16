@@ -46,7 +46,7 @@ class JsonORM(object):
     @log_function_execution(logger=logger)
     def update_one(self, db: Session, json_id: str, json_data: JsonUpdateSchema) -> Json:
         selected_json = self.find_one(db, json_id)
-        selected_json.status = json_data.status.value
+        selected_json.status = json_data.status
         db.add(selected_json)
         return selected_json
 
@@ -56,3 +56,7 @@ class JsonORM(object):
             return False
         db.query((Json)).filter(Json.id == json_id).delete()
         return True
+
+    @log_function_execution(logger=logger)
+    def find_by_page_id(self, db: Session, page_id: str) -> Json:
+        return db.query(Json).filter(Json.page_id == page_id).one()

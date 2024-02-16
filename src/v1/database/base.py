@@ -198,16 +198,16 @@ class Json(Base, TimestampMixin):
 
     page: Mapped["Page"] = relationship("Page", back_populates="json")
 
-    def __init__(self, id: str, project_id: str, object_key: str, status: str) -> None:
+    def __init__(self, id: str, page_id: str, object_key: str, status: str) -> None:
         self.id = id
-        self.project_id = project_id
+        self.page_id = page_id
         self.object_key = object_key
         self.status = status
         self.updated_at = datetime.now()
         self.created_at = datetime.now()
 
     def __str__(self) -> str:
-        return f"<Json id={self.id}, project_id={self.project_id}, object_key={self.object_key}>"
+        return f"<Json id={self.id}, page_id={self.page_id}, object_key={self.object_key}>"
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -215,7 +215,7 @@ class Json(Base, TimestampMixin):
     def serializer(self) -> dict:
         return {
             "id": self.id,
-            "projectId": self.project_id,
+            "page_id": self.page_id,
             "objectKey": self.object_key,
             "status": self.status,
             "updatedAt": self.updated_at.isoformat(),  # type: ignore
