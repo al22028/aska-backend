@@ -60,7 +60,6 @@ class PageORM(object):
     def create_one(self, db: Session, page_data: PageCreateSchema) -> Page:
         created_page = Page(**page_data.model_dump())
         db.add(created_page)
-        db.commit()
         return created_page
 
     @log_function_execution(logger=logger)
@@ -91,6 +90,5 @@ class PageORM(object):
                 index=index,
                 status=Status.preprocessing.value,
             )
-            db.flush()
-            db.commit()
+            db.add(created_page)
             return created_page

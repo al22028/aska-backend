@@ -41,7 +41,7 @@ class JsonORM(object):
             id=id,
         )
         db.add(created_json)
-        db.commit()
+        logger.info(f"Created JSON: {created_json}")
         return created_json
 
     @log_function_execution(logger=logger)
@@ -57,3 +57,7 @@ class JsonORM(object):
             return False
         db.query((Json)).filter(Json.id == json_id).delete()
         return True
+
+    @log_function_execution(logger=logger)
+    def find_by_page_id(self, db: Session, page_id: str) -> Json:
+        return db.query(Json).filter(Json.page_id == page_id).one()

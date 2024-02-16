@@ -45,7 +45,7 @@ class ImageORM(object):
             id=id,
         )
         db.add(created_image)
-        db.commit()
+        logger.info(f"Created Image: {created_image}")
         return created_image
 
     @log_function_execution(logger=logger)
@@ -66,5 +66,5 @@ class ImageORM(object):
     def delete_one(self, db: Session, image_id: str) -> bool:
         if not self.exists(db, image_id):
             return False
-        db.query((Image)).filter(Image.id == image_id).delete()
+        db.query(Image).filter(Image.id == image_id).delete()
         return True
