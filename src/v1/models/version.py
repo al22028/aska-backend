@@ -17,7 +17,6 @@ class VersionORM(object):
         return db.query(Version).filter(Version.id == version_id).one()
 
     def find_previous_version(self, db: Session, project_id: str) -> Version | None:
-        # Projectのバージョンをcreated_atが降順になるように取得し、その中から最新のバージョンを取得する
         project_versions = (
             db.query(Version)
             .filter(Version.project_id == project_id)
