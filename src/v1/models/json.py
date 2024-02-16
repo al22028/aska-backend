@@ -41,13 +41,12 @@ class JsonORM(object):
             id=id,
         )
         db.add(created_json)
-        logger.info(f"Created JSON: {created_json}")
         return created_json
 
     @log_function_execution(logger=logger)
     def update_one(self, db: Session, json_id: str, json_data: JsonUpdateSchema) -> Json:
         selected_json = self.find_one(db, json_id)
-        selected_json.status = json_data.status.value
+        selected_json.status = json_data.status
         db.add(selected_json)
         return selected_json
 

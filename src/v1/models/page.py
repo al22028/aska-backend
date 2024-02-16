@@ -65,7 +65,7 @@ class PageORM(object):
     @log_function_execution(logger=logger)
     def update_one(self, db: Session, page_id: str, page_data: PageUpdateSchema) -> Page:
         selected_page = self.find_one(db, page_id)
-        selected_page.status = page_data.status.value
+        selected_page.status = page_data.status
         db.add(selected_page)
         return selected_page
 

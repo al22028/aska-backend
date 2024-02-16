@@ -51,7 +51,7 @@ class ImageORM(object):
     @log_function_execution(logger=logger)
     def update_one(self, db: Session, image_id: str, image_data: ImageUpdateSchema) -> Image:
         selected_image = self.find_one(db, image_id)
-        selected_image.status = image_data.status.value
+        selected_image.status = image_data.status
         db.add(selected_image)
         return selected_image
 
