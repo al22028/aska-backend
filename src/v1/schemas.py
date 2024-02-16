@@ -212,8 +212,8 @@ class PageCreateSchema(BaseSchema):
         description="Version ID",
         examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "Version ID"}],
     )
-    status: Status = Field(
-        default=Status.pending,
+    status: str = Field(
+        default=Status.pending.value,
         title="Status",
         description="Status",
         examples=[{"value": "PENDING", "description": "Status"}],
@@ -229,21 +229,10 @@ class PageCreateSchema(BaseSchema):
 class PageUpdateSchema(BaseSchema):
     """Page Update Schema"""
 
-    status: Status = Field(
+    status: str = Field(
         title="Status",
         description="Status",
         examples=[{"value": "PREPROCESSING", "description": "Status"}],
-    )
-
-
-class PageSchema(PageCreateSchema, TimeStampSchema):
-    """Page Schema"""
-
-    id: str = Field(
-        ...,
-        title="ID",
-        description="Page ID",
-        examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "ID"}],
     )
 
 
@@ -256,8 +245,8 @@ class ImageCreateSchema(BaseSchema):
         description="Page ID",
         examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "Page ID"}],
     )
-    status: Status = Field(
-        default=Status.pending,
+    status: str = Field(
+        default=Status.pending.value,
         title="Status",
         description="Status",
         examples=[{"value": "PENDING", "description": "Status"}],
@@ -284,7 +273,7 @@ class ImageCreateResponseSchema(BaseSchema):
 class ImageUpdateSchema(BaseSchema):
     """Image Update Schema"""
 
-    status: Status = Field(
+    status: str = Field(
         title="Status",
         description="Status",
         examples=[{"value": "PREPROCESSING", "description": "Status"}],
@@ -311,8 +300,8 @@ class JsonCreateSchema(BaseSchema):
         description="Page ID",
         examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "Page ID"}],
     )
-    status: Status = Field(
-        default=Status.pending,
+    status: str = Field(
+        default=Status.pending.value,
         title="Status",
         description="Status",
         examples=[{"value": "PENDING", "description": "Status"}],
@@ -341,7 +330,7 @@ class JsonCreateResponseSchema(BaseSchema):
 class JsonUpdateSchema(BaseSchema):
     """Json Update Schema"""
 
-    status: Status = Field(
+    status: str = Field(
         title="Status",
         description="Status",
         examples=[{"value": "PREPROCESSING", "description": "Status"}],
@@ -361,3 +350,24 @@ class JsonSchema(JsonCreateSchema, TimeStampSchema):
 
 class LambdaInvokePayload(BaseModel):
     body: dict
+
+
+class PageSchema(PageCreateSchema, TimeStampSchema):
+    """Page Schema"""
+
+    id: str = Field(
+        ...,
+        title="ID",
+        description="Page ID",
+        examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "ID"}],
+    )
+    status: str = Field(
+        default=Status.pending.value,
+        title="Status",
+        description="Status",
+        examples=[{"value": "PENDING", "description": "Status"}],
+    )
+
+    version: VersionSchema
+    image: ImageSchema
+    json: JsonSchema  # type: ignore
