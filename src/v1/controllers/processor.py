@@ -19,7 +19,6 @@ logger = Logger()
 
 
 class Processor:
-
     lambda_client = LambdaClient()
     versions = VersionORM()
     pages = PageORM()
@@ -32,10 +31,6 @@ class Processor:
         self._bucket_name = event.bucket_name
         self._object_key = event.object_key
         self._version_id, self._page_index = self.parse_object_key()
-        self._version = self.find_version()
-        self._page = self.find_page()
-        self._previous_version = self.find_previous_version()
-        self._target_pages = self.find_target_pages()
 
     @log_function_execution(logger=logger)
     def parse_object_key(self) -> tuple[str, int]:
@@ -51,42 +46,44 @@ class Processor:
     @with_session
     @log_function_execution(logger=logger)
     def find_version(self, session: Session) -> Version:
-        self._version = self.versions.find_one(db=session, version_id=self._version_id)
-        return self._version
+        version = self.versions.find_one(db=session, version_id=self._version_id)
+        return version
 
     @with_session
     @log_function_execution(logger=logger)
     def find_previous_version(self, session: Session) -> Version | None:
-        self._previous_version = self.versions.find_previous_version(
-            db=session, project_id=self._version.project_id  # type: ignore
+        version = self.find_version()
+        return self.versions.find_previous_version(
+            db=session, project_id=version.project_id  # type: ignore
         )
-        return self._previous_version
 
     @with_session
     @log_function_execution(logger=logger)
     def find_target_pages(self, session: Session) -> list[Page]:
-        if self._previous_version is None:
+        previous_version = self.find_previous_version()
+        if previous_version is None:
             return []
         else:
-            self._target_pages = self.pages.find_many_by_version_id(
-                db=session, version_id=self._previous_version.id  # type: ignore
+            target_pages = self.pages.find_many_by_version_id(
+                db=session, version_id=previous_version.id  # type: ignore
             )
-            return self._target_pages
+            return target_pages
 
     @with_session
     @log_function_execution(logger=logger)
     def find_page(self, session: Session) -> Page:
-        self._page = self.pages.find_page_by_index(
+        selected_page = self.pages.find_page_by_index(
             db=session, version_id=self._version_id, index=self._page_index
         )
-        return self._page
+        return selected_page
 
     @with_session
     @log_function_execution(logger=logger)
     def create_json(self, session: Session) -> Json:
-        json_data = JsonCreateSchema(page_id=self._page.id, status=Status.preprocessed)  # type: ignore
-        self._json = self.jsons.create_one(db=session, json_data=json_data)
-        return self._json
+        selected_page = self.find_page()
+        json_data = JsonCreateSchema(page_id=selected_page.id, status=Status.preprocessed.value)  # type: ignore
+        created_json = self.jsons.create_one(db=session, json_data=json_data)
+        return created_json
 
     @log_function_execution(logger=logger)
     def find_matching(self) -> None:
@@ -104,11 +101,7 @@ class JsonProcessor(Processor):
 
         Args:
             target_json_object_key (str): target json object key
-
-        Returns:
-            _type_: _description_
         """
-
         response, status_code = self.lambda_client.invoke(
             function_name="aska-api-dev-MatchingCalculateHandler",
             payload=LambdaInvokePayload(
@@ -125,9 +118,10 @@ class JsonProcessor(Processor):
     @with_session
     @log_function_execution(logger=logger)
     def create_json(self, session: Session) -> Json:
-        json_data = JsonCreateSchema(page_id=self._page.id, status=Status.preprocessed)  # type: ignore
-        self._json = self.jsons.create_one(db=session, json_data=json_data)
-        return self._json
+        selected_page = self.find_page()
+        json_data = JsonCreateSchema(page_id=selected_page.id, status=Status.preprocessed.value, object_key=self._object_key)  # type: ignore
+        created_json = self.jsons.create_one(db=session, json_data=json_data)
+        return created_json
 
 
 class ImageProcessor(Processor):
@@ -138,14 +132,18 @@ class ImageProcessor(Processor):
     @with_session
     @log_function_execution(logger=logger)
     def create_image(self, session: Session) -> Image:
-        image_data = ImageCreateSchema(page_id=self._page.id, status=Status.preprocessed)  # type: ignore
-        self._image = self.images.create_one(db=session, image_data=image_data)
-        return self._image
+        selected_page = self.find_page()
+        image_data = ImageCreateSchema(
+            page_id=selected_page.id, status=Status.preprocessed.value, object_key=self._object_key  # type: ignore
+        )
+        created_image = self.images.create_one(db=session, image_data=image_data)
+        return created_image
 
 
 def calculate_matching_score(event: S3Event) -> None:
     json_processor = JsonProcessor(event)
     json_processor.create_json()
-    for target_page in json_processor._target_pages:
+    target_pages = json_processor.find_target_pages()
+    for target_page in target_pages:
         target_json_object_key = target_page.json.object_key
         json_processor.calculate_matching_score(target_json_object_key)
