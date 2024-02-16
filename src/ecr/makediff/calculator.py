@@ -122,36 +122,28 @@ class Calculator:
         self.diff_img = threshdiff
 
     def image_to_clusters(self, eps: float, min_samples: int) -> None:
-        data = []
         img = self.diff_img
         transformed_image = np.where(img == 0, 1, 0)
-        sparse_transformed_matxi = coo_matrix(transformed_image)
-        for i in range(len(sparse_transformed_matxi.row)):
-            m = sparse_transformed_matxi.col[i]
-            n = sparse_transformed_matxi.row[i]
-            data.append([m, n])
-
-        np_data = np.array(data)
-
-        db = DBSCAN(eps=eps, min_samples=min_samples).fit(np_data)
+        sparse_transformed_matrix = coo_matrix(transformed_image)
+        data = np.vstack([sparse_transformed_matrix.col, sparse_transformed_matrix.row]).T
+        db = DBSCAN(eps=eps, min_samples=min_samples).fit(data)
         labels = db.labels_
-
-        del db, data
+        del db
         gc.collect()
-
-        unique_labels = np.unique(labels[labels != -1])
+        unique_labels = set(labels) - {-1}
         result = []
-        for i in unique_labels:
-            idx = np.where(labels == i)
-            p = np_data[idx]
+        for label in unique_labels:
+            idx = labels == label
+            p = data[idx]
             result.append(
                 {
-                    "max_x": int(np.max(p[:, 0])),
-                    "max_y": int(np.max(p[:, 1])),
-                    "min_x": int(np.min(p[:, 0])),
-                    "min_y": int(np.min(p[:, 1])),
+                    "max_x": int(p[:, 0].max()),
+                    "max_y": int(p[:, 1].max()),
+                    "min_x": int(p[:, 0].min()),
+                    "min_y": int(p[:, 1].min()),
                 }
             )
+
         client.put_object(
             Bucket="aska-tmp-dir",
             Key=f"{self.id}/clusters_{self.page}.json",
