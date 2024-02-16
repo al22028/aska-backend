@@ -27,7 +27,7 @@ class PageORM(object):
         return db.query(Page).filter(Page.id == page_id).first()
 
     @log_function_execution(logger=logger)
-    def find_many_by_pdf_id(self, db: Session, version_id: str) -> List[Page]:
+    def find_many_by_version_id(self, db: Session, version_id: str) -> List[Page]:
         return db.query(Page).filter(Page.version_id == version_id).all()
 
     @log_function_execution(logger=logger)
@@ -36,7 +36,7 @@ class PageORM(object):
 
         Args:
             db (Session): Session
-            pdf_id (str): pdf id
+            version_id (str): version id
             page_index (str): index of the page
 
         Returns:
@@ -65,7 +65,7 @@ class PageORM(object):
     @log_function_execution(logger=logger)
     def update_one(self, db: Session, page_id: str, page_data: PageUpdateSchema) -> Page:
         selected_page = self.find_one(db, page_id)
-        selected_page.status = page_data.status.value
+        selected_page.status = page_data.status
         db.add(selected_page)
         return selected_page
 
@@ -90,6 +90,5 @@ class PageORM(object):
                 index=index,
                 status=Status.preprocessing.value,
             )
-            db.flush()
-            db.commit()
+            db.add(created_page)
             return created_page

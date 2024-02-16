@@ -179,15 +179,6 @@ functions:
       - s3:
           bucket: aska-image-bucket-dev
           event: s3:ObjectCreated:*
-          rules:
-            - suffix: .png
-          existing: true
-          forceDeploy: true
-      - s3:
-          bucket: aska-image-bucket-dev
-          event: s3:ObjectCreated:*
-          rules:
-            - suffix: .json
           existing: true
           forceDeploy: true
 
