@@ -136,6 +136,7 @@ class ImageProcessor(Processor):
         super().__init__(event)
 
     @with_session
+    @log_function_execution(logger=logger)
     def create_image(self, session: Session) -> Image:
         image_data = ImageCreateSchema(page_id=self._page.id, status=Status.preprocessed)  # type: ignore
         self._image = self.images.create_one(db=session, image_data=image_data)
@@ -144,6 +145,7 @@ class ImageProcessor(Processor):
 
 def calculate_matching_score(event: S3Event) -> None:
     json_processor = JsonProcessor(event)
+    json_processor.create_json()
     for target_page in json_processor._target_pages:
         target_json_object_key = target_page.json.object_key
         json_processor.calculate_matching_score(target_json_object_key)
