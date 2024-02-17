@@ -77,14 +77,6 @@ class Processor:
         )
         return selected_page
 
-    @with_session
-    @log_function_execution(logger=logger)
-    def create_json(self, session: Session) -> Json:
-        selected_page = self.find_page()
-        json_data = JsonCreateSchema(page_id=selected_page.id, status=Status.preprocessed.value)  # type: ignore
-        created_json = self.jsons.create_one(db=session, json_data=json_data)
-        return created_json
-
     @log_function_execution(logger=logger)
     def find_matching(self) -> None:
         pass
