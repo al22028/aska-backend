@@ -1,4 +1,5 @@
 # Standard Library
+from http import HTTPStatus
 from typing import List
 
 # Third Party Library
@@ -19,8 +20,9 @@ controller = UserController()
 @router.get(
     "/",
     tags=["User"],
-    summary="Fetch All Users",
-    response_description="List of Users",
+    summary="全てのユーザーを取得",
+    description="全てのユーザーを取得します。",
+    response_description="AllUsers",
     operation_id="fetchAllUsers",
 )
 def fetch_all_users() -> List[UserSchema]:
@@ -30,9 +32,14 @@ def fetch_all_users() -> List[UserSchema]:
 @router.get(
     "/<userId>",
     tags=["User"],
-    summary="Fetch User",
+    summary="特定のユーザーを取得",
+    description="特定のユーザーを取得します。",
     response_description="User",
     operation_id="fetchSingleUserById",
+    responses={
+        200: {"description": "User"},
+        404: {"description": "User Not Found"},
+    },
 )
 def fetch_user(userId: str) -> UserSchema:
     return controller.find_one_or_404(user_id=userId)
@@ -41,7 +48,8 @@ def fetch_user(userId: str) -> UserSchema:
 @router.post(
     "/",
     tags=["User"],
-    summary="Create User",
+    summary="ユーザーの新規登録",
+    description="ユーザーの新規登録",
     response_description="User",
     operation_id="createSingleUser",
     responses={201: {"description": "User Created"}},
@@ -54,7 +62,8 @@ def create_user(user: UserCreateSchema) -> UserSchema:
 @router.put(
     "/<userId>",
     tags=["User"],
-    summary="Update User",
+    summary="特定ユーザーの更新",
+    description="特定ユーザーを更新します。",
     response_description="User",
     operation_id="updateSingleUserById",
     responses={
@@ -71,7 +80,8 @@ def update_user(userId: str, user: UserUpdateSchema) -> UserSchema:
 @router.delete(
     "/<userId>",
     tags=["User"],
-    summary="Delete User",
+    summary="特定ユーザーの削除",
+    description="特定ユーザーを削除します。",
     response_description="User",
     operation_id="deleteSingleUserById",
     responses={
@@ -81,4 +91,4 @@ def update_user(userId: str, user: UserUpdateSchema) -> UserSchema:
 )
 def delete_single_user(userId: str) -> DeletedSchema:
     controller.delete_one(user_id=userId)
-    return DeletedSchema(message="User deleted successfully"), 200  # type: ignore
+    return DeletedSchema(message="User deleted successfully"), HTTPStatus.OK  # type: ignore
