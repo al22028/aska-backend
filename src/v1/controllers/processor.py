@@ -6,7 +6,7 @@ from aws.lambda_client import LambdaClient
 from aws_lambda_powertools import Logger
 from aws_lambda_powertools.utilities.data_classes import S3Event
 from database.base import Image, Json, Page, Version
-from database.session import with_session
+from database.session import session_maker, with_session
 from models.image import ImageORM
 from models.json import JsonORM
 from models.page import PageORM
@@ -25,14 +25,16 @@ class Processor:
     images = ImageORM()
     jsons = JsonORM()
 
-    @log_function_execution(logger=logger)
     def __init__(self, event: S3Event) -> None:
         self._event = event
         self._bucket_name = event.bucket_name
         self._object_key = event.object_key
         self._version_id, self._page_index = self.parse_object_key()
+        self._session: Session = session_maker()
 
-    @log_function_execution(logger=logger)
+    def __del__(self) -> None:
+        self._session.close()
+
     def parse_object_key(self) -> tuple[str, int]:
         """Parse object key to get version id and page index
 
@@ -43,38 +45,39 @@ class Processor:
         page_index = int(file_name.split(".")[0])
         return version_id, page_index
 
-    @with_session
     @log_function_execution(logger=logger)
-    def find_version(self, session: Session) -> Version:
-        version = self.versions.find_one(db=session, version_id=self._version_id)
+    def find_version(self) -> Version:
+        version = self.versions.find_one(db=self._session, version_id=self._version_id)
+        self._session.commit()
         return version
 
-    @with_session
     @log_function_execution(logger=logger)
-    def find_previous_version(self, session: Session) -> Version | None:
+    def find_previous_version(self) -> Version | None:
         version = self.find_version()
-        return self.versions.find_previous_version(
-            db=session, project_id=version.project_id  # type: ignore
+        previous_verson = self.versions.find_previous_version(
+            db=self._session, project_id=version.project_id  # type: ignore
         )
+        self._session.commit()
+        return previous_verson
 
-    @with_session
     @log_function_execution(logger=logger)
-    def find_target_pages(self, session: Session) -> list[Page]:
+    def find_target_pages(self) -> list[Page]:
         previous_version = self.find_previous_version()
         if previous_version is None:
             return []
         else:
             target_pages = self.pages.find_many_by_version_id(
-                db=session, version_id=previous_version.id  # type: ignore
+                db=self._session, version_id=previous_version.id  # type: ignore
             )
+            self._session.commit()
             return target_pages
 
-    @with_session
     @log_function_execution(logger=logger)
-    def find_page(self, session: Session) -> Page:
+    def find_page(self) -> Page:
         selected_page = self.pages.find_page_by_index(
-            db=session, version_id=self._version_id, index=self._page_index
+            db=self._session, version_id=self._version_id, index=self._page_index
         )
+        self._session.commit()
         return selected_page
 
     @log_function_execution(logger=logger)
@@ -107,12 +110,12 @@ class JsonProcessor(Processor):
         json_response = json.loads(response)
         logger.info(f'score: {json_response["score"]}, status_code: {status_code}')
 
-    @with_session
     @log_function_execution(logger=logger)
-    def create_json(self, session: Session) -> Json:
+    def create_json(self) -> Json:
         selected_page = self.find_page()
         json_data = JsonCreateSchema(page_id=selected_page.id, status=Status.preprocessed.value, object_key=self._object_key)  # type: ignore
-        created_json = self.jsons.create_one(db=session, json_data=json_data)
+        created_json = self.jsons.create_one(db=self._session, json_data=json_data)
+        self._session.commit()
         return created_json
 
 
