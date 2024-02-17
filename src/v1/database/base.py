@@ -10,8 +10,8 @@ from sqlalchemy import (
     Float,
     ForeignKey,
     String,
-    create_engine,
     UniqueConstraint,
+    create_engine,
 )
 from sqlalchemy.orm import Mapped, declarative_base, relationship
 from sqlalchemy.types import Integer
