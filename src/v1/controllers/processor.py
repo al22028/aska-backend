@@ -97,7 +97,8 @@ class JsonProcessor(Processor):
         Args:
             target_json_object_key (str): target json object key
         """
-        self.jsons.update_status(db=self._session, json_id=target_page.json.id, status=Status.matching_calculation.value)  # type: ignore
+        self.jsons.update_status(db=self._session, json_id=self._json.id, status=Status.matching_calculation.value)  # type: ignore
+        self.jsons.update_status(db=self._session, json_id=target_page.json.id, status=Status.preprocessing.value)  # type: ignore
         response, status_code = self.lambda_client.invoke(
             function_name="aska-api-dev-MatchingCalculateHandler",
             payload=LambdaInvokePayload(
@@ -110,16 +111,17 @@ class JsonProcessor(Processor):
         )
         json_response = json.loads(response)
         logger.info(f'score: {json_response["score"]}, status_code: {status_code}')
-        self.jsons.update_status(db=self._session, json_id=target_page.json.id, status=Status.matching_calculation_success.value)  # type: ignore
+        self.jsons.update_status(db=self._session, json_id=target_page.json.id, status=Status.preprocessed.value)  # type: ignore
+        self.jsons.update_status(db=self._session, json_id=self._json.id, status=Status.matching_calculation_success.value)  # type: ignore
 
     @log_function_execution(logger=logger)
     def create_json(self) -> Json:
         selected_page = self.find_page()
         json_data = JsonCreateSchema(page_id=selected_page.id, status=Status.preprocessed.value, object_key=self._object_key)  # type: ignore
-        created_json = self.jsons.create_one(db=self._session, json_data=json_data)
-        self._session.commit()
-        return created_json
+        self._json = self.jsons.create_one(db=self._session, json_data=json_data)
+        return self._json
 
+    @log_function_execution(logger=logger)
     def calculate_matching_score_for_each_page(self) -> None:
         self.create_json()
         target_pages = self.find_target_pages()
@@ -140,5 +142,4 @@ class ImageProcessor(Processor):
             page_id=selected_page.id, status=Status.preprocessed.value, object_key=self._object_key  # type: ignore
         )
         created_image = self.images.create_one(db=session, image_data=image_data)
-        self._session.commit()
         return created_image
