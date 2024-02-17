@@ -255,9 +255,9 @@ class Page(Base, TimestampMixin):
             "versionId": self.version_id,
             "status": self.status,
             "index": self.index,
-            "version": self.version.serializer(),
-            "image": self.image.serializer(),
-            "json": self.json.serializer(),
+            "version": self.version.serializer() if self.version else None,
+            "image": self.image.serializer() if self.image else None,
+            "json": self.json.serializer() if self.json else None,
             "updatedAt": self.updated_at.isoformat(),  # type: ignore
             "createdAt": self.created_at.isoformat(),  # type: ignore
         }
