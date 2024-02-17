@@ -3,7 +3,16 @@ from datetime import datetime
 
 # Third Party Library
 from config.settings import AWS_IMAGE_HOST_DOMAIN, AWS_RDS_DATABASE_URL, SQLALCHEMY_ECHO_SQL
-from sqlalchemy import JSON, Column, DateTime, Float, ForeignKey, String, create_engine
+from sqlalchemy import (
+    JSON,
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    String,
+    UniqueConstraint,
+    create_engine,
+)
 from sqlalchemy.orm import Mapped, declarative_base, relationship
 from sqlalchemy.types import Integer
 
@@ -273,6 +282,8 @@ class Matching(Base, TimestampMixin):
     status = Column(String, nullable=False)
     params = Column(JSON, nullable=False)
     bounding_boxes = Column(JSON, nullable=True)
+
+    __table_args__ = (UniqueConstraint("image1_id", "image2_id", name="unique_image_combination"),)
 
     image1: Mapped["Image"] = relationship("Image", foreign_keys=[image1_id])
     image2: Mapped["Image"] = relationship("Image", foreign_keys=[image2_id])
