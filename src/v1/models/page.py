@@ -50,6 +50,13 @@ class PageORM(object):
         return False
 
     @log_function_execution(logger=logger)
+    def update_status(self, db: Session, page_id: str, status: str) -> Page:
+        page = self.find_one(db, page_id)
+        page.status = status
+        db.add(page)
+        return page
+
+    @log_function_execution(logger=logger)
     def exists(self, db: Session, page_id: str) -> bool:
         page = db.query(Page).filter(Page.id == page_id).first()
         if page:

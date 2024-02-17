@@ -188,6 +188,7 @@ class Status(Enum):
     matching_calculation = "MATCHING_CALCULATION_IN_PROGRESS"  # マッチング計算中
     matching_calculation_timedout = "MATCHING_CALCULATION_TIMEDOUT"  # マッチング計算タイムアウト
     matching_calculation_failed = "MATCHING_CALCULATION_FAILED"  # マッチング計算失敗
+    matching_calculation_success = "MATCHING_CALCULATION_SUCCESS"  # マッチング計算成功
     differential_calculation = "DIFFERENTIAL_CALCULATION_IN_PROGRESS"  # 差分計算中
     differential_calculation_timedout = "DIFFERENTIAL_CALCULATION_TIMEDOUT"  # 差分計算タイムアウト
     differential_calculation_no_differences_found = (
