@@ -60,3 +60,11 @@ class JsonORM(object):
     @log_function_execution(logger=logger)
     def find_by_page_id(self, db: Session, page_id: str) -> Json:
         return db.query(Json).filter(Json.page_id == page_id).one()
+
+    @log_function_execution(logger=logger)
+    def update_status(self, db: Session, json_id: str, status: str) -> Json:
+        json = self.find_one(db, json_id)
+        json.status = status
+        db.add(json)
+        db.commit()
+        return json
