@@ -140,4 +140,5 @@ class ImageProcessor(Processor):
             page_id=selected_page.id, status=Status.preprocessed.value, object_key=self._object_key  # type: ignore
         )
         created_image = self.images.create_one(db=session, image_data=image_data)
+        self._session.commit()
         return created_image

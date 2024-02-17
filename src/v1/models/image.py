@@ -45,7 +45,6 @@ class ImageORM(object):
             id=id,
         )
         db.add(created_image)
-        logger.info(f"Created Image: {created_image}")
         return created_image
 
     @log_function_execution(logger=logger)
