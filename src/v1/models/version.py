@@ -17,16 +17,13 @@ class VersionORM(object):
         return db.query(Version).filter(Version.id == version_id).one()
 
     def find_previous_version(self, db: Session, project_id: str) -> Version | None:
-        project_versions = (
+        project_version = (
             db.query(Version)
             .filter(Version.project_id == project_id)
             .order_by(Version.created_at)
-            .all()
+            .first()
         )
-        if len(project_versions) == 1:
-            return None
-        else:
-            return project_versions[-2]
+        return project_version
 
     def find_many_by_project_id(self, db: Session, project_id: str) -> List[Version]:
         return db.query(Version).filter(Version.project_id == project_id).all()
