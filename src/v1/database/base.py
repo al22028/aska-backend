@@ -216,7 +216,7 @@ class Json(Base, TimestampMixin):
         self.created_at = datetime.now()
 
     def __str__(self) -> str:
-        return f"<Json id={self.id}, page_id={self.page_id}, object_key={self.object_key}>"
+        return f"<Json id={self.id}, page_id={self.page_id}, object_key={self.object_key}, status={self.status}>"
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -253,7 +253,7 @@ class Page(Base, TimestampMixin):
         self.created_at = datetime.now()
 
     def __str__(self) -> str:
-        return f"<Page id={self.id}, version_id={self.version_id}, index={self.index}>"
+        return f"<Page id={self.id}, version_id={self.version_id}, index={self.index}, status={self.status}>"
 
     def __repr__(self) -> str:
         return self.__str__()
