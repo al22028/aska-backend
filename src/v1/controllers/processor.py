@@ -1,5 +1,6 @@
 # Standard Library
 import json
+from concurrent.futures import ThreadPoolExecutor
 
 # Third Party Library
 from aws.lambda_client import LambdaClient
@@ -125,8 +126,8 @@ class JsonProcessor(Processor):
     def calculate_matching_score_for_each_page(self) -> None:
         self.create_json()
         target_pages = self.find_target_pages()
-        for target_page in target_pages:
-            self._calculate_matching_score(target_page=target_page)
+        with ThreadPoolExecutor(max_workers=len(target_pages)) as executor:
+            executor.map(self._calculate_matching_score, target_pages)
 
 
 class ImageProcessor(Processor):
