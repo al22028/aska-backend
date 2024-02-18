@@ -126,6 +126,8 @@ class JsonProcessor(Processor):
     def calculate_matching_score_for_each_page(self) -> None:
         self.create_json()
         target_pages = self.find_target_pages()
+        if len(target_pages) == 0:
+            return
         with ThreadPoolExecutor(max_workers=len(target_pages)) as executor:
             executor.map(self._calculate_matching_score, target_pages)
 
