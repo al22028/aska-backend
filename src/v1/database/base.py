@@ -47,7 +47,7 @@ class User(Base, TimestampMixin):
         self.created_at = datetime.now()
 
     def __str__(self) -> str:
-        return f"<user id={self.id}, name={self.name}, email={self.email}>"
+        return f"<User id={self.id}, name={self.name}, email={self.email}>"
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -90,7 +90,7 @@ class Project(Base, TimestampMixin):
         self.created_at = datetime.now()
 
     def __str__(self) -> str:
-        return f"<project id={self.id}, title={self.title}, descripton={self.description}>"
+        return f"<Project id={self.id}, title={self.title}, descripton={self.description}>"
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -150,7 +150,7 @@ class Version(Base, TimestampMixin):
         self.created_at = datetime.now()
 
     def __str__(self) -> str:
-        return f"<version id={self.id}, title={self.title}, object_key={self.object_key}>"
+        return f"<Version id={self.id}, title={self.title}, project_id={self.project_id}>"
 
     def __repr__(self) -> str:
         return self.__str__()
