@@ -11,6 +11,8 @@ import boto3
 import cv2
 import numpy as np
 from image import ImageModel, JsonModel
+from PIL import Image
+from pydantic import BaseModel
 from scipy.sparse import coo_matrix
 from sklearn.cluster import DBSCAN
 
@@ -18,8 +20,6 @@ AWS_IMAGE_BUCKET = os.environ["AWS_IMAGE_BUCKET"]
 
 client = boto3.client("s3")
 
-
-THRESHOLD = 0.85
 MIN_MACHTES = 10
 
 
@@ -33,6 +33,7 @@ class Calculator:
         after_image: ImageModel,
         id: str,
         page: str,
+        params: BaseModel,
     ) -> None:
         self.before_json = before_json
         self.after_json = after_json
@@ -41,6 +42,10 @@ class Calculator:
         self.id = id
         self.page = page
         self.diff_img = None
+        self.match_threshold = params.match_threshold
+        self.threshold = params.threshold
+        self.eps = params.eps
+        self.min_samples = params.min_samples
 
     def matching(self, threshhold: float) -> list[cv2.DMatch]:
         """2 枚の画像から得られた特徴量記述子の距離(ここではハミング距離)を総当たりで計算。近さが閾値以下になるようなマッチングのリストを返す。
@@ -70,10 +75,8 @@ class Calculator:
             raise e
 
     # TODO: Refactor this method
-    def homography_matrix(
-        self,
-    ) -> cv2.typing.MatLike:
-        matches = self.matching(threshhold=THRESHOLD)
+    def homography_matrix(self) -> cv2.typing.MatLike:
+        matches = self.matching(threshhold=self.match_threshold)
         if len(matches) <= MIN_MACHTES:
             raise ValueError("The number of matches is less than the minimum number of matches.")
         src_pts = np.float32(
@@ -97,21 +100,35 @@ class Calculator:
         M, _ = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
         return M
 
-    def create_image_diff(self, matrix: list, threshold: int) -> None:
+    def create_image_diff(self, matrix: list, is_dev: bool) -> None:
         before_image = self.before_image.image_data()
         after_image = self.after_image.image_data()
-        threshold = 0 if threshold > 255 or 0 > threshold else threshold
+        threshold = 0 if self.threshold > 255 or 0 > self.threshold else self.threshold
         rows, cols = after_image.shape
         mask = np.ones((rows, cols), dtype=np.uint8)
         warped_mask = cv2.warpPerspective(mask, matrix, before_image.shape[1::-1])
         warped_after_image = cv2.warpPerspective(after_image, matrix, before_image.shape[1::-1])
         warped_after_image[warped_mask == 0] = 255
-
         diff_image = cv2.absdiff(warped_after_image, before_image)
         _, threshdiff = cv2.threshold(diff_image, threshold, 255, cv2.THRESH_BINARY)
         threshdiff = 255 - threshdiff
+
+        if is_dev:
+            paramter_string = f"match_threshold:{self.match_threshold}, threhsold:{self.threshold},  eps:{self.eps},  min_samples:{self.min_samples}"
+            cv2.putText(
+                threshdiff,
+                paramter_string,
+                (10, 30),
+                cv2.FONT_HERSHEY_PLAIN,
+                3,
+                (0, 0, 0),
+                3,
+                cv2.LINE_AA,
+            )
+
+        image = Image.fromarray(threshdiff.astype("uint8"))
         buffer = io.BytesIO()
-        np.save(buffer, threshdiff)
+        image.save(buffer, format="PNG")
         buffer.seek(0)
         client.upload_fileobj(
             Fileobj=buffer,
@@ -121,12 +138,12 @@ class Calculator:
         )
         self.diff_img = threshdiff
 
-    def image_to_clusters(self, eps: float, min_samples: int) -> None:
+    def image_to_clusters(self) -> None:
         img = self.diff_img
         transformed_image = np.where(img == 0, 1, 0)
         sparse_transformed_matrix = coo_matrix(transformed_image)
         data = np.vstack([sparse_transformed_matrix.col, sparse_transformed_matrix.row]).T
-        db = DBSCAN(eps=eps, min_samples=min_samples).fit(data)
+        db = DBSCAN(eps=self.eps, min_samples=self.min_samples).fit(data)
         labels = db.labels_
         del db
         gc.collect()
