@@ -21,9 +21,9 @@ class VersionORM(object):
             db.query(Version)
             .filter(Version.project_id == project_id)
             .order_by(Version.created_at)
-            .first()
+            .all()
         )
-        return project_version
+        return project_version[-2] if len(project_version) > 1 else None
 
     def find_many_by_project_id(self, db: Session, project_id: str) -> List[Version]:
         return db.query(Version).filter(Version.project_id == project_id).all()
