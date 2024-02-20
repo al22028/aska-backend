@@ -12,6 +12,9 @@ config = context.config
 # Third Party Library
 from config.settings import AWS_RDS_DATABASE_URL
 
+# DEV
+# AWS_RDS_DATABASE_URL = "postgresql+psycopg2://postgres:postgres@aska-app-db-dev.cku5kitsuoky.ap-northeast-1.rds.amazonaws.com:5432/app"
+
 config.set_section_option(config.config_ini_section, "sqlalchemy.url", AWS_RDS_DATABASE_URL)
 
 # Interpret the config file for Python logging.
