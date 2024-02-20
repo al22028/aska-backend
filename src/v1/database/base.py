@@ -241,8 +241,12 @@ class Page(Base, TimestampMixin):
     index = Column(Integer, nullable=False)
 
     version: Mapped["Version"] = relationship("Version", back_populates="pages")
-    image: Mapped["Image"] = relationship("Image", cascade="all, delete", passive_deletes=True)
-    json: Mapped["Json"] = relationship("Json", cascade="all, delete", passive_deletes=True)
+    image: Mapped["Image"] = relationship(
+        "Image", cascade="all, delete", passive_deletes=True, back_populates="page"
+    )
+    json: Mapped["Json"] = relationship(
+        "Json", cascade="all, delete", passive_deletes=True, back_populates="page"
+    )
 
     def __init__(self, id: str, version_id: str, index: int, status: str) -> None:
         self.id = id
