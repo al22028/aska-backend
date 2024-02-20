@@ -26,6 +26,7 @@ def invoke_lambda():
                 "eps" : 20,
                 "min_samples" : 50,
             },
+            "is_dev": True
         }
     }
 

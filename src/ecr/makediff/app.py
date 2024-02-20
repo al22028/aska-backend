@@ -9,7 +9,7 @@ from aws_lambda_powertools.utilities.data_classes import LambdaFunctionUrlEvent,
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from calculator import Calculator
 from image import ImageModel, JsonModel
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel, Field, ValidationError
 
 logger = Logger(service="ImageDiffCalculator")
 
@@ -31,6 +31,7 @@ class EventBody(BaseModel):
     before: ObjectKeys
     after: ObjectKeys
     params: Params
+    is_dev: bool = Field(default=False)
 
 
 @event_source(data_class=LambdaFunctionUrlEvent)
@@ -55,9 +56,8 @@ def lambda_handler(event: LambdaFunctionUrlEvent, context: LambdaContext) -> dic
         event_body.before.image_object_key,
         event_body.after.image_object_key,
     )
-    THRESHOLD = event_body.params.threshold
-    EPS = event_body.params.eps
-    MIN_SAMPLES = event_body.params.min_samples
+
+    IS_DEV = event_body.is_dev
 
     before_json = JsonModel(bucket_name, before_json_object_key)
     after_json = JsonModel(bucket_name, after_json_object_key)
@@ -68,14 +68,16 @@ def lambda_handler(event: LambdaFunctionUrlEvent, context: LambdaContext) -> dic
     page, _ = image_name.split(".")
     logger.info(f"start : {time.time()}")
     now = time.time()
-    calculator = Calculator(before_json, after_json, before_image, after_image, pdf_id, page)
+    calculator = Calculator(
+        before_json, after_json, before_image, after_image, pdf_id, page, event_body.params
+    )
     homography_matrix = calculator.homography_matrix()
-    logger(f"homography : {time.time() - now}")
+    logger.info(f"homography : {time.time() - now}")
     now = time.time()
-    calculator.create_image_diff(homography_matrix, THRESHOLD)
+    calculator.create_image_diff(homography_matrix, IS_DEV)
     logger.info(f"create image diff : {time.time() - now}")
     now = time.time()
-    calculator.image_to_clusters(EPS, MIN_SAMPLES)
+    calculator.image_to_clusters()
     logger.info(f"image to cluster : {time.time() - now}")
     now = time.time()
     return {"statusCode": 200, "body": json.dumps({"message": "Created and saved diff image"})}
