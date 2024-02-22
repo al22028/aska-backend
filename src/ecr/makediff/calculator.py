@@ -46,6 +46,7 @@ class Calculator:
         self.threshold = params.threshold
         self.eps = params.eps
         self.min_samples = params.min_samples
+        self.export_path = None
 
     def matching(self, threshhold: float) -> list[cv2.DMatch]:
         """2 枚の画像から得られた特徴量記述子の距離(ここではハミング距離)を総当たりで計算。近さが閾値以下になるようなマッチングのリストを返す。
@@ -166,3 +167,4 @@ class Calculator:
             Key=f"{self.id}/clusters_{self.page}.json",
             Body=json.dumps(result).encode(),
         )
+        self.export_path = f"{self.id}/clusters_{self.page}.json"

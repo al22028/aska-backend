@@ -80,4 +80,4 @@ def lambda_handler(event: LambdaFunctionUrlEvent, context: LambdaContext) -> dic
     calculator.image_to_clusters()
     logger.info(f"image to cluster : {time.time() - now}")
     now = time.time()
-    return {"statusCode": 200, "body": json.dumps({"message": "Created and saved diff image"})}
+    return {"statusCode": 200, "body": json.dumps({"objectKey": f"{str(calculator.export_path)}"})}
