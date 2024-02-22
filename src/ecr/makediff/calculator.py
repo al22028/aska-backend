@@ -42,16 +42,18 @@ class Calculator:
         self.id = id
         self.page = page
         self.diff_img = None
+        self.export_path = None
+
         self.match_threshold = params.match_threshold
         self.threshold = params.threshold
         self.eps = params.eps
         self.min_samples = params.min_samples
 
-    def matching(self, threshhold: float) -> list[cv2.DMatch]:
+    def matching(self, threshold: float) -> list[cv2.DMatch]:
         """2 枚の画像から得られた特徴量記述子の距離(ここではハミング距離)を総当たりで計算。近さが閾値以下になるようなマッチングのリストを返す。
 
         Args:
-            threshhold (float): 近さの閾値
+            threshold (float): 近さの閾値
 
         Raises:
             e: 計算上でのエラー
@@ -68,7 +70,7 @@ class Calculator:
             )
             good_matches = []
             for m, n in matches:
-                if m.distance < threshhold * n.distance:
+                if m.distance < threshold * n.distance:
                     good_matches.append(m)
             return good_matches
         except Exception as e:
@@ -76,7 +78,7 @@ class Calculator:
 
     # TODO: Refactor this method
     def homography_matrix(self) -> cv2.typing.MatLike:
-        matches = self.matching(threshhold=self.match_threshold)
+        matches = self.matching(threshold=self.match_threshold)
         if len(matches) <= MIN_MACHTES:
             raise ValueError("The number of matches is less than the minimum number of matches.")
         src_pts = np.float32(
@@ -166,3 +168,4 @@ class Calculator:
             Key=f"{self.id}/clusters_{self.page}.json",
             Body=json.dumps(result).encode(),
         )
+        self.export_path = f"{self.id}/clusters_{self.page}.json"
