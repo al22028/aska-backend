@@ -372,3 +372,93 @@ class PageSchema(PageCreateSchema, TimeStampSchema):
     version: VersionSchema
     image: ImageSchema
     json: JsonSchema  # type: ignore
+
+
+class MatchingCreateSchema(BaseSchema):
+    """Matching Create Schema"""
+
+    image1_id: str = Field(
+        ...,
+        title="Image1 ID",
+        description="Image1 ID",
+        examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "Image1 ID"}],
+    )
+    image2_id: str = Field(
+        ...,
+        title="Image2 ID",
+        description="Image2 ID",
+        examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "Image2 ID"}],
+    )
+    params: dict = Field(
+        default={"threshold": 220, "eps": 20, "min_samples": 50, "acc": 0.1},
+        title="Params",
+        description="Params",
+        examples=[
+            {
+                "value": {"threshold": 220, "eps": 20, "min_samples": 50, "acc": 0.1},
+                "description": "Params",
+            }
+        ],
+    )
+    status: str = Field(
+        title="Status",
+        description="Status",
+        examples=[{"value": "MATCHING_CALCULATION_IN_PROGRESS", "description": "Status"}],
+    )
+
+
+class MatchingUpdateSchema(BaseSchema):
+    """Matching Update Schema"""
+
+    score: float = Field(
+        title="Score",
+        description="Score",
+        examples=[{"value": 0.1, "description": "Score"}],
+    )
+    params: dict = Field(
+        title="Params",
+        description="Params",
+        examples=[
+            {
+                "value": {"threshold": 220, "eps": 20, "min_samples": 50, "acc": 0.1},
+                "description": "Params",
+            }
+        ],
+    )
+    status: str = Field(
+        title="Status",
+        description="Status",
+        examples=[{"value": "MATCHING_CALCULATION_IN_PROGRESS", "description": "Status"}],
+    )
+    bounding_boxes: list[dict] = Field(
+        title="bounding boxes",
+        description="bounding boxes",
+        examples=[
+            {
+                "value": [
+                    {
+                        "0": {
+                            "position": {
+                                "max_x": 100,
+                                "max_y": 100,
+                                "min_x": 0,
+                                "min_y": 0,
+                            }
+                        }
+                    }
+                ],
+                "description": "bounding boxes",
+            }
+        ],
+    )
+
+
+class MatchingSchema(MatchingCreateSchema, MatchingUpdateSchema, TimeStampSchema):
+    """Matching Schema"""
+
+    id: str = Field(
+        ...,
+        title="ID",
+        description="Matching ID",
+        examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "ID"}],
+    )
