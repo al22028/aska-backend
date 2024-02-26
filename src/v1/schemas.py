@@ -430,23 +430,15 @@ class MatchingUpdateSchema(BaseSchema):
         description="Status",
         examples=[{"value": "MATCHING_CALCULATION_IN_PROGRESS", "description": "Status"}],
     )
-    bounding_boxes: list[dict] = Field(
+    bounding_boxes: dict = Field(
         title="bounding boxes",
         description="bounding boxes",
         examples=[
             {
-                "value": [
-                    {
-                        "0": {
-                            "position": {
-                                "max_x": 100,
-                                "max_y": 100,
-                                "min_x": 0,
-                                "min_y": 0,
-                            }
-                        }
-                    }
-                ],
+                "value": {
+                    "0": {"position": {"max_x": 100, "max_y": 100, "min_x": 0, "min_y": 0}},
+                    "1": {"position": {"max_x": 10, "max_y": 10, "min_x": 0, "min_y": 0}},
+                },
                 "description": "bounding boxes",
             }
         ],

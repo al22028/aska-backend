@@ -300,7 +300,7 @@ class Matching(Base, TimestampMixin):
         score: float,
         status: str,
         params: dict,
-        bounding_boxes: list[dict],
+        bounding_boxes: dict,
     ) -> None:
         self.id = id
         self.image1_id = image1_id
