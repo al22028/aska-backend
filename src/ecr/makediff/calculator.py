@@ -84,8 +84,8 @@ class Calculator:
         src_pts = np.float32(
             [
                 (
-                    self.before_json.key_points()[m.queryIdx]["x"],
-                    self.before_json.key_points()[m.queryIdx]["y"],
+                    self.after_json.key_points()[m.trainIdx]["x"],
+                    self.after_json.key_points()[m.trainIdx]["y"],
                 )
                 for m in matches
             ]
@@ -93,8 +93,8 @@ class Calculator:
         dst_pts = np.float32(
             [
                 (
-                    self.after_json.key_points()[m.trainIdx]["x"],
-                    self.after_json.key_points()[m.trainIdx]["y"],
+                    self.before_json.key_points()[m.queryIdx]["x"],
+                    self.before_json.key_points()[m.queryIdx]["y"],
                 )
                 for m in matches
             ]
@@ -116,6 +116,16 @@ class Calculator:
         threshdiff = 255 - threshdiff
 
         if is_dev:
+            processing_image = Image.fromarray(warped_after_image.astype("uint8"))
+            processing_buffer = io.BytesIO()
+            processing_image.save(processing_buffer, format="PNG")
+            processing_buffer.seek(0)
+            client.upload_fileobj(
+                Fileobj=processing_buffer,
+                Bucket="aska-tmp-dir",
+                Key=f"{self.id}/processing_{self.page}.png",
+                ExtraArgs={"ContentType": "image/png"},
+            )
             paramter_string = f"match_threshold:{self.match_threshold}, threhsold:{self.threshold},  eps:{self.eps},  min_samples:{self.min_samples}"
             cv2.putText(
                 threshdiff,
@@ -156,10 +166,10 @@ class Calculator:
             p = data[idx]
             result.append(
                 {
-                    "max_x": int(p[:, 0].max()),
-                    "max_y": int(p[:, 1].max()),
-                    "min_x": int(p[:, 0].min()),
-                    "min_y": int(p[:, 1].min()),
+                    "maxX": int(p[:, 0].max()),
+                    "maxY": int(p[:, 1].max()),
+                    "minX": int(p[:, 0].min()),
+                    "minY": int(p[:, 1].min()),
                 }
             )
 
