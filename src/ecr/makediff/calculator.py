@@ -118,7 +118,7 @@ class Calculator:
         if is_dev:
             processing_image = Image.fromarray(warped_after_image.astype("uint8"))
             processing_buffer = io.BytesIO()
-            processing_image.save(processing_buffer,format="PNG")
+            processing_image.save(processing_buffer, format="PNG")
             processing_buffer.seek(0)
             client.upload_fileobj(
                 Fileobj=processing_buffer,
