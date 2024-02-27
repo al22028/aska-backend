@@ -62,6 +62,7 @@ def keypoint_serializer(kp: cv2.KeyPoint) -> dict:
       dict : cv2.KeyPointのパラメータを持った辞書
     """
 
+    # TODO: パラメータを削った後のファイルサイズを確認してから検討
     return {
         "x": float(kp.pt[0]),
         "y": float(kp.pt[1]),
