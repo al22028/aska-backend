@@ -83,7 +83,7 @@ npm run dev
 ```bash
 cd src/v1
 # 新しくモデルを追加した場合
-alembic revision --autogenrate -m "migration message"
+alembic revision --autogenerate -m "migration message"
 # データベースに最新のマイグレーションを反映
 alembic upgrade head
 ```
@@ -104,9 +104,9 @@ terraform apply
 | ブランチ名                   | 説明             | 補足 |
 | ---------------------------- | ---------------- | ---- |
 | main                         | 最新リリース     |      |
-| dev/main                     | 開発用最新       |
-| hotfix/{モジュール名}/{主題} |
-| sandbox/{なんでも}           | テストコードなど |
+| dev/main                     | 開発用最新       |      |
+| hotfix/{モジュール名}/{主題} |                  |      |
+| sandbox/{なんでも}           | テストコードなど |      |
 
 ### Branch rule
 
