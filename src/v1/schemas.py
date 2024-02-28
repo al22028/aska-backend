@@ -374,14 +374,26 @@ class PageSchema(PageCreateSchema, TimeStampSchema):
     json: JsonSchema  # type: ignore
 
 
-class PageDisplaySchema(PageCreateSchema):
-    """Page Display Schema"""
+class PageDisplaySchema(BaseSchema):
+    """Page Dislplay Schema for Version Detail"""
 
     id: str = Field(
         ...,
         title="ID",
-        description="Page ID",
+        description="ID",
         examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "ID"}],
+    )
+    status: str = Field(
+        default=Status.pending.value,
+        title="Status",
+        description="Status",
+        examples=[{"value": "PENDING", "description": "Status"}],
+    )
+    index: int = Field(
+        ...,
+        title="Index",
+        description="Index",
+        examples=[{"value": 0, "description": "Index"}],
     )
 
 
