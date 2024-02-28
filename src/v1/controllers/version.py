@@ -14,7 +14,7 @@ from models.version import VersionORM
 from schemas import (
     DeletedSchema,
     DownloadURLSchema,
-    PageDisplaySchema,
+    PageSchema,
     VersionCreateResponseSchema,
     VersionCreateSchema,
     VersionDetailSchema,
@@ -72,7 +72,7 @@ class VersionController:
         version = self.versions.find_one(db=session, version_id=version_id)
 
         page_list = self.pages.find_many_by_version_id(db=session, version_id=version_id)
-        serialized_page_list = [PageDisplaySchema(**page.serializer()) for page in page_list]
+        serialized_page_list = [PageSchema(**page.serializer()) for page in page_list]
         return VersionDetailSchema(**version.serializer(), pages=serialized_page_list)
 
     @with_session
