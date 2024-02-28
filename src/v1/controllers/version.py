@@ -4,7 +4,6 @@ from typing import List
 
 # Third Party Library
 from aws.s3 import S3
-from aws_lambda_powertools import Logger
 from aws_lambda_powertools.event_handler.exceptions import NotFoundError
 from config.settings import AWS_PDF_BUCKET
 from database.base import Version
@@ -25,7 +24,6 @@ from schemas import (
 from sqlalchemy.orm.session import Session
 
 s3 = S3()
-logger = Logger(service="aws_s3_client")
 
 
 class VersionController:
@@ -74,9 +72,7 @@ class VersionController:
         version = self.versions.find_one(db=session, version_id=version_id)
 
         page_list = self.pages.find_many_by_version_id(db=session, version_id=version_id)
-        logger.info({"page_list": page_list})
         serialized_page_list = [PageDisplaySchema(**page.serializer()) for page in page_list]
-        logger.info({"serialized_page_list": serialized_page_list})
         return VersionDetailSchema(**version.serializer(), pages=serialized_page_list)
 
     @with_session
