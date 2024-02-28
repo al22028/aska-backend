@@ -372,3 +372,18 @@ class PageSchema(PageCreateSchema, TimeStampSchema):
     version: VersionSchema
     image: ImageSchema
     json: JsonSchema  # type: ignore
+
+
+class PageDisplaySchema(PageCreateSchema):
+    """Page Display Schema"""
+
+    id: str = Field(
+        ...,
+        title="ID",
+        description="Page ID",
+        examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "ID"}],
+    )
+
+
+class VersionDetailSchema(VersionSchema):
+    pages: list[PageDisplaySchema]
