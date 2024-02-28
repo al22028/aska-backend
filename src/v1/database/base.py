@@ -280,26 +280,8 @@ class Page(Base, TimestampMixin):
             "status": self.status,
             "index": self.index,
             "version": self.version.serializer(),
-            # "image": self.image.serializer(),
-            # "json": self.json.serializer(),
-            # "image": None,
-            # "json": None,
-            "image": {
-                "id": self.image.id,
-                "pageId": self.image.page_id,
-                "objectKey": self.image.object_key,
-                "status": self.image.status,
-                "updatedAt": self.image.updated_at.isoformat(),  # type: ignore
-                "createdAt": self.image.created_at.isoformat(),  # type: ignore
-            },
-            "json": {
-                "id": self.json.id,
-                "pageId": self.json.page_id,
-                "objectKey": self.json.object_key,
-                "status": self.json.status,
-                "updatedAt": self.json.updated_at.isoformat(),  # type: ignore
-                "createdAt": self.json.created_at.isoformat(),  # type: ignore
-            },
+            "image": self.image.serializer(),
+            "json": self.json.serializer(),
             "updatedAt": self.updated_at.isoformat(),  # type: ignore
             "createdAt": self.created_at.isoformat(),  # type: ignore
         }
