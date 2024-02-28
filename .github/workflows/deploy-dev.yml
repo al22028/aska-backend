@@ -6,7 +6,7 @@ on:
   #   types:
   #     - closed
   #   branches:
-  #     - develop
+  #     - dev/main
 
 jobs:
   deploy:
