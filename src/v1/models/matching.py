@@ -5,7 +5,7 @@ from typing import List
 # Third Party Library
 from aws_lambda_powertools import Logger
 from database.base import Matching
-from schemas import ImageCreateSchema, ImageUpdateSchema, Status
+from schemas import MatchingCreateSchema, MatchingUpdateSchema, Status
 from sqlalchemy.orm.session import Session
 from views.console import log_function_execution
 
@@ -34,7 +34,7 @@ class MatchingORM(object):
         return False
 
     @log_function_execution(logger=logger)
-    def create_one(self, db: Session, mathing_data: ImageCreateSchema) -> Matching:
+    def create_one(self, db: Session, mathing_data: MatchingCreateSchema) -> Matching:
         id = str(uuid.uuid4()).replace("-", "")
         created_matching = Matching(
             **mathing_data.model_dump(),
@@ -45,7 +45,7 @@ class MatchingORM(object):
 
     @log_function_execution(logger=logger)
     def update_one(
-        self, db: Session, matching_id: str, matching_data: ImageUpdateSchema
+        self, db: Session, matching_id: str, matching_data: MatchingUpdateSchema
     ) -> Matching:
         selected_matching = self.find_one(db, matching_id)
         selected_matching.status = matching_data.status
