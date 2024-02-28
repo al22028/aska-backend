@@ -4,29 +4,35 @@ from typing import List
 
 # Third Party Library
 from aws.s3 import S3
+from aws_lambda_powertools import Logger
 from aws_lambda_powertools.event_handler.exceptions import NotFoundError
 from config.settings import AWS_PDF_BUCKET
 from database.base import Version
 from database.session import with_session
+from models.page import PageORM
 from models.project import ProjectORM
 from models.version import VersionORM
 from schemas import (
     DeletedSchema,
     DownloadURLSchema,
+    PageDisplaySchema,
     VersionCreateResponseSchema,
     VersionCreateSchema,
+    VersionDetailSchema,
     VersionSchema,
     VersionUpdateSchema,
 )
 from sqlalchemy.orm.session import Session
 
 s3 = S3()
+logger = Logger(service="aws_s3_client")
 
 
 class VersionController:
 
     versions = VersionORM()
     projects = ProjectORM()
+    pages = PageORM()
 
     @with_session
     def fetch_all_versions(self, session: Session) -> list[VersionSchema]:
@@ -62,11 +68,16 @@ class VersionController:
         )
 
     @with_session
-    def find_one(self, session: Session, version_id: str) -> VersionSchema:
+    def find_one(self, session: Session, version_id: str) -> VersionDetailSchema:
         if not self.versions.exists(db=session, version_id=version_id):
             raise NotFoundError("pdf not found")
         version = self.versions.find_one(db=session, version_id=version_id)
-        return VersionSchema(**version.serializer())
+
+        page_list = self.pages.find_many_by_version_id(db=session, version_id=version_id)
+        logger.info({"page_list": page_list})
+        serialized_page_list = [PageDisplaySchema(**page.serializer()) for page in page_list]
+        logger.info({"serialized_page_list": serialized_page_list})
+        return VersionDetailSchema(**version.serializer(), pages=serialized_page_list)
 
     @with_session
     def update_one(
