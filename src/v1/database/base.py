@@ -2,6 +2,7 @@
 from datetime import datetime
 
 # Third Party Library
+from aws_lambda_powertools import Logger
 from config.settings import AWS_IMAGE_HOST_DOMAIN, AWS_RDS_DATABASE_URL, SQLALCHEMY_ECHO_SQL
 from sqlalchemy import (
     JSON,
@@ -18,6 +19,8 @@ from sqlalchemy.types import Integer
 
 Engine = create_engine(AWS_RDS_DATABASE_URL, echo=SQLALCHEMY_ECHO_SQL)
 Base = declarative_base()
+
+logger = Logger(service="aws_s3_client")
 
 
 class TimestampMixin(object):
@@ -186,6 +189,12 @@ class Image(Base, TimestampMixin):
         self.updated_at = datetime.now()
         self.created_at = datetime.now()
 
+    def __str__(self) -> str:
+        return f"<Image id={self.id}, page_id={self.page_id}, object_key={self.object_key}, status={self.status}>"
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
     def serializer(self) -> dict:
         return {
             "id": self.id,
@@ -263,14 +272,34 @@ class Page(Base, TimestampMixin):
         return self.__str__()
 
     def serializer(self) -> dict:
+        logger.info({"image": self.image})
+        logger.info({"json": self.json})
         return {
             "id": self.id,
             "versionId": self.version_id,
             "status": self.status,
             "index": self.index,
             "version": self.version.serializer(),
-            "image": self.image.serializer(),
-            "json": self.json.serializer(),
+            # "image": self.image.serializer(),
+            # "json": self.json.serializer(),
+            # "image": None,
+            # "json": None,
+            "image": {
+                "id": self.image.id,
+                "pageId": self.image.page_id,
+                "objectKey": self.image.object_key,
+                "status": self.image.status,
+                "updatedAt": self.image.updated_at.isoformat(),  # type: ignore
+                "createdAt": self.image.created_at.isoformat(),  # type: ignore
+            },
+            "json": {
+                "id": self.json.id,
+                "pageId": self.json.page_id,
+                "objectKey": self.json.object_key,
+                "status": self.json.status,
+                "updatedAt": self.json.updated_at.isoformat(),  # type: ignore
+                "createdAt": self.json.created_at.isoformat(),  # type: ignore
+            },
             "updatedAt": self.updated_at.isoformat(),  # type: ignore
             "createdAt": self.created_at.isoformat(),  # type: ignore
         }
