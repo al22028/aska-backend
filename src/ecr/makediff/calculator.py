@@ -42,16 +42,18 @@ class Calculator:
         self.id = id
         self.page = page
         self.diff_img = None
+        self.export_path = None
+
         self.match_threshold = params.match_threshold
         self.threshold = params.threshold
         self.eps = params.eps
         self.min_samples = params.min_samples
 
-    def matching(self, threshhold: float) -> list[cv2.DMatch]:
+    def matching(self, threshold: float) -> list[cv2.DMatch]:
         """2 枚の画像から得られた特徴量記述子の距離(ここではハミング距離)を総当たりで計算。近さが閾値以下になるようなマッチングのリストを返す。
 
         Args:
-            threshhold (float): 近さの閾値
+            threshold (float): 近さの閾値
 
         Raises:
             e: 計算上でのエラー
@@ -68,7 +70,7 @@ class Calculator:
             )
             good_matches = []
             for m, n in matches:
-                if m.distance < threshhold * n.distance:
+                if m.distance < threshold * n.distance:
                     good_matches.append(m)
             return good_matches
         except Exception as e:
@@ -76,14 +78,14 @@ class Calculator:
 
     # TODO: Refactor this method
     def homography_matrix(self) -> cv2.typing.MatLike:
-        matches = self.matching(threshhold=self.match_threshold)
+        matches = self.matching(threshold=self.match_threshold)
         if len(matches) <= MIN_MACHTES:
             raise ValueError("The number of matches is less than the minimum number of matches.")
         src_pts = np.float32(
             [
                 (
-                    self.before_json.key_points()[m.queryIdx]["x"],
-                    self.before_json.key_points()[m.queryIdx]["y"],
+                    self.after_json.key_points()[m.trainIdx]["x"],
+                    self.after_json.key_points()[m.trainIdx]["y"],
                 )
                 for m in matches
             ]
@@ -91,8 +93,8 @@ class Calculator:
         dst_pts = np.float32(
             [
                 (
-                    self.after_json.key_points()[m.trainIdx]["x"],
-                    self.after_json.key_points()[m.trainIdx]["y"],
+                    self.before_json.key_points()[m.queryIdx]["x"],
+                    self.before_json.key_points()[m.queryIdx]["y"],
                 )
                 for m in matches
             ]
@@ -114,6 +116,16 @@ class Calculator:
         threshdiff = 255 - threshdiff
 
         if is_dev:
+            processing_image = Image.fromarray(warped_after_image.astype("uint8"))
+            processing_buffer = io.BytesIO()
+            processing_image.save(processing_buffer, format="PNG")
+            processing_buffer.seek(0)
+            client.upload_fileobj(
+                Fileobj=processing_buffer,
+                Bucket="aska-tmp-dir",
+                Key=f"{self.id}/processing_{self.page}.png",
+                ExtraArgs={"ContentType": "image/png"},
+            )
             paramter_string = f"match_threshold:{self.match_threshold}, threhsold:{self.threshold},  eps:{self.eps},  min_samples:{self.min_samples}"
             cv2.putText(
                 threshdiff,
@@ -154,10 +166,10 @@ class Calculator:
             p = data[idx]
             result.append(
                 {
-                    "max_x": int(p[:, 0].max()),
-                    "max_y": int(p[:, 1].max()),
-                    "min_x": int(p[:, 0].min()),
-                    "min_y": int(p[:, 1].min()),
+                    "maxX": int(p[:, 0].max()),
+                    "maxY": int(p[:, 1].max()),
+                    "minX": int(p[:, 0].min()),
+                    "minY": int(p[:, 1].min()),
                 }
             )
 
@@ -166,3 +178,4 @@ class Calculator:
             Key=f"{self.id}/clusters_{self.page}.json",
             Body=json.dumps(result).encode(),
         )
+        self.export_path = f"{self.id}/clusters_{self.page}.json"
