@@ -1,5 +1,5 @@
 resource "aws_cognito_user_pool" "client" {
-  name = "psaco-user-pool"
+  name = "aska-user-pool"
   auto_verified_attributes = [
     "email",
   ]
