@@ -13,6 +13,7 @@ from schemas import (
     DownloadURLSchema,
     VersionCreateResponseSchema,
     VersionCreateSchema,
+    VersionDetailSchema,
     VersionSchema,
     VersionUpdateSchema,
 )
@@ -84,7 +85,7 @@ def create_single_version(version_data: VersionCreateSchema) -> VersionCreateRes
         500: {"description": "Internal Server Error"},
     },
 )
-def fetch_single_version_by_id(versionId: str) -> VersionSchema:
+def fetch_single_version_by_id(versionId: str) -> VersionDetailSchema:
     return controller.find_one(version_id=versionId)
 
 

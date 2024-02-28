@@ -374,6 +374,12 @@ class PageSchema(PageCreateSchema, TimeStampSchema):
     json: JsonSchema  # type: ignore
 
 
+
+class VersionDetailSchema(VersionSchema):
+    pages: list[PageSchema]
+
+      
+      
 class MatchingCreateSchema(BaseSchema):
     """Matching Create Schema"""
 
@@ -454,3 +460,4 @@ class MatchingSchema(MatchingCreateSchema, MatchingUpdateSchema, TimeStampSchema
         description="Matching ID",
         examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "ID"}],
     )
+
