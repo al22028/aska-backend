@@ -35,7 +35,10 @@ def get_object_body(bucket: str, key: str) -> str:
 @logger.inject_lambda_context(log_event=True)
 def lambda_handler(event: LambdaFunctionUrlEvent, context: LambdaContext) -> dict:
     bucket_name = event.body["bucket_name"]
-    before_object_key, after_object_key = event.body["before"], event.body["after"]
+    before_object_key, after_object_key = (
+        event.body["before"]["json_object_key"],
+        event.body["after"]["json_object_key"],
+    )
     before_data = get_object_body(bucket_name, before_object_key)
     after_data = get_object_body(bucket_name, after_object_key)
     after_descripter = json.loads(after_data)["descriptors"]
