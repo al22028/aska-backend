@@ -9,7 +9,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
 
     name: Assign author to PR
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, ubuntu]
     steps:
       - name: Assign author to PR
         uses: technote-space/assign-author@v1
