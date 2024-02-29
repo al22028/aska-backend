@@ -1,8 +1,9 @@
 # type: ignore
 # Standard Library
-import json
-from collections import deque
 import csv
+import json
+import os
+from collections import deque
 from io import StringIO
 
 # Third Party Library
@@ -17,6 +18,7 @@ logger = Logger(service="MatchingScoreCalculator")
 
 client = boto3.client("s3")
 
+AWS_TMP_BUCKET = os.environ["AWS_TMP_BUCKET"]
 
 ACC = 0.2
 
@@ -34,10 +36,9 @@ def get_object_body(bucket: str, key: str) -> str:
     return response["Body"].read().decode("utf-8")
 
 
-def listup_object_keys(bucket:str) -> list[str]:
+def listup_object_keys(bucket: str) -> list[str]:
     response = client.list_objects_v2(Bucket=bucket)
-    response = json.loads(response)
-    content = response['message']['Contents']
+    content = response["Contents"]
     key_list = []
     for c in content:
         key_list.append(str(c["Key"]))
@@ -51,34 +52,27 @@ def lambda_handler(event: LambdaFunctionUrlEvent, context: LambdaContext) -> dic
     before_id = event.body["before"]["json_object_key"].split("/")[0]
     after_id = event.body["after"]["json_object_key"].split("/")[0]
 
-    before_data_list = deque()
-    after_data_list = deque()
+    before_json_datas = deque()
+    after_json_datas = deque()
     key_list = listup_object_keys(bucket_name)
     csv_buffer = StringIO()
     csv_writer = csv.writer(csv_buffer)
 
-    logger.info(key_list)
-
     for key in key_list:
-        id = key.split('/')[0]
+        id = key.split("/")[0]
         is_json = key.endswith(".json")
         if id == before_id and is_json:
-            data = get_object_body(bucket=bucket_name,key=key)
-            before_data_list.append(data)
+            data = get_object_body(bucket=bucket_name, key=key)
+            before_json_datas.append(data)
         if id == after_id and is_json:
-            data = get_object_body(bucket=bucket_name,key=key)
-            after_data_list.append(data)
+            data = get_object_body(bucket=bucket_name, key=key)
+            after_json_datas.append(data)
 
-
-    logger.info(before_data_list)
-    logger.info(after_data_list)
-
-
-    for before_data in before_data_list:
-        score_list = []
-        for after_data in after_data_list:
-            before_descriptor = json.loads(before_data)["descriptor"]
-            after_descriptor = json.loads(after_data)["descriptor"]
+    for before_data in before_json_datas:
+        score_list = deque()
+        before_descriptor = json.loads(before_data)["descriptors"]
+        for after_data in after_json_datas:
+            after_descriptor = json.loads(after_data)["descriptors"]
             desc_num_ave = int(len(after_descriptor) + len(before_descriptor)) / 2
             desc_num = int(desc_num_ave * ACC)
             score = score_similarity(
@@ -86,26 +80,13 @@ def lambda_handler(event: LambdaFunctionUrlEvent, context: LambdaContext) -> dic
                 np.array(before_descriptor[:desc_num], dtype=np.uint8),
             )
             score_list.append(score)
-        csv_writer.writerows(score_list)
+        csv_writer.writerow(list(score_list))
 
-
+    # TODO: find best matching of pages
     csv_bytes = csv_buffer.getvalue().encode()
     client.put_object(
-        Bucket="aska-tmp-dir",
-        Key = f"{id}/matching_result.csv",
-        Body= csv_bytes,
+        Bucket=AWS_TMP_BUCKET,
+        Key="matching_result.csv",
+        Body=csv_bytes,
     )
-
-    # before_object_key, after_object_key = event.body["before"], event.body["after"]
-    # before_data = get_object_body(bucket_name, before_object_key)
-    # after_data = get_object_body(bucket_name, after_object_key)
-    # after_descripter = json.loads(after_data)["descriptors"]
-    # before_descriptor = json.loads(before_data)["descriptors"]
-    # desc_num_ave = int(len(after_descripter) + len(before_descriptor)) / 2
-    # desc_num = int(desc_num_ave * ACC)
-    # score = score_similarity(
-    #     np.array(after_descripter[:desc_num], dtype=np.uint8),
-    #     np.array(before_descriptor[:desc_num], dtype=np.uint8),
-    # )
-    # logger.info(f"Matching score: {score}")
-    return {"statusCode": 200, "score": "scores"}
+    return {"statusCode": 200, "body": {"objectKey": "matching_result.csv"}}

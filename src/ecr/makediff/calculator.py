@@ -17,6 +17,7 @@ from scipy.sparse import coo_matrix
 from sklearn.cluster import DBSCAN
 
 AWS_IMAGE_BUCKET = os.environ["AWS_IMAGE_BUCKET"]
+AWS_TMP_BUCKET = os.environ["AWS_TMP_BUCKET"]
 
 client = boto3.client("s3")
 
@@ -122,7 +123,7 @@ class Calculator:
             processing_buffer.seek(0)
             client.upload_fileobj(
                 Fileobj=processing_buffer,
-                Bucket="aska-tmp-dir",
+                Bucket=AWS_TMP_BUCKET,
                 Key=f"{self.id}/processing_{self.page}.png",
                 ExtraArgs={"ContentType": "image/png"},
             )
@@ -144,7 +145,7 @@ class Calculator:
         buffer.seek(0)
         client.upload_fileobj(
             Fileobj=buffer,
-            Bucket="aska-tmp-dir",
+            Bucket=AWS_TMP_BUCKET,
             Key=f"{self.id}/diff_{self.page}.png",
             ExtraArgs={"ContentType": "image/png"},
         )
@@ -174,7 +175,7 @@ class Calculator:
             )
 
         client.put_object(
-            Bucket="aska-tmp-dir",
+            Bucket=AWS_TMP_BUCKET,
             Key=f"{self.id}/clusters_{self.page}.json",
             Body=json.dumps(result).encode(),
         )
