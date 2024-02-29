@@ -9,7 +9,9 @@ on:
 
 jobs:
   Lint:
-    runs-on: ubuntu-latest
+    name: Lint
+    runs-on: [self-hosted, ubuntu]
+    # runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
