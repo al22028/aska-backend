@@ -103,7 +103,7 @@ def fetch_single_version_by_id(versionId: str) -> VersionDetailSchema:
     },
 )
 def fetch_single_version_download_url(versionId: str) -> DownloadURLSchema:
-    return controller.generate_download_url(pdf_id=versionId)
+    return controller.generate_download_url(version_id=versionId)
 
 
 @router.put(
