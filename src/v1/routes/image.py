@@ -5,7 +5,7 @@ from aws_lambda_powertools import Tracer
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.event_handler.api_gateway import Router
 from controllers.image import ImageController
-from schemas import ImageSchema
+from schemas import DownloadURLSchema, ImageSchema
 
 app = APIGatewayRestResolver(debug=True)
 router = Router()
@@ -27,3 +27,20 @@ controller = ImageController()
 )
 def fetch_all_images() -> list[ImageSchema]:
     return controller.fetch_all_images()
+
+
+@router.get(
+    "/<imageId>/download",
+    tags=["Image"],
+    summary="画像のダウンロードURLを取得",
+    description="画像のダウンロードURLを取得します。",
+    response_description="ダウンロードURL",
+    operation_id="fetchSingleImageDownloadURL",
+    responses={
+        200: {"description": "成功"},
+        404: {"description": "Not Found"},
+        500: {"description": "Internal Server Error"},
+    },
+)
+def fetch_single_image_download_url(imageId: str) -> DownloadURLSchema:
+    return controller.generate_download_url(image_id=imageId)
