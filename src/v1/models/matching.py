@@ -55,7 +55,7 @@ class MatchingORM(object):
     @log_function_execution(logger=logger)
     def update_status(self, db: Session, matching_id: str, status: Status) -> Matching:
         selected_matching = self.find_one(db, matching_id)
-        selected_matching.status = status.value
+        selected_matching.status = status
         db.add(selected_matching)
         return selected_matching
 

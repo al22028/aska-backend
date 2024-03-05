@@ -50,7 +50,7 @@ class PageORM(object):
         return False
 
     @log_function_execution(logger=logger)
-    def update_status(self, db: Session, page_id: str, status: str) -> Page:
+    def update_status(self, db: Session, page_id: str, status: Status) -> Page:
         page = self.find_one(db, page_id)
         page.status = status
         db.add(page)
@@ -95,7 +95,7 @@ class PageORM(object):
                 id=str(uuid.uuid4()).replace("-", ""),
                 version_id=version_id,
                 index=index,
-                status=Status.preprocessing.value,
+                status=Status.preprocessing,
             )
             db.add(created_page)
             return created_page

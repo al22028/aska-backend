@@ -213,8 +213,8 @@ class PageCreateSchema(BaseSchema):
         description="Version ID",
         examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "Version ID"}],
     )
-    status: str = Field(
-        default=Status.pending.value,
+    status: Status = Field(
+        default=Status.pending,
         title="Status",
         description="Status",
         examples=[{"value": "PENDING", "description": "Status"}],
@@ -230,7 +230,7 @@ class PageCreateSchema(BaseSchema):
 class PageUpdateSchema(BaseSchema):
     """Page Update Schema"""
 
-    status: str = Field(
+    status: Status = Field(
         title="Status",
         description="Status",
         examples=[{"value": "PREPROCESSING", "description": "Status"}],
@@ -246,8 +246,8 @@ class ImageCreateSchema(BaseSchema):
         description="Page ID",
         examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "Page ID"}],
     )
-    status: str = Field(
-        default=Status.pending.value,
+    status: Status = Field(
+        default=Status.pending,
         title="Status",
         description="Status",
         examples=[{"value": "PENDING", "description": "Status"}],
@@ -274,7 +274,7 @@ class ImageCreateResponseSchema(BaseSchema):
 class ImageUpdateSchema(BaseSchema):
     """Image Update Schema"""
 
-    status: str = Field(
+    status: Status = Field(
         title="Status",
         description="Status",
         examples=[{"value": "PREPROCESSING", "description": "Status"}],
@@ -301,8 +301,8 @@ class JsonCreateSchema(BaseSchema):
         description="Page ID",
         examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "Page ID"}],
     )
-    status: str = Field(
-        default=Status.pending.value,
+    status: Status = Field(
+        default=Status.pending,
         title="Status",
         description="Status",
         examples=[{"value": "PENDING", "description": "Status"}],
@@ -331,7 +331,7 @@ class JsonCreateResponseSchema(BaseSchema):
 class JsonUpdateSchema(BaseSchema):
     """Json Update Schema"""
 
-    status: str = Field(
+    status: Status = Field(
         title="Status",
         description="Status",
         examples=[{"value": "PREPROCESSING", "description": "Status"}],
@@ -362,7 +362,7 @@ class PageSchema(PageCreateSchema, TimeStampSchema):
         description="Page ID",
         examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "ID"}],
     )
-    status: str = Field(
+    status: Status = Field(
         default=Status.pending.value,
         title="Status",
         description="Status",
@@ -404,7 +404,7 @@ class MatchingCreateSchema(BaseSchema):
             }
         ],
     )
-    status: str = Field(
+    status: Status = Field(
         title="Status",
         description="Status",
         examples=[{"value": "MATCHING_CALCULATION_IN_PROGRESS", "description": "Status"}],
@@ -429,7 +429,7 @@ class MatchingUpdateSchema(BaseSchema):
             }
         ],
     )
-    status: str = Field(
+    status: Status = Field(
         title="Status",
         description="Status",
         examples=[{"value": "MATCHING_CALCULATION_IN_PROGRESS", "description": "Status"}],
