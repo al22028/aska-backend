@@ -5,7 +5,7 @@ from typing import List
 # Third Party Library
 from aws_lambda_powertools import Logger
 from database.base import Json
-from schemas import JsonCreateSchema, JsonUpdateSchema
+from schemas import JsonCreateSchema, JsonUpdateSchema, Status
 from sqlalchemy.orm.session import Session
 from views.console import log_function_execution
 
@@ -62,7 +62,7 @@ class JsonORM(object):
         return db.query(Json).filter(Json.page_id == page_id).one()
 
     @log_function_execution(logger=logger)
-    def update_status(self, db: Session, json_id: str, status: str) -> Json:
+    def update_status(self, db: Session, json_id: str, status: Status) -> Json:
         json = self.find_one(db, json_id)
         json.status = status
         db.add(json)

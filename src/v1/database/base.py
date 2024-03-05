@@ -4,10 +4,12 @@ from datetime import datetime
 # Third Party Library
 from aws_lambda_powertools import Logger
 from config.settings import AWS_IMAGE_HOST_DOMAIN, AWS_RDS_DATABASE_URL, SQLALCHEMY_ECHO_SQL
+from schemas import Status
 from sqlalchemy import (
     JSON,
     Column,
     DateTime,
+    Enum,
     Float,
     ForeignKey,
     String,
@@ -177,11 +179,11 @@ class Image(Base, TimestampMixin):
     id = Column(String, primary_key=True)
     page_id = Column(String, ForeignKey("pages.id", ondelete="CASCADE"), nullable=False)
     object_key = Column(String, nullable=False)
-    status = Column(String, nullable=False)
+    status = Column(Enum(Status), nullable=False)
 
     page: Mapped["Page"] = relationship("Page", back_populates="image")
 
-    def __init__(self, id: str, page_id: str, object_key: str, status: str) -> None:
+    def __init__(self, id: str, page_id: str, object_key: str, status: Status) -> None:
         self.id = id
         self.page_id = page_id
         self.object_key = object_key
@@ -212,11 +214,11 @@ class Json(Base, TimestampMixin):
     id = Column(String, primary_key=True)
     page_id = Column(String, ForeignKey("pages.id", ondelete="CASCADE"), nullable=False)
     object_key = Column(String, nullable=False)
-    status = Column(String, nullable=False)
+    status = Column(Enum(Status), nullable=False)
 
     page: Mapped["Page"] = relationship("Page", back_populates="json")
 
-    def __init__(self, id: str, page_id: str, object_key: str, status: str) -> None:
+    def __init__(self, id: str, page_id: str, object_key: str, status: Status) -> None:
         self.id = id
         self.page_id = page_id
         self.object_key = object_key
@@ -246,7 +248,7 @@ class Page(Base, TimestampMixin):
 
     id = Column(String, primary_key=True)
     version_id = Column(String, ForeignKey("versions.id", ondelete="CASCADE"), nullable=False)
-    status = Column(String, nullable=False)
+    status = Column(Enum(Status), nullable=False)
     index = Column(Integer, nullable=False)
 
     version: Mapped["Version"] = relationship("Version", back_populates="pages")
@@ -257,7 +259,7 @@ class Page(Base, TimestampMixin):
         "Json", cascade="all, delete", passive_deletes=True, back_populates="page"
     )
 
-    def __init__(self, id: str, version_id: str, index: int, status: str) -> None:
+    def __init__(self, id: str, version_id: str, index: int, status: Status) -> None:
         self.id = id
         self.version_id = version_id
         self.status = status
@@ -294,7 +296,7 @@ class Matching(Base, TimestampMixin):
     image1_id = Column(String, ForeignKey("images.id", ondelete="CASCADE"), nullable=False)
     image2_id = Column(String, ForeignKey("images.id", ondelete="CASCADE"), nullable=False)
     score = Column(Float, nullable=True)
-    status = Column(String, nullable=False)
+    status = Column(Enum(Status), nullable=False)
     params = Column(JSON, nullable=False)
     bounding_boxes = Column(JSON, nullable=True)
 
@@ -309,7 +311,7 @@ class Matching(Base, TimestampMixin):
         image1_id: str,
         image2_id: str,
         score: float,
-        status: str,
+        status: Status,
         params: dict,
         bounding_boxes: dict,
     ) -> None:
