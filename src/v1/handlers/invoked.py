@@ -13,4 +13,5 @@ logger = Logger()
 @logger.inject_lambda_context(log_event=True)
 @event_source(data_class=LambdaFunctionUrlEvent)
 def lambda_handler(event: LambdaFunctionUrlEvent, context: LambdaContext) -> dict:
+
     return {"statusCode": 200, "body": event.body}
