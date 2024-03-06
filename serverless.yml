@@ -176,12 +176,16 @@ functions:
   S3WatchHandler:
     description: Watch S3 Bucket
     handler: src/v1/handlers/s3watch.lambda_handler
-    events:
-      - s3:
-          bucket: aska-image-bucket-dev
-          event: s3:ObjectCreated:*
-          existing: true
-          forceDeploy: true
+    # events:
+    #   - s3:
+    #       bucket: aska-image-bucket-dev
+    #       event: s3:ObjectCreated:*
+    #       existing: true
+    #       forceDeploy: true
+
+  InvokedLambdaHandler:
+    description: Invoked Lambda Handler
+    handler: src/v1/handlers/invoked.lambda_handler
 
   PDFToImagesHandler:
     description: Convert PDF to Images
