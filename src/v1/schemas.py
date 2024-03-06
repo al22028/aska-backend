@@ -373,8 +373,12 @@ class PageSchema(PageCreateSchema, TimeStampSchema):
         description="Status",
         examples=[{"value": "PENDING", "description": "Status"}],
     )
-
-    version: VersionSchema
+    version_id: str = Field(
+        ...,
+        title="Version ID",
+        description="Version ID",
+        examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "Version ID"}],
+    )
     image: ImageSchema
     json: JsonSchema  # type: ignore
 
