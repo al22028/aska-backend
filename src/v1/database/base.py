@@ -249,7 +249,8 @@ class Page(Base, TimestampMixin):
     id = Column(String, primary_key=True)
     version_id = Column(String, ForeignKey("versions.id", ondelete="CASCADE"), nullable=False)
     status = Column(Enum(Status), nullable=False)
-    index = Column(Integer, nullable=False)
+    local_index = Column(Integer, nullable=False)
+    global_index = Column(Integer, nullable=False)
 
     version: Mapped["Version"] = relationship("Version", back_populates="pages")
     image: Mapped["Image"] = relationship(
@@ -259,16 +260,17 @@ class Page(Base, TimestampMixin):
         "Json", cascade="all, delete", passive_deletes=True, back_populates="page"
     )
 
-    def __init__(self, id: str, version_id: str, index: int, status: Status) -> None:
+    def __init__(self, id: str, version_id: str, local_index: int, status: Status) -> None:
         self.id = id
         self.version_id = version_id
         self.status = status
-        self.index = index
+        self.local_index = local_index
+        self.global_index = local_index
         self.updated_at = datetime.now()
         self.created_at = datetime.now()
 
     def __str__(self) -> str:
-        return f"<Page id={self.id}, version_id={self.version_id}, index={self.index}, status={self.status}>"
+        return f"<Page id={self.id}, version_id={self.version_id}, local_index={self.local_index}, globel_index={self.global_index}, status={self.status}>"
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -280,7 +282,8 @@ class Page(Base, TimestampMixin):
             "id": self.id,
             "versionId": self.version_id,
             "status": self.status,
-            "index": self.index,
+            "local_index": self.local_index,
+            "global_index": self.global_index,
             "version": self.version.serializer(),
             "image": self.image.serializer(),
             "json": self.json.serializer(),
