@@ -25,7 +25,7 @@ class PageController:
         for page in pages:
             created_page = self.pages.create_one(
                 db=session,
-                page=PageCreateSchema(
+                page_data=PageCreateSchema(
                     version_id=page["version_id"],
                     local_index=page["local_index"],
                     status=Status.preprocessed,
@@ -33,7 +33,7 @@ class PageController:
             )
             created_json = self.jsons.create_one(
                 db=session,
-                json=JsonCreateSchema(
+                json_data=JsonCreateSchema(
                     object_key=page["json"]["object_key"],
                     page_id=created_page.id,
                     status=Status(page["json"]["status"]),
@@ -41,7 +41,7 @@ class PageController:
             )
             created_image = self.images.create_one(
                 db=session,
-                image=ImageCreateSchema(
+                image_data=ImageCreateSchema(
                     object_key=page["image"]["object_key"],
                     page_id=created_page.id,
                     status=Status(page["image"]["status"]),
