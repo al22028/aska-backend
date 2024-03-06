@@ -4,6 +4,7 @@ from database.session import with_session
 from models.image import ImageORM
 from models.json import JsonORM
 from models.page import PageORM
+from models.version import VersionORM
 from schemas import ImageCreateSchema, JsonCreateSchema, PageCreateSchema, PageSchema, Status
 from sqlalchemy.orm.session import Session
 
@@ -14,6 +15,7 @@ class PageController:
     pages = PageORM()
     images = ImageORM()
     jsons = JsonORM()
+    versions = VersionORM()
 
     @with_session
     def find_all_pages(self, session: Session) -> list[PageSchema]:
@@ -22,7 +24,13 @@ class PageController:
 
     @with_session
     def bulk_insert_pages(self, pages: list[dict], session: Session) -> None:
-        for page in pages:
+        for index, page in enumerate(pages):
+            if index == 0:
+                self.versions.update_thumbnail(
+                    db=session,
+                    version_id=page["version_id"],
+                    thumbnail=page["image"]["object_key"],
+                )
             created_page = self.pages.create_one(
                 db=session,
                 page_data=PageCreateSchema(
