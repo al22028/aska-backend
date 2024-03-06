@@ -2,6 +2,7 @@
 import io
 import json
 import os
+from enum import Enum
 from typing import TypeVar
 
 # Third Party Library
@@ -12,6 +13,7 @@ from aws_lambda_powertools import Logger
 from aws_lambda_powertools.utilities.data_classes import S3Event, event_source
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from pdf2image import convert_from_bytes
+from pydantic import BaseModel
 
 logger = Logger()
 
@@ -20,13 +22,38 @@ AWS_IMAGE_BUCKET = os.environ["AWS_IMAGE_BUCKET"]
 
 
 client = boto3.client("s3")
+lambda_client = boto3.client("lambda")
 
 T = TypeVar("T")
 
 
+class Status(Enum):
+    """Status Enum"""
+
+    pending = "PENDING"  # 待機状態
+    preprocessing = "PREPROCESSING"  # 前処理中
+    preprocessed = "PREPROCESSED"  # 前処理完了
+    preprocessing_timedout = "PREPROCESSING_TIMEDOUT"  # 前処理タイムアウト
+    preprocessing_failed = "PREPROCESSING_FAILED"  # 前処理失敗
+
+
+class JsonPayload(BaseModel):
+    object_key: str
+    status: Status
+
+
+class ImagePayload(JsonPayload):
+    pass
+
+
+class LmabdaInvokePayload(BaseModel):
+    version_id: str
+    local_index: int
+    json: JsonPayload
+    image: ImagePayload
+
+
 # TODO: Refactor this function to use AWS Lambda Powertools
-
-
 def extract_feature_points(img: np.ndarray) -> dict:
     """
     1枚の画像から特徴点を抽出する関数
@@ -74,33 +101,52 @@ def keypoint_serializer(kp: cv2.KeyPoint) -> dict:
     }
 
 
+def invoke_lambda(payload: LmabdaInvokePayload) -> None:
+    logger.info(payload)
+    response = lambda_client.invoke(
+        FunctionName="aska-api-dev-InvokedLambdaHandler",
+        InvocationType="Event",
+        Payload=payload.model_dump_json().encode(),
+    )
+    logger.info(response["Payload"].read().decode("utf-8"))
+
+
 def convert_to_images(id: str, pdf_file_data: bytes) -> None:
     logger.info("Convert PDF to Images")
     images = convert_from_bytes(pdf_file_data)
     for i, image in enumerate(images):
         img = np.array(image)
         serialized_keypoints = extract_feature_points(img)
+        json_object_key = f"{id}/{i+1}.json"
         client.put_object(
             Bucket=AWS_IMAGE_BUCKET,
-            Key=f"{id}/{i+1}.json",
+            Key=json_object_key,
             Body=json.dumps(serialized_keypoints).encode(),
         )
-        logger.info(f"Uploaded {AWS_IMAGE_BUCKET}/{id}/{i+1}.json")
         buffer = io.BytesIO()
         image.save(buffer, format="PNG")
         buffer.seek(0)
+        image_object_key = f"{id}/{i+1}.png"
         client.upload_fileobj(
             Fileobj=buffer,
             Bucket=AWS_IMAGE_BUCKET,
-            Key=f"{id}/{i+1}.png",
+            Key=image_object_key,
             ExtraArgs={"ContentType": "image/png"},
         )
-        logger.info(f"Uploaded {i+1}.png to {AWS_IMAGE_BUCKET}/{id}/{i+1}.png")
+        # invoke_lambda(
+        #     LmabdaInvokePayload(
+        #         version_id=id,
+        #         local_index=i,
+        #         json=JsonPayload(object_key=json_object_key, status=Status.preprocessed),
+        #         image=ImagePayload(object_key=image_object_key, status=Status.preprocessed),
+        #     )
+        # )
 
 
 @event_source(data_class=S3Event)
 @logger.inject_lambda_context(log_event=True)
 def lambda_handler(event: S3Event, context: LambdaContext) -> dict:
+    logger.info(event)
     bucket_name = event.bucket_name
     object_key = event.object_key
     pdf_id, _ = object_key.split("/")
