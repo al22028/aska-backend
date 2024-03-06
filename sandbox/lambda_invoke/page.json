@@ -1,0 +1,13 @@
+[
+    {
+        "image": {
+            "object_key": "/uuid/1.jpg",
+            "status": "PREPROCESSING"
+        },
+        "json": {
+            "object_key": "/uuid/1.json",
+            "status": "PREPROCESSING"
+        },
+        "local_index": 1
+    }
+]
