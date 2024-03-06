@@ -31,6 +31,7 @@ class PageController:
                     version_id=page["version_id"],
                     thumbnail=page["image"]["object_key"],
                 )
+                session.commit()
             created_page = self.pages.create_one(
                 db=session,
                 page_data=PageCreateSchema(
@@ -39,7 +40,8 @@ class PageController:
                     status=Status.preprocessed,
                 ),
             )
-            created_json = self.jsons.create_one(
+            session.commit()
+            self.jsons.create_one(
                 db=session,
                 json_data=JsonCreateSchema(
                     object_key=page["json"]["object_key"],
@@ -47,7 +49,8 @@ class PageController:
                     status=Status(page["json"]["status"]),
                 ),
             )
-            created_image = self.images.create_one(
+            session.commit()
+            self.images.create_one(
                 db=session,
                 image_data=ImageCreateSchema(
                     object_key=page["image"]["object_key"],
@@ -55,4 +58,4 @@ class PageController:
                     status=Status(page["image"]["status"]),
                 ),
             )
-            logger.info(created_page, created_json, created_image)
+            session.commit()
