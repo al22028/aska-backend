@@ -36,6 +36,6 @@ class WatchController:
     def create_page(self, session: Session) -> None:
         """Create a page in the database"""
         page_data = PageCreateSchema(
-            version_id=self.version_id, index=self.page_index, status=Status.pending.value
+            version_id=self.version_id, local_index=self.page_index, status=Status.pending
         )
         self.pages.create_one(db=session, page_data=page_data)

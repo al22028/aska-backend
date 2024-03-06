@@ -37,13 +37,13 @@ class PageORM(object):
         Args:
             db (Session): Session
             version_id (str): version id
-            page_index (str): index of the page
+            page_index (str): local index of the page
 
         Returns:
             bool: if the page does not exist in the database return True else False
         """
         page = (
-            db.query(Page).filter(Page.version_id == version_id, Page.index == page_index).first()
+            db.query(Page).filter(Page.version_id == version_id, Page.local_index == page_index).first()
         )
         if not page:
             return True
@@ -73,6 +73,7 @@ class PageORM(object):
     def update_one(self, db: Session, page_id: str, page_data: PageUpdateSchema) -> Page:
         selected_page = self.find_one(db, page_id)
         selected_page.status = page_data.status
+        selected_page.global_index = page_data.global_index
         db.add(selected_page)
         return selected_page
 
@@ -86,7 +87,7 @@ class PageORM(object):
     @log_function_execution(logger=logger)
     def find_page_by_index(self, db: Session, version_id: str, index: int) -> Page:
         selected_page = (
-            db.query(Page).filter(Page.version_id == version_id, Page.index == index).first()
+            db.query(Page).filter(Page.version_id == version_id, Page.local_index == index).first()
         )
         if selected_page:
             return selected_page
@@ -94,7 +95,7 @@ class PageORM(object):
             created_page = Page(
                 id=str(uuid.uuid4()).replace("-", ""),
                 version_id=version_id,
-                index=index,
+                local_index=index,
                 status=Status.preprocessing,
             )
             db.add(created_page)

@@ -219,11 +219,11 @@ class PageCreateSchema(BaseSchema):
         description="Status",
         examples=[{"value": "PENDING", "description": "Status"}],
     )
-    index: int = Field(
+    local_index: int = Field(
         ...,
-        title="Index",
-        description="Index",
-        examples=[{"value": 0, "description": "Index"}],
+        title="local Index",
+        description="local Index",
+        examples=[{"value": 0, "description": "Local Index"}],
     )
 
 
@@ -234,6 +234,11 @@ class PageUpdateSchema(BaseSchema):
         title="Status",
         description="Status",
         examples=[{"value": "PREPROCESSING", "description": "Status"}],
+    )
+    global_index: int = Field(
+        title="Global Index",
+        description="Global Index",
+        examples=[{"value": 0, "description": "Global Index"}],
     )
 
 
@@ -363,7 +368,7 @@ class PageSchema(PageCreateSchema, TimeStampSchema):
         examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "ID"}],
     )
     status: Status = Field(
-        default=Status.pending.value,
+        default=Status.pending,
         title="Status",
         description="Status",
         examples=[{"value": "PENDING", "description": "Status"}],
