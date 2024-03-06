@@ -49,7 +49,7 @@ class ImagePayload(JsonPayload):
 class LmabdaInvokePayload(BaseModel):
     version_id: str
     local_index: int
-    json: JsonPayload
+    json: JsonPayload  # type: ignore
     image: ImagePayload
 
 
