@@ -43,7 +43,9 @@ class PageORM(object):
             bool: if the page does not exist in the database return True else False
         """
         page = (
-            db.query(Page).filter(Page.version_id == version_id, Page.local_index == page_index).first()
+            db.query(Page)
+            .filter(Page.version_id == version_id, Page.local_index == page_index)
+            .first()
         )
         if not page:
             return True
