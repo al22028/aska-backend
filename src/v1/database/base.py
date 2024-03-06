@@ -284,7 +284,6 @@ class Page(Base, TimestampMixin):
             "status": self.status,
             "local_index": self.local_index,
             "global_index": self.global_index,
-            "version": self.version.serializer(),
             "image": self.image.serializer(),
             "json": self.json.serializer(),
             "updatedAt": self.updated_at.isoformat(),  # type: ignore
