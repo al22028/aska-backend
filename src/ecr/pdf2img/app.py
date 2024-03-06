@@ -133,14 +133,14 @@ def convert_to_images(id: str, pdf_file_data: bytes) -> None:
             Key=image_object_key,
             ExtraArgs={"ContentType": "image/png"},
         )
-        # invoke_lambda(
-        #     LmabdaInvokePayload(
-        #         version_id=id,
-        #         local_index=i,
-        #         json=JsonPayload(object_key=json_object_key, status=Status.preprocessed),
-        #         image=ImagePayload(object_key=image_object_key, status=Status.preprocessed),
-        #     )
-        # )
+        invoke_lambda(
+            LmabdaInvokePayload(
+                version_id=id,
+                local_index=i,
+                json=JsonPayload(object_key=json_object_key, status=Status.preprocessed),
+                image=ImagePayload(object_key=image_object_key, status=Status.preprocessed),
+            )
+        )
 
 
 @event_source(data_class=S3Event)
