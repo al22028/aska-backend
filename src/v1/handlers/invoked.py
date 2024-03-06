@@ -1,3 +1,5 @@
+# Standard Library
+
 # Third Party Library
 from aws_lambda_powertools import Logger, Tracer
 from aws_lambda_powertools.utilities.typing import LambdaContext
@@ -10,4 +12,5 @@ logger = Logger()
 @logger.inject_lambda_context(log_event=True)
 def lambda_handler(event: dict, context: LambdaContext) -> dict:
     logger.info(event)
+    # body = json.loads(event)
     return {"statusCode": 200, "body": event}

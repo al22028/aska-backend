@@ -84,7 +84,7 @@ def keypoint_serializer(kp: cv2.KeyPoint) -> dict:
     }
 
 
-def invoke_lambda(payload: dict) -> None:
+def invoke_lambda(payload: list[dict[str, object]]) -> None:
     logger.info(payload)
     response = lambda_client.invoke(
         FunctionName="aska-api-dev-InvokedLambdaHandler",
