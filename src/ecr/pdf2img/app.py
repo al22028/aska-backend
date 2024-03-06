@@ -13,7 +13,6 @@ from aws_lambda_powertools import Logger
 from aws_lambda_powertools.utilities.data_classes import S3Event, event_source
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from pdf2image import convert_from_bytes
-from pydantic import BaseModel
 
 logger = Logger()
 
@@ -35,22 +34,6 @@ class Status(Enum):
     preprocessed = "PREPROCESSED"  # 前処理完了
     preprocessing_timedout = "PREPROCESSING_TIMEDOUT"  # 前処理タイムアウト
     preprocessing_failed = "PREPROCESSING_FAILED"  # 前処理失敗
-
-
-class JsonPayload(BaseModel):
-    object_key: str
-    status: Status
-
-
-class ImagePayload(JsonPayload):
-    pass
-
-
-class LmabdaInvokePayload(BaseModel):
-    version_id: str
-    local_index: int
-    json: JsonPayload  # type: ignore
-    image: ImagePayload
 
 
 # TODO: Refactor this function to use AWS Lambda Powertools
@@ -101,19 +84,19 @@ def keypoint_serializer(kp: cv2.KeyPoint) -> dict:
     }
 
 
-def invoke_lambda(payload: LmabdaInvokePayload) -> None:
+def invoke_lambda(payload: list[dict[str, object]]) -> None:
     logger.info(payload)
     response = lambda_client.invoke(
         FunctionName="aska-api-dev-InvokedLambdaHandler",
-        InvocationType="Event",
-        Payload=payload.model_dump_json().encode(),
+        InvocationType="RequestResponse",
+        Payload=json.dumps(payload).encode(),
     )
     logger.info(response["Payload"].read().decode("utf-8"))
 
 
 def convert_to_images(id: str, pdf_file_data: bytes) -> None:
-    logger.info("Convert PDF to Images")
     images = convert_from_bytes(pdf_file_data)
+    payload = []
     for i, image in enumerate(images):
         img = np.array(image)
         serialized_keypoints = extract_feature_points(img)
@@ -133,14 +116,15 @@ def convert_to_images(id: str, pdf_file_data: bytes) -> None:
             Key=image_object_key,
             ExtraArgs={"ContentType": "image/png"},
         )
-        invoke_lambda(
-            LmabdaInvokePayload(
-                version_id=id,
-                local_index=i,
-                json=JsonPayload(object_key=json_object_key, status=Status.preprocessed),
-                image=ImagePayload(object_key=image_object_key, status=Status.preprocessed),
-            )
+        payload.append(
+            {
+                "version_id": id,
+                "local_index": i + 1,
+                "json": {"object_key": json_object_key, "status": Status.preprocessed.value},
+                "image": {"object_key": image_object_key, "status": Status.preprocessed.value},
+            }
         )
+    invoke_lambda(payload)
 
 
 @event_source(data_class=S3Event)

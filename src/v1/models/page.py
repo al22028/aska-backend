@@ -67,7 +67,8 @@ class PageORM(object):
 
     @log_function_execution(logger=logger)
     def create_one(self, db: Session, page_data: PageCreateSchema) -> Page:
-        created_page = Page(**page_data.model_dump())
+        id = str(uuid.uuid4()).replace("-", "")
+        created_page = Page(**page_data.model_dump(), id=id)
         db.add(created_page)
         return created_page
 

@@ -463,3 +463,21 @@ class MatchingSchema(MatchingCreateSchema, MatchingUpdateSchema, TimeStampSchema
         description="Matching ID",
         examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "ID"}],
     )
+
+
+class JsonPayload(BaseModel):
+    object_key: str
+    status: Status
+
+
+class ImagePayload(JsonPayload):
+    pass
+
+
+class LmabdaInvokePayloadSchema(BaseModel):
+    """Lambda Invoke Payload"""
+
+    version_id: str
+    local_index: int
+    json: JsonPayload  # type: ignore
+    image: ImagePayload
