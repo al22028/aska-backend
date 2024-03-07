@@ -49,7 +49,7 @@ class User(Base, TimestampMixin):
         self.name = name
         self.email = email
         self.updated_at = datetime.now()
-        self.created_at = datetime.now()
+        self.created_at = self.updated_at
 
     def __str__(self) -> str:
         return f"<User id={self.id}, name={self.name}, email={self.email}>"
@@ -92,7 +92,7 @@ class Project(Base, TimestampMixin):
         self.title = title
         self.description = description
         self.updated_at = datetime.now()
-        self.created_at = datetime.now()
+        self.created_at = self.updated_at
 
     def __str__(self) -> str:
         return f"<Project id={self.id}, title={self.title}, descripton={self.description}>"
@@ -152,7 +152,7 @@ class Version(Base, TimestampMixin):
         self.description = description
         self.object_key = object_key
         self.updated_at = datetime.now()
-        self.created_at = datetime.now()
+        self.created_at = self.updated_at
 
     def __str__(self) -> str:
         return f"<Version id={self.id}, title={self.title}, project_id={self.project_id}>"
@@ -189,7 +189,7 @@ class Image(Base, TimestampMixin):
         self.object_key = object_key
         self.status = status
         self.updated_at = datetime.now()
-        self.created_at = datetime.now()
+        self.created_at = self.updated_at
 
     def __str__(self) -> str:
         return f"<Image id={self.id}, page_id={self.page_id}, object_key={self.object_key}, status={self.status}>"
@@ -224,7 +224,7 @@ class Json(Base, TimestampMixin):
         self.object_key = object_key
         self.status = status
         self.updated_at = datetime.now()
-        self.created_at = datetime.now()
+        self.created_at = self.updated_at
 
     def __str__(self) -> str:
         return f"<Json id={self.id}, page_id={self.page_id}, object_key={self.object_key}, status={self.status}>"
@@ -267,7 +267,7 @@ class Page(Base, TimestampMixin):
         self.local_index = local_index
         self.global_index = local_index
         self.updated_at = datetime.now()
-        self.created_at = datetime.now()
+        self.created_at = self.updated_at
 
     def __str__(self) -> str:
         return f"<Page id={self.id}, version_id={self.version_id}, local_index={self.local_index}, globel_index={self.global_index}, status={self.status}>"
@@ -325,7 +325,7 @@ class Matching(Base, TimestampMixin):
         self.params = params
         self.bounding_boxes = bounding_boxes
         self.updated_at = datetime.now()
-        self.created_at = datetime.now()
+        self.created_at = self.updated_at
 
     def __str__(self) -> str:
         return f"<Matching id={self.id}, image1_id={self.image1_id}, image2_id={self.image2_id}>"
