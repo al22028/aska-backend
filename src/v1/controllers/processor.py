@@ -12,7 +12,10 @@ from models.image import ImageORM
 from models.json import JsonORM
 from models.page import PageORM
 from models.version import VersionORM
-from schemas import ImageCreateSchema, JsonCreateSchema, LambdaInvokePayload, Status
+from schemas.image import ImageCreateSchema
+from schemas.json import JsonCreateSchema
+from schemas.payload import LambdaInvokePayload
+from schemas.status import Status
 from sqlalchemy.orm.session import Session
 from views.console import log_function_execution
 

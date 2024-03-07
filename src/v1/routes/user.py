@@ -7,7 +7,8 @@ from aws_lambda_powertools import Tracer
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.event_handler.api_gateway import Router
 from controllers.user import UserController
-from schemas import DeletedSchema, UserCreateSchema, UserSchema, UserUpdateSchema
+from schemas.common import DeletedSchema
+from schemas.user import UserCreateSchema, UserSchema, UserUpdateSchema
 
 app = APIGatewayRestResolver(debug=True)
 router = Router()

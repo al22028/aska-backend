@@ -4,7 +4,7 @@ from datetime import datetime
 # Third Party Library
 from aws_lambda_powertools import Logger
 from config.settings import AWS_IMAGE_HOST_DOMAIN, AWS_RDS_DATABASE_URL, SQLALCHEMY_ECHO_SQL
-from schemas import Status
+from schemas.status import Status
 from sqlalchemy import (
     JSON,
     Column,

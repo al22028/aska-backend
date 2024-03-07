@@ -5,7 +5,8 @@ from aws_lambda_powertools import Tracer
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.event_handler.api_gateway import Router
 from controllers.image import ImageController
-from schemas import DownloadURLSchema, ImageSchema
+from schemas.common import DownloadURLSchema
+from schemas.image import ImageSchema
 
 app = APIGatewayRestResolver(debug=True)
 router = Router()

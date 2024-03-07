@@ -5,7 +5,8 @@ from typing import List
 # Third Party Library
 from aws_lambda_powertools import Logger
 from database.base import Page
-from schemas import PageCreateSchema, PageUpdateSchema, Status
+from schemas.page import PageCreateSchema, PageUpdateSchema
+from schemas.status import Status
 from sqlalchemy.orm.session import Session
 from views.console import log_function_execution
 

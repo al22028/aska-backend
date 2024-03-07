@@ -7,7 +7,7 @@ from aws_lambda_powertools.event_handler.exceptions import BadRequestError, NotF
 from database.base import User
 from database.session import with_session
 from models.user import UserORM
-from schemas import UserCreateSchema, UserSchema, UserUpdateSchema
+from schemas.user import UserCreateSchema, UserSchema, UserUpdateSchema
 from sqlalchemy.orm.session import Session
 
 

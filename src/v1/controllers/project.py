@@ -7,8 +7,8 @@ from aws_lambda_powertools.event_handler.exceptions import NotFoundError
 from database.base import Project
 from database.session import with_session
 from models.project import ProjectORM
-from schemas import (
-    DeletedSchema,
+from schemas.common import DeletedSchema
+from schemas.project import (
     ProjectCreateSchema,
     ProjectDetailSchema,
     ProjectSchema,

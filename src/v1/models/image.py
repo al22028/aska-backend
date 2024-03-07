@@ -5,7 +5,8 @@ from typing import List
 # Third Party Library
 from aws_lambda_powertools import Logger
 from database.base import Image
-from schemas import ImageCreateSchema, ImageUpdateSchema, Status
+from schemas.image import ImageCreateSchema, ImageUpdateSchema
+from schemas.status import Status
 from sqlalchemy.orm.session import Session
 from views.console import log_function_execution
 

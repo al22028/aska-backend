@@ -3,7 +3,8 @@ from aws.s3 import S3
 from aws_lambda_powertools.utilities.data_classes import S3Event
 from database.session import with_session
 from models.page import PageORM
-from schemas import PageCreateSchema, Status
+from schemas.page import PageCreateSchema
+from schemas.status import Status
 from sqlalchemy.orm.session import Session
 
 

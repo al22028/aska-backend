@@ -11,10 +11,9 @@ from database.session import with_session
 from models.page import PageORM
 from models.project import ProjectORM
 from models.version import VersionORM
-from schemas import (
-    DeletedSchema,
-    DownloadURLSchema,
-    PageSchema,
+from schemas.common import DeletedSchema, DownloadURLSchema
+from schemas.page import PageSchema
+from schemas.version import (
     VersionCreateResponseSchema,
     VersionCreateSchema,
     VersionDetailSchema,

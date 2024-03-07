@@ -5,7 +5,8 @@ from typing import List
 # Third Party Library
 from aws_lambda_powertools import Logger
 from database.base import Json
-from schemas import JsonCreateSchema, JsonUpdateSchema, Status
+from schemas.json import JsonCreateSchema, JsonUpdateSchema
+from schemas.status import Status
 from sqlalchemy.orm.session import Session
 from views.console import log_function_execution
 

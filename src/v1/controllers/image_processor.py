@@ -8,7 +8,9 @@ from database.session import with_session
 from models.image import ImageORM
 from models.page import PageORM
 from models.version import VersionORM
-from schemas import ImageCreateSchema, LambdaInvokePayload, Status
+from schemas.image import ImageCreateSchema
+from schemas.payload import LambdaInvokePayload
+from schemas.status import Status
 from sqlalchemy.orm.session import Session
 
 

@@ -1,11 +1,9 @@
-# Standard Library
-
 # Third Party Library
 from aws_lambda_powertools import Tracer
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.event_handler.api_gateway import Router
 from controllers.page import PageController
-from schemas import PageSchema
+from schemas.page import PageSchema
 
 app = APIGatewayRestResolver(debug=True)
 router = Router()

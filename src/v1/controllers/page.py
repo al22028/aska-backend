@@ -5,7 +5,10 @@ from models.image import ImageORM
 from models.json import JsonORM
 from models.page import PageORM
 from models.version import VersionORM
-from schemas import ImageCreateSchema, JsonCreateSchema, PageCreateSchema, PageSchema, Status
+from schemas.image import ImageCreateSchema
+from schemas.json import JsonCreateSchema
+from schemas.page import PageCreateSchema, PageSchema
+from schemas.status import Status
 from sqlalchemy.orm.session import Session
 
 logger = Logger()
