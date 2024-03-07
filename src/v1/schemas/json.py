@@ -15,7 +15,7 @@ class JsonCreateSchema(BaseSchema):
         examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "Page ID"}],
     )
     status: Status = Field(
-        default=Status.pending,
+        ...,
         title="Status",
         description="Status",
         examples=[{"value": "PENDING", "description": "Status"}],
@@ -45,6 +45,7 @@ class JsonUpdateSchema(BaseSchema):
     """Json Update Schema"""
 
     status: Status = Field(
+        ...,
         title="Status",
         description="Status",
         examples=[{"value": "PREPROCESSING", "description": "Status"}],

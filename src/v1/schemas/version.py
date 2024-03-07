@@ -15,7 +15,7 @@ class VersionUpdateSchema(BaseSchema):
         examples=[{"value": "K12345_V1", "description": "Title"}],
     )
     description: str = Field(
-        default="",
+        ...,
         min_length=0,
         max_length=512,
         title="詳細情報",

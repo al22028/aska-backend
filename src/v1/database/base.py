@@ -37,7 +37,7 @@ class User(Base, TimestampMixin):
 
     id = Column(String, primary_key=True)
     email = Column(String(256), nullable=False, unique=True)
-    name = Column(String(256), nullable=False)
+    name = Column(String(256), nullable=False, default="Unknown")
 
     def __init__(
         self,
@@ -71,8 +71,8 @@ class Project(Base, TimestampMixin):
     __tablename__ = "projects"
 
     id = Column(String, primary_key=True)
-    title = Column(String(256), nullable=False)
-    description = Column(String(512), nullable=False)
+    title = Column(String(256), nullable=False, default="")
+    description = Column(String(512), nullable=False, default="")
 
     versions: Mapped[list["Version"]] = relationship(
         "Version",
@@ -126,10 +126,10 @@ class Version(Base, TimestampMixin):
 
     id = Column(String, primary_key=True)
     project_id = Column(String, ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
-    title = Column(String(256), nullable=False)
-    description = Column(String(512), nullable=True)
+    title = Column(String(256), nullable=False, default="")
+    description = Column(String(512), nullable=False, default="")
     thumbnail = Column(String, nullable=False, default="default.png")
-    object_key = Column(String, nullable=True)
+    object_key = Column(String, nullable=False, default="")
 
     project: Mapped["Project"] = relationship("Project", back_populates="versions")
     pages: Mapped[list["Page"]] = relationship(
@@ -178,8 +178,8 @@ class Image(Base, TimestampMixin):
 
     id = Column(String, primary_key=True)
     page_id = Column(String, ForeignKey("pages.id", ondelete="CASCADE"), nullable=False)
-    object_key = Column(String, nullable=False)
-    status = Column(Enum(Status), nullable=False)
+    object_key = Column(String, nullable=False, default="")
+    status = Column(Enum(Status), nullable=False, default=Status.pending)
 
     page: Mapped["Page"] = relationship("Page", back_populates="image")
 
@@ -213,8 +213,8 @@ class Json(Base, TimestampMixin):
 
     id = Column(String, primary_key=True)
     page_id = Column(String, ForeignKey("pages.id", ondelete="CASCADE"), nullable=False)
-    object_key = Column(String, nullable=False)
-    status = Column(Enum(Status), nullable=False)
+    object_key = Column(String, nullable=False, default="")
+    status = Column(Enum(Status), nullable=False, default=Status.pending)
 
     page: Mapped["Page"] = relationship("Page", back_populates="json")
 
@@ -248,9 +248,9 @@ class Page(Base, TimestampMixin):
 
     id = Column(String, primary_key=True)
     version_id = Column(String, ForeignKey("versions.id", ondelete="CASCADE"), nullable=False)
-    status = Column(Enum(Status), nullable=False)
-    local_index = Column(Integer, nullable=False)
-    global_index = Column(Integer, nullable=False)
+    status = Column(Enum(Status), nullable=False, default=Status.pending)
+    local_index = Column(Integer, nullable=False, default=-1)
+    global_index = Column(Integer, nullable=False, default=-1)
 
     version: Mapped["Version"] = relationship("Version", back_populates="pages")
     image: Mapped["Image"] = relationship(
@@ -297,10 +297,10 @@ class Matching(Base, TimestampMixin):
     id = Column(String, primary_key=True)
     image1_id = Column(String, ForeignKey("images.id", ondelete="CASCADE"), nullable=False)
     image2_id = Column(String, ForeignKey("images.id", ondelete="CASCADE"), nullable=False)
-    score = Column(Float, nullable=True)
-    status = Column(Enum(Status), nullable=False)
-    params = Column(JSON, nullable=False)
-    bounding_boxes = Column(JSON, nullable=True)
+    score = Column(Float, nullable=True, default=-1.0)
+    status = Column(Enum(Status), nullable=False, default=Status.pending)
+    params = Column(JSON, nullable=False, default={})
+    bounding_boxes = Column(JSON, nullable=True, default={})
 
     __table_args__ = (UniqueConstraint("image1_id", "image2_id", name="unique_image_combination"),)
 
