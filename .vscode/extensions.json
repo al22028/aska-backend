@@ -4,6 +4,7 @@
     "njpwerner.autodocstring",
     "KevinRose.vsc-python-indent",
     "donjayamanne.python-extension-pack",
-    "wayou.vscode-todo-highlight"
+    "wayou.vscode-todo-highlight",
+    "ms-python.mypy-type-checker"
   ]
 }
