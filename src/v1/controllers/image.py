@@ -10,9 +10,8 @@ from database.base import Image
 from database.session import with_session
 from models.image import ImageORM
 from models.page import PageORM
-from schemas import (
-    DeletedSchema,
-    DownloadURLSchema,
+from schemas.common import DeletedSchema, DownloadURLSchema
+from schemas.image import (
     ImageCreateResponseSchema,
     ImageCreateSchema,
     ImageSchema,

@@ -10,14 +10,8 @@ from database.base import Json
 from database.session import with_session
 from models.json import JsonORM
 from models.page import PageORM
-from schemas import (
-    DeletedSchema,
-    DownloadURLSchema,
-    JsonCreateResponseSchema,
-    JsonCreateSchema,
-    JsonSchema,
-    JsonUpdateSchema,
-)
+from schemas.common import DeletedSchema, DownloadURLSchema
+from schemas.json import JsonCreateResponseSchema, JsonCreateSchema, JsonSchema, JsonUpdateSchema
 from sqlalchemy.orm.session import Session
 
 s3 = S3()

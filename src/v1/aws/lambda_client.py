@@ -3,7 +3,7 @@ import json
 
 # Third Party Library
 import boto3
-from schemas import LambdaInvokePayload
+from schemas.payload import LambdaInvokePayload
 
 
 class LambdaClient:
