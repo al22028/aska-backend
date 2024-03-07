@@ -3,7 +3,7 @@ from typing import List
 
 # Third Party Library
 from database.base import User
-from schemas import UserCreateSchema, UserUpdateSchema
+from schemas.user import UserCreateSchema, UserUpdateSchema
 from sqlalchemy.orm.session import Session
 
 

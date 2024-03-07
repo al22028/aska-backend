@@ -4,7 +4,7 @@ from typing import List
 
 # Third Party Library
 from database.base import Version
-from schemas import VersionCreateSchema, VersionUpdateSchema
+from schemas.version import VersionCreateSchema, VersionUpdateSchema
 from sqlalchemy.orm.session import Session
 
 

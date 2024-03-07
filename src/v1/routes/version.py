@@ -8,9 +8,8 @@ from aws_lambda_powertools.event_handler.api_gateway import Router
 from aws_lambda_powertools.event_handler.openapi.params import Query
 from aws_lambda_powertools.shared.types import Annotated
 from controllers.version import VersionController
-from schemas import (
-    DeletedSchema,
-    DownloadURLSchema,
+from schemas.common import DeletedSchema, DownloadURLSchema
+from schemas.version import (
     VersionCreateResponseSchema,
     VersionCreateSchema,
     VersionDetailSchema,

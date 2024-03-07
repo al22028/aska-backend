@@ -6,8 +6,8 @@ from aws_lambda_powertools import Tracer
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.event_handler.api_gateway import Router
 from controllers.project import ProjectController
-from schemas import (
-    DeletedSchema,
+from schemas.common import DeletedSchema
+from schemas.project import (
     ProjectCreateSchema,
     ProjectDetailSchema,
     ProjectSchema,
