@@ -15,7 +15,7 @@ class ProjectCreateSchema(BaseSchema):
         examples=[{"value": "Project A", "description": "Title"}],
     )
     description: str = Field(
-        default="",
+        ...,
         min_length=0,
         max_length=512,
         title="Description",
