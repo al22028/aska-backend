@@ -12,19 +12,19 @@ class ImageCreateSchema(BaseSchema):
         ...,
         title="Page ID",
         description="Page ID",
-        example="44f97c86d4954afcbdc6f2443a159c28",
+        example="44f97c86d4954afcbdc6f2443a159c28",  # type: ignore
     )
     status: Status = Field(
         ...,
         title="Status",
         description="Status",
-        example=Status.pending.value,
+        example=Status.pending.value,  # type: ignore
     )
     object_key: str = Field(
         ...,
         title="Object Key",
         description="Object Key",
-        example="44f97c86d4954afcbdc6f2443a159c28/1.png",
+        example="44f97c86d4954afcbdc6f2443a159c28/1.png",  # type: ignore
     )
 
 
@@ -35,7 +35,7 @@ class ImageCreateResponseSchema(BaseSchema):
         ...,
         title="(PUT) Presigned URL",
         description="Presigned URL for PUT image file",
-        example="https://example.com/presigned_url",
+        example="https://example.com/presigned_url",  # type: ignore
     )
 
 
@@ -46,7 +46,7 @@ class ImageUpdateSchema(BaseSchema):
         ...,
         title="Status",
         description="Status",
-        example=Status.pending.value,
+        example=Status.pending.value,  # type: ignore
     )
 
 
@@ -57,5 +57,5 @@ class ImageSchema(ImageCreateSchema, TimeStampSchema):
         ...,
         title="ID",
         description="Image ID",
-        example="44f97c86d4954afcbdc6f2443a159c28",
+        example="44f97c86d4954afcbdc6f2443a159c28",  # type: ignore
     )

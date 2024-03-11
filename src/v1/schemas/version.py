@@ -12,7 +12,7 @@ class VersionUpdateSchema(BaseSchema):
         max_length=256,
         title="タイトル",
         description="バージョンタイトル",
-        example="K12345_V1",
+        example="K12345_V1",  # type: ignore
     )
     description: str = Field(
         ...,
@@ -20,7 +20,7 @@ class VersionUpdateSchema(BaseSchema):
         max_length=512,
         title="詳細情報",
         description="バージョンの詳細情報",
-        example="5月末時点のバージョン",
+        example="5月末時点のバージョン",  # type: ignore
     )
 
 
@@ -29,16 +29,22 @@ class VersionCreateSchema(VersionUpdateSchema):
         ...,
         title="Project ID",
         description="Project ID",
-        example="44f97c86d4954afcbdc6f2443a159c28",
+        example="44f97c86d4954afcbdc6f2443a159c28",  # type: ignore
     )
 
 
 class VersionSchema(VersionCreateSchema, VersionUpdateSchema, TimeStampSchema):
     id: str = Field(
-        ..., title="ID", description="Version ID", example="44f97c86d4954afcbdc6f2443a159c28"
+        ...,
+        title="ID",
+        description="Version ID",
+        example="44f97c86d4954afcbdc6f2443a159c28",  # type: ignore
     )
     thumbnail: str = Field(
-        ..., title="Thumbnail", description="Thumbnail", example="https://example.com/thumbnail.jpg"
+        ...,
+        title="Thumbnail",
+        description="Thumbnail",
+        example="https://example.com/thumbnail.jpg",  # type: ignore
     )
 
 
@@ -47,7 +53,7 @@ class VersionCreateResponseSchema(VersionSchema):
         ...,
         title="(PUT) Presigned URL",
         description="Presigned URL for PUT pdf file",
-        example="https://example.com/presigned_url",
+        example="https://example.com/presigned_url",  # type: ignore
     )
 
 
