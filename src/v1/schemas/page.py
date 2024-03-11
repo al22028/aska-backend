@@ -24,9 +24,15 @@ class PageCreateSchema(BaseSchema):
     )
     local_index: int = Field(
         ...,
-        title="local Index",
-        description="local Index",
+        title="Local Index",
+        description="Local Index",
         examples=[{"value": 0, "description": "Local Index"}],
+    )
+    global_index: int = Field(
+        ...,
+        title="Global Index",
+        description="Global Index",
+        examples=[{"value": 0, "description": "Global Index"}],
     )
 
 
