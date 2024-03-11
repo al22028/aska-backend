@@ -8,16 +8,20 @@ class DeletedSchema(BaseSchema):
         default="Object deleted successfully",
         title="Message",
         description="Message",
-        example="Object deleted successfully",
+        example="Object deleted successfully",  # type: ignore
     )
 
 
 class TimeStampSchema(BaseSchema):
     created_at: str = Field(
-        ..., description="isoformated created datetime", example="2021-09-01T00:00:00.000Z"
+        ...,
+        description="isoformated created datetime",
+        example="2021-09-01T00:00:00.000Z",  # type: ignore
     )
     updated_at: str = Field(
-        ..., description="isoformated updated datetime", example="2021-09-01T00:00:00.000Z"
+        ...,
+        description="isoformated updated datetime",
+        example="2021-09-01T00:00:00.000Z",  # type: ignore
     )
 
 
@@ -26,5 +30,5 @@ class DownloadURLSchema(BaseSchema):
         ...,
         title="Download URL",
         description="Download URL",
-        example="https://example.com/download_url",
+        example="https://example.com/download_url",  # type: ignore
     )

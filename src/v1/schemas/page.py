@@ -14,25 +14,25 @@ class PageCreateSchema(BaseSchema):
         ...,
         title="Version ID",
         description="Version ID",
-        example="44f97c86d4954afcbdc6f2443a159c28",
+        example="44f97c86d4954afcbdc6f2443a159c28",  # type: ignore
     )
     status: Status = Field(
         default=Status.pending,
         title="Status",
         description="Status",
-        example=Status.pending.value,
+        example=Status.pending.value,  # type: ignore
     )
     local_index: int = Field(
         ...,
         title="Local Index",
         description="Local Index",
-        example=1,
+        example=1,  # type: ignore
     )
     global_index: int = Field(
         ...,
         title="Global Index",
         description="Global Index",
-        example=1,
+        example=1,  # type: ignore
     )
 
 
@@ -43,12 +43,12 @@ class PageUpdateSchema(BaseSchema):
         ...,
         title="Status",
         description="Status",
-        example=Status.pending.value,
+        example=Status.pending.value,  # type: ignore
     )
     global_index: int = Field(
         title="Global Index",
         description="Global Index",
-        example=1,
+        example=1,  # type: ignore
     )
 
 
@@ -59,19 +59,19 @@ class PageSchema(PageCreateSchema, TimeStampSchema):
         ...,
         title="ID",
         description="Page ID",
-        example="44f97c86d4954afcbdc6f2443a159c28",
+        example="44f97c86d4954afcbdc6f2443a159c28",  # type: ignore
     )
     status: Status = Field(
         ...,
         title="Status",
         description="Status",
-        example=Status.pending.value,
+        example=Status.pending.value,  # type: ignore
     )
     version_id: str = Field(
         ...,
         title="Version ID",
         description="Version ID",
-        example="44f97c86d4954afcbdc6f2443a159c28",
+        example="44f97c86d4954afcbdc6f2443a159c28",  # type: ignore
     )
     image: ImageSchema
     json: JsonSchema  # type: ignore

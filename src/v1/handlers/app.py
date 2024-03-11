@@ -50,7 +50,7 @@ app.include_router(json.router, prefix="/jsons")
 
 
 class HealthCheckSchema(BaseModel):
-    status: str = Field(..., description="Health Check Status", example="ok")
+    status: str = Field(..., description="Health Check Status", example="ok")  # type: ignore
 
 
 @app.get(
