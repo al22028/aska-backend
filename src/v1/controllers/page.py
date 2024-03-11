@@ -64,6 +64,16 @@ class PageController:
             session.commit()
 
         post_version_id = pages[0]["version_id"]
+        matching_results: list[tuple[int | None, int | None]] = []
+        self.update_global_indices(session, pages, post_version_id, matching_results)
+
+    @with_session
+    def update_global_indices(
+        self,
+        session: Session,
+        post_version_id: str,
+        matching_results: list[tuple[int | None, int | None]],
+    ) -> None:
         post_version = self.versions.find_one(db=session, version_id=post_version_id)
         prev_version = self.versions.find_previous_version(
             db=session, project_id=post_version.project_id
@@ -72,9 +82,6 @@ class PageController:
             return
         prev_version_id = prev_version.id
 
-        # receive the matching results here
-        # assume the matching results are in the form of list[(prev_local_index: int, post_local_index: int)]
-        matching_results: list[tuple[int | None, int | None]] = []
         for prev_local_index, post_local_index in matching_results:
             if post_local_index is None:
                 continue
