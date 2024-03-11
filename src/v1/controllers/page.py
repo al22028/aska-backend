@@ -63,38 +63,75 @@ class PageController:
             )
             session.commit()
 
-        post_version_id = pages[0]["version_id"]
+        after_version_id = pages[0]["version_id"]
         matching_results: list[tuple[int | None, int | None]] = []
-        self.update_global_indices(session, pages, post_version_id, matching_results)
+        matching_results.sort(key=lambda pair: (pair[0] is None, pair[1]))
+        project_id = self.versions.find_one(db=session, version_id=after_version_id).project_id
+        self.update_global_indices(
+            session=session,
+            after_version_id=after_version_id,
+            matching_results=matching_results,
+            project_id=project_id,
+        )
 
     @with_session
     def update_global_indices(
         self,
         session: Session,
-        post_version_id: str,
+        after_version_id: str,
         matching_results: list[tuple[int | None, int | None]],
+        project_id: str,
     ) -> None:
-        post_version = self.versions.find_one(db=session, version_id=post_version_id)
-        prev_version = self.versions.find_previous_version(
-            db=session, project_id=post_version.project_id
+        after_version = self.versions.find_one(db=session, version_id=after_version_id)
+        before_version = self.versions.find_previous_version(
+            db=session, project_id=after_version.project_id
         )
-        if prev_version is None:
+        if before_version is None:
             return
-        prev_version_id = prev_version.id
+        before_version_id = before_version.id
 
-        for prev_local_index, post_local_index in matching_results:
-            if post_local_index is None:
+        for before_local_index, after_local_index in matching_results:
+            if after_local_index is None:
                 continue
 
-            if prev_local_index is None:
-                continue  # TODO: handle this case
+            # 対応するページがない場合は、global indexを1つ前のページのglobal indexから推定する
+            if before_local_index is None:
+                prev_after_local_index = after_local_index - 1
+                if prev_after_local_index < 1:
+                    after_global_index = 1
+                prev_after_global_index = self.pages.find_page_by_index(
+                    db=session, version_id=after_version_id, index=prev_after_local_index
+                ).global_index
+                after_global_index = prev_after_global_index + 1
+                # 推定したglobal indexが他のglobal indexと重複していないか調べる
+                for _, after_local_index_ in matching_results:
+                    if after_local_index_ is None:
+                        continue
+                    after_global_index_ = self.pages.find_page_by_index(
+                        db=session, version_id=after_version_id, index=after_local_index_
+                    ).global_index
+                    # 重複がある場合は、すべてのバージョンのglobal indexをずらす
+                    if after_global_index_ == after_global_index:
+                        self.insert_new_global_index(after_global_index, project_id)
 
-            post_page_id = self.pages.find_page_by_index(
-                db=session, version_id=post_version_id, index=post_local_index
+            after_page_id = self.pages.find_page_by_index(
+                db=session, version_id=after_version_id, index=after_local_index
             ).id
-            post_global_index = self.pages.find_page_by_index(
-                db=session, version_id=prev_version_id, index=prev_local_index
+            after_global_index = self.pages.find_page_by_index(
+                db=session, version_id=before_version_id, index=before_local_index
             ).global_index
             self.pages.update_global_index(
-                db=session, page_id=post_page_id, global_index=post_global_index
+                db=session, page_id=after_page_id, global_index=after_global_index
             )
+
+    @with_session
+    def insert_new_global_index(
+        self, session: Session, new_global_index: int, project_id: int
+    ) -> None:
+        versions = self.versions.find_all_previous_versions(db=session, project_id=project_id)
+        for version in versions:
+            for page in version.pages:
+                if page.global_index >= new_global_index:
+                    self.pages.update_global_index(
+                        db=session, page_id=page.id, global_index=page.global_index + 1
+                    )

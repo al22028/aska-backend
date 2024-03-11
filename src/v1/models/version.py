@@ -25,6 +25,15 @@ class VersionORM(object):
         )
         return project_version[-2] if len(project_version) > 1 else None
 
+    def find_all_previous_versions(self, db: Session, project_id: str) -> List[Version]:
+        project_version = (
+            db.query(Version)
+            .filter(Version.project_id == project_id)
+            .order_by(Version.created_at)
+            .all()
+        )
+        return project_version[:-1]
+
     def find_many_by_project_id(self, db: Session, project_id: str) -> List[Version]:
         return db.query(Version).filter(Version.project_id == project_id).all()
 
