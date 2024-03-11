@@ -22,7 +22,7 @@ controller = UserController()
     summary="開発用",
     description="全てのユーザーを取得します。",
     response_description="AllUsers",
-    operation_id="fetchAllUsers",
+    operation_id="devFetchAllUsers",
 )
 def fetch_all_users() -> List[UserSchema]:
     return controller.fetch_all_users()
