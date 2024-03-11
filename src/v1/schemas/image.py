@@ -12,19 +12,19 @@ class ImageCreateSchema(BaseSchema):
         ...,
         title="Page ID",
         description="Page ID",
-        examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "Page ID"}],
+        example="44f97c86d4954afcbdc6f2443a159c28",
     )
     status: Status = Field(
         ...,
         title="Status",
         description="Status",
-        examples=[{"value": "PENDING", "description": "Status"}],
+        example=Status.pending.value,
     )
     object_key: str = Field(
         ...,
         title="Object Key",
         description="Object Key",
-        examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28/1.png", "description": "Object Key"}],
+        example="44f97c86d4954afcbdc6f2443a159c28/1.png",
     )
 
 
@@ -35,7 +35,7 @@ class ImageCreateResponseSchema(BaseSchema):
         ...,
         title="(PUT) Presigned URL",
         description="Presigned URL for PUT image file",
-        examples=[{"value": "https://example.com/presigned_url", "description": "Presigned URL"}],
+        example="https://example.com/presigned_url",
     )
 
 
@@ -46,7 +46,7 @@ class ImageUpdateSchema(BaseSchema):
         ...,
         title="Status",
         description="Status",
-        examples=[{"value": "PREPROCESSING", "description": "Status"}],
+        example=Status.pending.value,
     )
 
 
@@ -57,5 +57,5 @@ class ImageSchema(ImageCreateSchema, TimeStampSchema):
         ...,
         title="ID",
         description="Image ID",
-        examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "ID"}],
+        example="44f97c86d4954afcbdc6f2443a159c28",
     )

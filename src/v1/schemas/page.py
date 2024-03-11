@@ -14,25 +14,25 @@ class PageCreateSchema(BaseSchema):
         ...,
         title="Version ID",
         description="Version ID",
-        examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "Version ID"}],
+        example="44f97c86d4954afcbdc6f2443a159c28",
     )
     status: Status = Field(
         default=Status.pending,
         title="Status",
         description="Status",
-        examples=[{"value": "PENDING", "description": "Status"}],
+        example=Status.pending.value,
     )
     local_index: int = Field(
         ...,
         title="Local Index",
         description="Local Index",
-        examples=[{"value": 0, "description": "Local Index"}],
+        example=1,
     )
     global_index: int = Field(
         ...,
         title="Global Index",
         description="Global Index",
-        examples=[{"value": 0, "description": "Global Index"}],
+        example=1,
     )
 
 
@@ -43,12 +43,12 @@ class PageUpdateSchema(BaseSchema):
         ...,
         title="Status",
         description="Status",
-        examples=[{"value": "PREPROCESSING", "description": "Status"}],
+        example=Status.pending.value,
     )
     global_index: int = Field(
         title="Global Index",
         description="Global Index",
-        examples=[{"value": 0, "description": "Global Index"}],
+        example=1,
     )
 
 
@@ -59,19 +59,19 @@ class PageSchema(PageCreateSchema, TimeStampSchema):
         ...,
         title="ID",
         description="Page ID",
-        examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "ID"}],
+        example="44f97c86d4954afcbdc6f2443a159c28",
     )
     status: Status = Field(
         ...,
         title="Status",
         description="Status",
-        examples=[{"value": "PENDING", "description": "Status"}],
+        example=Status.pending.value,
     )
     version_id: str = Field(
         ...,
         title="Version ID",
         description="Version ID",
-        examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "Version ID"}],
+        example="44f97c86d4954afcbdc6f2443a159c28",
     )
     image: ImageSchema
     json: JsonSchema  # type: ignore

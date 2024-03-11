@@ -11,7 +11,7 @@ class UserCreateSchema(BaseSchema):
         max_length=256,
         title="ID",
         description="Same as Cognito sub",
-        examples=[{"value": "44f97c86-d495-4afc-bdc6-f2443a159c28", "description": "ID"}],
+        example="44f97c86-d495-4afc-bdc6-f2443a159c28",
     )
     name: str = Field(
         ...,
@@ -19,14 +19,14 @@ class UserCreateSchema(BaseSchema):
         max_length=256,
         title="Name",
         description="Name",
-        examples=[{"value": "Tsubasa Taro", "description": "Name"}],
+        example="Tsubasa Taro",
     )
     email: str = Field(
         ...,
         min_length=1,
         max_length=256,
         description="Email",
-        examples=[{"value": "tsubasa@world-wing.com", "description": "Email Address"}],
+        example="tsubasa@world-wing.com",
     )
     model_config = ConfigDict(from_attributes=True)
 
@@ -38,7 +38,7 @@ class UserUpdateSchema(BaseSchema):
         max_length=256,
         title="Name",
         description="Name",
-        examples=[{"value": "Tsubasa Taro", "description": "Name"}],
+        example="Tsubasa Taro",
     )
 
 
