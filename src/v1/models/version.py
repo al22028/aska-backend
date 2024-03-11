@@ -36,10 +36,15 @@ class VersionORM(object):
 
     def create_one(self, db: Session, version_data: VersionCreateSchema) -> Version:
         id = str(uuid.uuid4()).replace("-", "")
+        project_id = version_data.project_id
+        versions = self.find_many_by_project_id(db, project_id)
+        version_number = len(versions) + 1
+        title = "Version" + str(version_number)
         created_pdf = Version(
-            **version_data.model_dump(),
             id=id,
-            object_key=f'{id}/{version_data.title.replace(" ", "_")}.pdf',
+            title=title,
+            **version_data.model_dump(),
+            object_key=f"{id}/{title}.pdf",
         )
         db.add(created_pdf)
         return created_pdf
