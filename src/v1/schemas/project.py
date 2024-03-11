@@ -12,7 +12,7 @@ class ProjectCreateSchema(BaseSchema):
         max_length=256,
         title="Title",
         description="Title",
-        examples=[{"value": "Project A", "description": "Title"}],
+        example="Project A",
     )
     description: str = Field(
         ...,
@@ -20,7 +20,7 @@ class ProjectCreateSchema(BaseSchema):
         max_length=512,
         title="Description",
         description="Description",
-        examples=[{"value": "description of the project", "description": "Description"}],
+        example="Project A Description",
     )
 
 
@@ -33,7 +33,7 @@ class ProjectSchema(ProjectUpdateSchema, TimeStampSchema):
         ...,
         title="ID",
         description="Project ID",
-        examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "ID"}],
+        example="44f97c86d4954afcbdc6f2443a159c28",
     )
 
 

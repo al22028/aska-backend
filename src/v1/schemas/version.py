@@ -12,7 +12,7 @@ class VersionUpdateSchema(BaseSchema):
         max_length=256,
         title="タイトル",
         description="バージョンタイトル",
-        examples=[{"value": "K12345_V1", "description": "Title"}],
+        example="K12345_V1",
     )
     description: str = Field(
         ...,
@@ -20,7 +20,7 @@ class VersionUpdateSchema(BaseSchema):
         max_length=512,
         title="詳細情報",
         description="バージョンの詳細情報",
-        examples=[{"value": "5月末時点のバージョン", "description": "Description"}],
+        example="5月末時点のバージョン",
     )
 
 
@@ -29,22 +29,16 @@ class VersionCreateSchema(VersionUpdateSchema):
         ...,
         title="Project ID",
         description="Project ID",
-        examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "Project ID"}],
+        example="44f97c86d4954afcbdc6f2443a159c28",
     )
 
 
 class VersionSchema(VersionCreateSchema, VersionUpdateSchema, TimeStampSchema):
     id: str = Field(
-        ...,
-        title="ID",
-        description="Version ID",
-        examples=[{"value": "44f97c86d4954afcbdc6f2443a159c28", "description": "ID"}],
+        ..., title="ID", description="Version ID", example="44f97c86d4954afcbdc6f2443a159c28"
     )
     thumbnail: str = Field(
-        ...,
-        title="Thumbnail",
-        description="Thumbnail",
-        examples=[{"value": "https://example.com/thumbnail.jpg", "description": "Thumbnail"}],
+        ..., title="Thumbnail", description="Thumbnail", example="https://example.com/thumbnail.jpg"
     )
 
 
@@ -53,7 +47,7 @@ class VersionCreateResponseSchema(VersionSchema):
         ...,
         title="(PUT) Presigned URL",
         description="Presigned URL for PUT pdf file",
-        examples=[{"value": "https://example.com/presigned_url", "description": "Presigned URL"}],
+        example="https://example.com/presigned_url",
     )
 
 
