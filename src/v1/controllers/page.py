@@ -64,7 +64,7 @@ class PageController:
             session.commit()
 
         after_version_id = pages[0]["version_id"]
-        matching_results: list[tuple[int | None, int | None]] = []
+        matching_results: list[tuple[int | None, int | None]] = []  # todo
         matching_results.sort(key=lambda pair: (pair[0] is None, pair[1]))
         project_id = self.versions.find_one(db=session, version_id=after_version_id).project_id
         self.update_global_indices(
@@ -103,6 +103,7 @@ class PageController:
                     db=session, version_id=after_version_id, index=prev_after_local_index
                 ).global_index
                 after_global_index = prev_after_global_index + 1
+
                 # 推定したglobal indexが他のglobal indexと重複していないか調べる
                 for _, after_local_index_ in matching_results:
                     if after_local_index_ is None:
@@ -114,23 +115,26 @@ class PageController:
                     if after_global_index_ == after_global_index:
                         self.insert_new_global_index(after_global_index, project_id)
 
-            after_page_id = self.pages.find_page_by_index(
-                db=session, version_id=after_version_id, index=after_local_index
-            ).id
+            # 1つ前のバージョンに対応するページがある場合は、そのglobal indexを使う
             after_global_index = self.pages.find_page_by_index(
                 db=session, version_id=before_version_id, index=before_local_index
             ).global_index
+            after_page_id = self.pages.find_page_by_index(
+                db=session, version_id=after_version_id, index=after_local_index
+            ).id
             self.pages.update_global_index(
                 db=session, page_id=after_page_id, global_index=after_global_index
             )
 
     @with_session
     def insert_new_global_index(
-        self, session: Session, new_global_index: int, project_id: int
+        self, session: Session, new_global_index: int, project_id: str
     ) -> None:
-        versions = self.versions.find_all_previous_versions(db=session, project_id=project_id)
+        versions = self.versions.find_many_by_project_id(db=session, project_id=project_id)
         for version in versions:
             for page in version.pages:
+                if page.global_index is None:
+                    continue
                 if page.global_index >= new_global_index:
                     self.pages.update_global_index(
                         db=session, page_id=page.id, global_index=page.global_index + 1
