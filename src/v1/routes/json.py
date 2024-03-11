@@ -1,4 +1,3 @@
-# Standard Library
 
 # Third Party Library
 from aws_lambda_powertools import Tracer
