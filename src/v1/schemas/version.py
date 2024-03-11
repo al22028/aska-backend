@@ -31,14 +31,6 @@ class VersionCreateSchema(BaseSchema):
         description="Project ID",
         example="44f97c86d4954afcbdc6f2443a159c28",  # type: ignore
     )
-    description: str = Field(
-        ...,
-        min_length=0,
-        max_length=512,
-        title="詳細情報",
-        description="バージョンの詳細情報",
-        example="5月末時点のバージョン",  # type: ignore
-    )
 
 
 class VersionSchema(VersionCreateSchema, VersionUpdateSchema, TimeStampSchema):

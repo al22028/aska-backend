@@ -4,11 +4,14 @@ from typing import List
 
 # Third Party Library
 from database.base import Version
+from models.project import ProjectORM
 from schemas.version import VersionCreateSchema, VersionUpdateSchema
 from sqlalchemy.orm.session import Session
 
 
 class VersionORM(object):
+
+    projects = ProjectORM()
 
     def find_all(self, db: Session) -> List[Version]:
         return db.query(Version).all()
@@ -39,10 +42,12 @@ class VersionORM(object):
         project_id = version_data.project_id
         versions = self.find_many_by_project_id(db, project_id)
         version_number = len(versions) + 1
-        title = "Version" + str(version_number)
+        project_title = self.projects.find_one(db, project_id).title
+        title = f"{project_title}_V{version_number}"
         created_pdf = Version(
             id=id,
             title=title,
+            description="",
             **version_data.model_dump(),
             object_key=f"{id}/{title}.pdf",
         )
