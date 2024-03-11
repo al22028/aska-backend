@@ -24,7 +24,7 @@ class VersionUpdateSchema(BaseSchema):
     )
 
 
-class VersionCreateSchema(VersionUpdateSchema):
+class VersionCreateSchema(BaseSchema):
     project_id: str = Field(
         ...,
         title="Project ID",
