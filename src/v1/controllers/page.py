@@ -62,3 +62,32 @@ class PageController:
                 ),
             )
             session.commit()
+
+        post_version_id = pages[0]["version_id"]
+        post_version = self.versions.find_one(db=session, version_id=post_version_id)
+        prev_version = self.versions.find_previous_version(
+            db=session, project_id=post_version.project_id
+        )
+        if prev_version is None:
+            return
+        prev_version_id = prev_version.id
+
+        # receive the matching results here
+        # assume the matching results are in the form of list[(prev_local_index: int, post_local_index: int)]
+        matching_results: list[tuple[int | None, int | None]] = []
+        for prev_local_index, post_local_index in matching_results:
+            if post_local_index is None:
+                continue
+
+            if prev_local_index is None:
+                continue  # TODO: handle this case
+
+            post_page_id = self.pages.find_page_by_index(
+                db=session, version_id=post_version_id, index=post_local_index
+            ).id
+            post_global_index = self.pages.find_page_by_index(
+                db=session, version_id=prev_version_id, index=prev_local_index
+            ).global_index
+            self.pages.update_global_index(
+                db=session, page_id=post_page_id, global_index=post_global_index
+            )

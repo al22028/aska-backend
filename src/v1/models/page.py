@@ -60,6 +60,13 @@ class PageORM(object):
         return page
 
     @log_function_execution(logger=logger)
+    def update_global_index(self, db: Session, page_id: str, global_index: int) -> Page:
+        page = self.find_one(db, page_id)
+        page.global_index = global_index
+        db.add(page)
+        return page
+
+    @log_function_execution(logger=logger)
     def exists(self, db: Session, page_id: str) -> bool:
         page = db.query(Page).filter(Page.id == page_id).first()
         if page:
