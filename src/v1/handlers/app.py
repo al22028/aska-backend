@@ -6,7 +6,7 @@ from aws_lambda_powertools.utilities.typing import LambdaContext
 from config.settings import STAGE
 from middlewares.common import handler_middleware
 from pydantic import BaseModel, Field
-from routes import image, json, page, project, user, version
+from routes import dev, image, json, page, project, user, version
 
 tracer = Tracer()
 logger = Logger()
@@ -47,6 +47,9 @@ app.include_router(version.router, prefix="/versions")
 app.include_router(page.router, prefix="/pages")
 app.include_router(image.router, prefix="/images")
 app.include_router(json.router, prefix="/jsons")
+
+if STAGE != "prod":
+    app.include_router(dev.router, prefix="/dev")
 
 
 class HealthCheckSchema(BaseModel):

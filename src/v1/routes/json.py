@@ -1,5 +1,3 @@
-# Standard Library
-
 # Third Party Library
 from aws_lambda_powertools import Tracer
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
