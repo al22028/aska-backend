@@ -10,7 +10,6 @@ from aws_lambda_powertools.event_handler.exceptions import BadRequestError, NotF
 from database.base import User
 from database.session import with_session
 from models.user import UserORM
-from mypy_boto3_cognito_idp.type_defs import AdminCreateUserResponseTypeDef
 from schemas.user import UserCreateResponsSchema, UserCreateSchema, UserSchema, UserUpdateSchema
 from sqlalchemy.orm.session import Session
 
@@ -53,17 +52,8 @@ class UserController:
             raise BadRequestError("email already in use")
         # create user in cognito
         password = generate_password()
-        _response: AdminCreateUserResponseTypeDef = self.cognito.create_user(
-            user_data.email, password
-        )
-        user_id = None
-        attributes = _response["User"]["Attributes"]
-        for attribute in attributes:
-            if attribute["Name"] == "sub":
-                user_id = attribute["Value"]
-                break
-        if not user_id:
-            raise BadRequestError("user id not found")
+        user_id = self.cognito.create_user(user_data.email, password)
+
         self.cognito.confirm_user(user_data.email, password)
         self.cognito.verify_email(user_data.email)
         # create user in database
