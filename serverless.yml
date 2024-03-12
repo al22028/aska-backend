@@ -110,6 +110,12 @@ provider:
             - "ec2:UnassignPrivateIpAddresses"
           Resource:
             - "*"
+        # Allow functions to operate Cognito stuff
+        - Effect: Allow
+          Action:
+            - cognito-idp:*
+          Resource:
+            - "*"
 
   # Versioning Deployed Functions
   # https://www.serverless.com/framework/docs/providers/aws/guide/functions#versioning-deployed-functions
