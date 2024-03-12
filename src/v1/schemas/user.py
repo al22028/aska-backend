@@ -36,7 +36,12 @@ class UserUpdateSchema(BaseSchema):
 
 
 class UserSchema(UserCreateSchema, TimeStampSchema):
-    pass
+    id: str = Field(
+        ...,
+        title="ユーザーID",
+        description="CognitoのユーザーID(sub)",
+        example="e7b45a98-1031-7095-d7ee-6748af941d2a",  # type: ignore
+    )
 
 
 class UserCreateResponsSchema(UserSchema):

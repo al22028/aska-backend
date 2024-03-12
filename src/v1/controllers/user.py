@@ -86,4 +86,5 @@ class UserController:
         if not self.users.exists(db=session, user_id=user_id):
             raise NotFoundError
         self.users.delete_one(db=session, user_id=user_id)
+        self.cognito.disable_user(user_id)
         return None
