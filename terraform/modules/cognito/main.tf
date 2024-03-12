@@ -53,5 +53,5 @@ resource "aws_cognito_user_pool_client" "client" {
   name                = "aska-user-pool-client"
   user_pool_id        = aws_cognito_user_pool.client.id
   generate_secret     = false
-  explicit_auth_flows = ["ALLOW_REFRESH_TOKEN_AUTH", "ALLOW_USER_SRP_AUTH"]
+  explicit_auth_flows = ["ALLOW_REFRESH_TOKEN_AUTH", "ALLOW_USER_SRP_AUTH", "ALLOW_ADMIN_USER_PASSWORD_AUTH"]
 }
