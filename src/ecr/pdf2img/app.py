@@ -13,6 +13,7 @@ from aws_lambda_powertools import Logger
 from aws_lambda_powertools.utilities.data_classes import S3Event, event_source
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from pdf2image import convert_from_bytes
+from PIL import Image
 
 logger = Logger()
 
@@ -94,11 +95,28 @@ def invoke_lambda(payload: list[dict[str, object]]) -> None:
     logger.info(response["Payload"].read().decode("utf-8"))
 
 
+def replace_red_with_white(img: Image) -> Image:
+    pil_image = np.array(img)
+    hsv = cv2.cvtColor(pil_image, cv2.COLOR_RGB2HSV)
+    lower_red1 = np.array([0, 70, 50])
+    upper_red1 = np.array([10, 255, 255])
+    lower_red2 = np.array([170, 70, 50])
+    upper_red2 = np.array([180, 255, 255])
+    mask1 = cv2.inRange(hsv, lower_red1, upper_red1)
+    mask2 = cv2.inRange(hsv, lower_red2, upper_red2)
+    # TODO : Type check
+    mask = mask1 + mask2  # type: ignore
+    pil_image[mask != 0] = [255, 255, 255]
+    pil_image = Image.fromarray(pil_image)
+    return pil_image
+
+
 def convert_to_images(id: str, pdf_file_data: bytes) -> None:
     images = convert_from_bytes(pdf_file_data)
     payload = []
     for i, image in enumerate(images):
-        img = np.array(image)
+        rw_image = replace_red_with_white(image)
+        img = np.array(rw_image)
         serialized_keypoints = extract_feature_points(img)
         json_object_key = f"{id}/{i+1}.json"
         client.put_object(
