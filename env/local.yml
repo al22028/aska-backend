@@ -24,6 +24,10 @@ AWS_TMP_BUCKET: aska-tmp-dir
 # AWS CloudFront
 AWS_IMAGE_HOST_DOMAIN: "https://images.u10.teba-saki.net"
 
+# AWS Cognito
+AWS_COGNITO_USER_POOL_ID: ap-northeast-1_qxG0VadiV
+AWS_COGNITO_CLIENT_ID: 4ujkjrjqvgg0kuebsnkmj9rq1f
+
 # AWS VPC
 vpc:
   securityGroupIds:

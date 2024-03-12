@@ -28,3 +28,7 @@ AWS_IMAGE_BUCKET = config("AWS_IMAGE_BUCKET", default="aska-image-bucket-dev", c
 AWS_IMAGE_HOST_DOMAIN = config(
     "AWS_IMAGE_HOST_DOMAIN", default="https://d3jn185gjojza6.cloudfront.net/", cast=str
 )
+
+# AWS Cognito
+AWS_COGNITO_USER_POOL_ID = config("AWS_COGNITO_USER_POOL_ID", default="", cast=str)
+AWS_COGNITO_CLIENT_ID = config("AWS_COGNITO_CLIENT_ID", default="", cast=str)
