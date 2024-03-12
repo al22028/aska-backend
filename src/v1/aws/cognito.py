@@ -18,13 +18,16 @@ class Cognito:
         self._client_id = AWS_COGNITO_CLIENT_ID
 
     def create_user(self, email: str, password: str) -> str:
-        response: AdminCreateUserResponseTypeDef = self.client.admin_create_user(
-            UserPoolId=self._user_pool_id,
-            Username=email,
-            UserAttributes=[{"Name": "email", "Value": email}],
-            TemporaryPassword=password,
-            MessageAction="SUPPRESS",
-        )
+        try:
+            response: AdminCreateUserResponseTypeDef = self.client.admin_create_user(
+                UserPoolId=self._user_pool_id,
+                Username=email,
+                UserAttributes=[{"Name": "email", "Value": email}],
+                TemporaryPassword=password,
+                MessageAction="SUPPRESS",
+            )
+        except self.client.exceptions.UsernameExistsException:
+            raise BadRequestError("email already in use")
         user_id = None
         attributes = response["User"]["Attributes"]
         for attribute in attributes:
@@ -69,3 +72,17 @@ class Cognito:
             UserAttributes=[{"Name": "email_verified", "Value": "true"}],
         )
         return response
+
+    def disable_user(self, user_id: str) -> None:
+        """Disable user
+
+        Args:
+            user_id (str): user id
+
+        Raises:
+            BadRequestError: some error occurred
+        """
+        try:
+            self.client.admin_disable_user(UserPoolId=self._user_pool_id, Username=user_id)
+        except Exception:
+            raise BadRequestError("user id not found")
