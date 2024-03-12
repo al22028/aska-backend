@@ -24,8 +24,8 @@ class UserORM(object):
     def find_by_email(self, db: Session, email: str) -> User | None:
         return db.query(User).filter(User.email == email).first()
 
-    def create_one(self, db: Session, user_data: UserCreateSchema) -> User:
-        created_user = User(**user_data.model_dump())
+    def create_one(self, db: Session, id: str, user_data: UserCreateSchema) -> User:
+        created_user = User(id=id, **user_data.model_dump())
         db.add(created_user)
         return created_user
 

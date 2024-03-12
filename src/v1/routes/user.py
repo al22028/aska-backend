@@ -8,7 +8,7 @@ from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.event_handler.api_gateway import Router
 from controllers.user import UserController
 from schemas.common import DeletedSchema
-from schemas.user import UserCreateSchema, UserSchema, UserUpdateSchema
+from schemas.user import UserCreateResponsSchema, UserCreateSchema, UserSchema, UserUpdateSchema
 
 app = APIGatewayRestResolver(debug=True)
 router = Router()
@@ -55,7 +55,7 @@ def fetch_user(userId: str) -> UserSchema:
     operation_id="createSingleUser",
     responses={201: {"description": "User Created"}},
 )
-def create_user(user: UserCreateSchema) -> UserSchema:
+def create_user(user: UserCreateSchema) -> UserCreateResponsSchema:
     created_user, status_code = controller.create_one(user_data=user)
     return created_user, status_code  # type: ignore
 
