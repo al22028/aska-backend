@@ -5,8 +5,10 @@ import json
 # Third Party Library
 from aws_lambda_powertools import Tracer
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
+from aws_lambda_powertools.event_handler.exceptions import NotFoundError
 from aws_lambda_powertools.event_handler.api_gateway import Router
 from controllers.user import UserController
+
 
 app = APIGatewayRestResolver(debug=True)
 router = Router()
@@ -435,7 +437,7 @@ controller = UserController()
 
 
 @router.get(
-    "/versions/{versionId}",
+    "/versions/<versionId>",
     tags=["Dev"],
     summary="開発用",
     description="全てのユーザーを取得します。",
@@ -443,14 +445,15 @@ controller = UserController()
     operation_id="devFetchVersionById",
 )
 def fetch_version_detail_by_id_for_dev(versionId: str) -> str:
-    print("versionId", versionId)
     if versionId == "v1":
         return json.dumps(dummy_data["v1"])
-    if versionId == "v2":
+    elif versionId == "v2":
         return json.dumps(dummy_data["v2"])
-    if versionId == "v3":
+    elif versionId == "v3":
         return json.dumps(dummy_data["v3"])
-    if versionId == "v4":
+    elif versionId == "v4":
         return json.dumps(dummy_data["v4"])
-    if versionId == "v5":
+    elif versionId == "v5":
         return json.dumps(dummy_data["v5"])
+    else:
+        raise NotFoundError("Version not found")
