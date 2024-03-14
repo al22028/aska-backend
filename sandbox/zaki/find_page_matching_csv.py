@@ -1,17 +1,10 @@
-import json
+import csv
+import numpy as np
 
 def key_with_min_value(data_dict:dict) -> str:
     min_value_key = min(data_dict, key=data_dict.get)
     return min_value_key
 
-def transform_data(data:dict) -> dict:
-    transformed = {}
-    for outer_key, inner_dict in data.items():
-        for inner_key, value in inner_dict.items():
-            if inner_key not in transformed:
-                transformed[inner_key] = {}
-            transformed[inner_key][outer_key] = value
-    return transformed
 
 def in_check(l:list[tuple],id:str,rc:int) -> bool:
     for tup in l:
@@ -26,13 +19,18 @@ def extract_value(l:list[tuple],row_id:str,col_id:str) -> tuple:
     return ("","")
 
 def find_page_matching() -> None:
-    with open("sandbox/zaki/similarity_score.json","r") as sim:
-        data = json.load(sim)
-    data = data[0]
-    t_data = transform_data(data)
+    data = []
+    with open("sandbox/zaki/data/similarity_score.csv","r",newline='') as sim:
+        spamreader = csv.reader(sim,delimiter=" ",quotechar=" ")
+        for r in spamreader:
+            d = list(map(str,r[0].split(",")))
+            data.append(d)
 
-    row_mins = [(d,key_with_min_value(data[d])) for d in (data.keys())]
-    col_mins = [(key_with_min_value(t_data[d]),d) for d in (t_data.keys())]
+    t_data = np.array(data).T
+    t_data = t_data.tolist()
+
+    row_mins = [(d[0],data[0][d.index(str(min(list(map(float,d[1:])))))]) for d in data[1:]]
+    col_mins = [(t_data[0][d.index(str(min(list(map(float,d[1:])))))],d[0]) for d in t_data[1:]]
 
     result = []
 
@@ -42,7 +40,6 @@ def find_page_matching() -> None:
             row_mins.pop(row_mins.index(rows))
             col_mins.pop(col_mins.index(rows))
 
-    print(row_mins)
 
     for i in row_mins:
         if not in_check(result,i[0],0):
