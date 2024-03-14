@@ -1,14 +1,12 @@
 # Standard Library
 import json
 
-
 # Third Party Library
 from aws_lambda_powertools import Tracer
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
-from aws_lambda_powertools.event_handler.exceptions import NotFoundError
 from aws_lambda_powertools.event_handler.api_gateway import Router
+from aws_lambda_powertools.event_handler.exceptions import NotFoundError
 from controllers.user import UserController
-
 
 app = APIGatewayRestResolver(debug=True)
 router = Router()
