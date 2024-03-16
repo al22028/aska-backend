@@ -22,12 +22,12 @@ controller = DevController()
     summary="差分のjsonを計算",
     description="差分のJsonを計算します",
 )
-def create_image_diff(image1_id: str, image2_id) -> DiffSchema:
+def create_image_diff(image1_id: str, image2_id: str) -> DiffSchema:
     return controller.create_image_diff(image1_id=image1_id, image2_id=image2_id)
 
 
 v1_json = """
-[
+[s
     {
         "version": "1",
         "localIndex": "1",
