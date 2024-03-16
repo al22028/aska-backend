@@ -6,11 +6,23 @@ from aws_lambda_powertools import Tracer
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.event_handler.api_gateway import Router
 from aws_lambda_powertools.event_handler.exceptions import NotFoundError
-from controllers.user import UserController
+from controllers.dev import DevController
 
 app = APIGatewayRestResolver(debug=True)
 router = Router()
 tracer = Tracer()
+
+controller = DevController()
+
+
+@router.post(
+    "/diff/<image1_id>/<image2_id>",
+    tags=["Dev"],
+    summary="差分のjsonを計算",
+    description="差分のJsonを計算します",
+)
+def create_image_diff(image1_id: str, image2_id) -> dict:
+    return {"statusCode": 200, "body": event}
 
 
 v1_json = """
@@ -429,9 +441,6 @@ dummy_data = {
     "v4": json.loads(v4_json),
     "v5": json.loads(v5_json),
 }
-
-
-controller = UserController()
 
 
 @router.get(
