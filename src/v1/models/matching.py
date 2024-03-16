@@ -4,9 +4,9 @@ from typing import List
 # Third Party Library
 from aws_lambda_powertools import Logger
 from database.base import Matching
+from schemas.diff import DiffCreateSchema
 from sqlalchemy.orm.session import Session
 from views.console import log_function_execution
-from schemas.diff import DiffCreateSchema
 
 logger = Logger("MatchinORM")
 

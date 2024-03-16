@@ -6,7 +6,7 @@ from models.json import JsonORM
 from models.matching import MatchinORM
 from models.page import PageORM
 from models.version import VersionORM
-from schemas.diff import DiffSchema
+from schemas.diff import DiffCreateSchema, DiffSchema
 from sqlalchemy.orm.session import Session
 
 logger = Logger("DiffController")
@@ -29,4 +29,7 @@ class DiffController:
         diff = self.matchings.find_by_ids(image1_id=image1_id, image2_id=image2_id, db=session)
         return DiffSchema(**diff.serializer())
 
-    # @with_session
+    @with_session
+    def create_one(self, diff_data: DiffCreateSchema, session: Session) -> DiffSchema:
+        diff = self.matchings.create_one(diff_data=diff_data, db=session)
+        return DiffSchema(**diff.serializer())

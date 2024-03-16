@@ -40,6 +40,7 @@ class PageController:
                 page_data=PageCreateSchema(
                     version_id=page["version_id"],
                     local_index=page["local_index"],
+                    global_index=page["local_index"],
                     status=Status.preprocessed,
                 ),
             )
