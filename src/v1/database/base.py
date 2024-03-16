@@ -202,6 +202,7 @@ class Image(Base, TimestampMixin):
             "id": self.id,
             "pageId": self.page_id,
             "objectKey": self.object_key,
+            "src": AWS_IMAGE_HOST_DOMAIN + "/" + self.object_key,
             "status": self.status,
             "updatedAt": self.updated_at.isoformat(),  # type: ignore
             "createdAt": self.created_at.isoformat(),  # type: ignore
