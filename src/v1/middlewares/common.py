@@ -32,8 +32,15 @@ def handler_middleware(handler: Callable[..., T], event: dict, context: dict) ->
     logger.info("Request", extra={"event": event, "body": body})
 
     origin = event["headers"].get("origin")
+
+    if not origin:
+        logger.info("Origin", extra={"origin": origin})
+        response = handler(event, context)
+        logger.info("Response", extra={"response": response})
+        return response
+
     logger.info("Origin", extra={"origin": origin})
-    if origin not in APP_API_CORS_ALLOWED_ORIGIN_LIST or not origin:
+    if origin not in APP_API_CORS_ALLOWED_ORIGIN_LIST:
         raise UnauthorizedError("Invalid origin")
     response = handler(event, context)
 
