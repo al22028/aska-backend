@@ -5,6 +5,10 @@ from typing import Callable, TypeVar
 from aws_lambda_powertools.event_handler.exceptions import UnauthorizedError
 from aws_lambda_powertools.middleware_factory import lambda_handler_decorator
 from config.settings import APP_API_CORS_ALLOWED_ORIGIN_LIST
+from aws_lambda_powertools import Logger
+
+
+logger = Logger()
 
 T = TypeVar("T")
 
@@ -25,7 +29,10 @@ def handler_middleware(handler: Callable[..., T], event: dict, context: dict) ->
     if not body:
         body = {}
 
+    logger.info("Request", extra={"event": event, "body": body})
+
     origin = event["headers"].get("origin")
+    logger.info("Origin", extra={"origin": origin})
     if origin not in APP_API_CORS_ALLOWED_ORIGIN_LIST or not origin:
         raise UnauthorizedError("Invalid origin")
     response = handler(event, context)
@@ -35,5 +42,7 @@ def handler_middleware(handler: Callable[..., T], event: dict, context: dict) ->
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": origin,
     }
+
+    logger.info("Response", extra={"response": response})
 
     return response
