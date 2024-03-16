@@ -119,7 +119,7 @@ def fetch_single_version_download_url(versionId: str) -> DownloadURLSchema:
     },
 )
 def update_single_version(versionId: str, version_data: VersionUpdateSchema) -> VersionSchema:
-    return controller.update_one(pdf_id=versionId, version_data=version_data)
+    return controller.update_one(version_id=versionId, version_data=version_data)
 
 
 @router.delete(
