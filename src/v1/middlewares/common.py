@@ -2,11 +2,10 @@
 from typing import Callable, TypeVar
 
 # Third Party Library
+from aws_lambda_powertools import Logger
 from aws_lambda_powertools.event_handler.exceptions import UnauthorizedError
 from aws_lambda_powertools.middleware_factory import lambda_handler_decorator
 from config.settings import APP_API_CORS_ALLOWED_ORIGIN_LIST
-from aws_lambda_powertools import Logger
-
 
 logger = Logger()
 
