@@ -54,7 +54,7 @@ class DevController:
             ),
         )
         logger.info(response)
-        body = json.loads(response["Payload"].read().decode("utf-8"))
+        body = json.loads(response)["body"]
         logger.info(body)
         return body["score"]
 
@@ -79,7 +79,7 @@ class DevController:
             },
         )
         logger.info(response)
-        body = json.loads(json.loads(response["Payload"].read().decode("utf-8"))["body"])
+        body = json.loads(response)["body"]
         logger.info(body)
         body = json.loads(self.get_object_body(bucket=AWS_IMAGE_BUCKET, key=body["objectKey"]))
         logger.info(body)
