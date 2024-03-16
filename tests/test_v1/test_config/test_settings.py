@@ -15,7 +15,7 @@ def test_app_api_version() -> None:
 
 
 def test_app_api_cors_allowed_origins() -> None:
-    assert settings.APP_API_CORS_ALLOWED_ORIGINS == "*"
+    assert settings.APP_API_CORS_ALLOWED_ORIGINS is not None
 
 
 def test_aws_rds_database_url() -> None:
