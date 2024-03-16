@@ -57,6 +57,6 @@ class DiffSchema(DiffCreateSchema, TimeStampSchema):
     id: str = Field(
         ...,
         title="ID",
-        description="Diff sID",
+        description="Diff ID",
         example="44f97c86d4954afcbdc6f2443a159c28",  # type: ignore
     )
