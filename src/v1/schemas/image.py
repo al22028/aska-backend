@@ -59,3 +59,9 @@ class ImageSchema(ImageCreateSchema, TimeStampSchema):
         description="Image ID",
         example="44f97c86d4954afcbdc6f2443a159c28",  # type: ignore
     )
+    src: str = Field(
+        ...,
+        title="Image Source",
+        description="Image Source",
+        example="https://example.com/44f97c86d4954afcbdc6f2443a159c28/1.png",  # type: ignore
+    )
