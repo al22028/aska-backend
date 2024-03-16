@@ -42,8 +42,7 @@ class VersionORM(object):
         project_id = version_data.project_id
         versions = self.find_many_by_project_id(db, project_id)
         version_number = len(versions) + 1
-        project_title = self.projects.find_one(db, project_id).title
-        title = f"{project_title}_V{version_number}"
+        title = f"V{version_number}"
         created_pdf = Version(
             id=id,
             title=title,
@@ -54,12 +53,14 @@ class VersionORM(object):
         db.add(created_pdf)
         return created_pdf
 
-    def update_one(self, db: Session, version_id: str, pdf_data: VersionUpdateSchema) -> Version:
-        updated_pdf = self.find_one(db, version_id)
-        updated_pdf.title = pdf_data.title
-        updated_pdf.description = pdf_data.description
-        db.add(updated_pdf)
-        return updated_pdf
+    def update_one(
+        self, db: Session, version_id: str, version_data: VersionUpdateSchema
+    ) -> Version:
+        updated_version = self.find_one(db, version_id)
+        updated_version.title = version_data.title
+        updated_version.description = version_data.description
+        db.add(updated_version)
+        return updated_version
 
     def update_thumbnail(self, db: Session, version_id: str, thumbnail: str) -> Version:
         updated_pdf = self.find_one(db, version_id)

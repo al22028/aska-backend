@@ -67,7 +67,7 @@ class VersionController:
     @with_session
     def find_one(self, session: Session, version_id: str) -> VersionDetailSchema:
         if not self.versions.exists(db=session, version_id=version_id):
-            raise NotFoundError("pdf not found")
+            raise NotFoundError("version not found")
         version = self.versions.find_one(db=session, version_id=version_id)
 
         page_list = self.pages.find_many_by_version_id(db=session, version_id=version_id)
@@ -79,18 +79,18 @@ class VersionController:
         self, session: Session, version_id: str, version_data: VersionUpdateSchema
     ) -> VersionSchema:
         if not self.versions.exists(db=session, version_id=version_id):
-            raise NotFoundError("pdf not found")
+            raise NotFoundError("version not found")
         updated_version = self.versions.update_one(
-            db=session, version_id=version_id, pdf_data=version_data
+            db=session, version_id=version_id, version_data=version_data
         )
         return VersionSchema(**updated_version.serializer())
 
     @with_session
     def delete_one(self, session: Session, version_id: str) -> DeletedSchema:
         if not self.versions.exists(db=session, version_id=version_id):
-            raise NotFoundError("pdf not found")
+            raise NotFoundError("version not found")
         self.versions.delete_one(db=session, version_id=version_id)
-        return DeletedSchema(message="pdf deleted successfully")
+        return DeletedSchema(message="version deleted successfully")
 
     @with_session
     def generate_download_url(self, session: Session, version_id: str) -> DownloadURLSchema:
