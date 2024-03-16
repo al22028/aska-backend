@@ -261,12 +261,14 @@ class Page(Base, TimestampMixin):
         "Json", cascade="all, delete", passive_deletes=True, back_populates="page"
     )
 
-    def __init__(self, id: str, version_id: str, local_index: int, status: Status) -> None:
+    def __init__(
+        self, id: str, version_id: str, local_index: int, global_index: int, status: Status
+    ) -> None:
         self.id = id
         self.version_id = version_id
         self.status = status
         self.local_index = local_index
-        self.global_index = local_index
+        self.global_index = global_index
         self.updated_at = datetime.now()
         self.created_at = self.updated_at
 

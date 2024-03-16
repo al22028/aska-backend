@@ -10,7 +10,8 @@
     "dev": "serverless offline start --reloadHandler --stage local",
     "clean": "rm -rf .serverless .pytest_cache .mypy_cache .coverage .pytest_cache .mypy_cache .ruff_cache htmlcov",
     "deploy": "serverless deploy --verbose --stage dev --region ap-northeast-1",
-    "deploy:dev": "serverless deploy --verbose --stage dev --region ap-northeast-1"
+    "deploy:dev": "serverless deploy --verbose --stage dev --region ap-northeast-1",
+    "deploy:api": "serverless deploy --verbose --stage dev --region ap-northeast-1 --function ApplicationApiHandler --force"
   },
   "repository": {
     "type": "git",
