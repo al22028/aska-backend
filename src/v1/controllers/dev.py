@@ -87,10 +87,10 @@ class DevController:
 
     @with_session
     def create_image_diff(self, session: Session, image1_id: str, image2_id: str) -> dict:
-        image1 = self.images.find_one(db=session, id=image1_id)
-        image2 = self.images.find_one(db=session, id=image2_id)
-        page1 = self.pages.find_one(db=session, id=image1.page_id)
-        page2 = self.pages.find_one(db=session, id=image2.page_id)
+        image1 = self.images.find_one(db=session, image_id=image1_id)
+        image2 = self.images.find_one(db=session, image_id=image2_id)
+        page1 = self.pages.find_one(db=session, page_id=image1.page_id)
+        page2 = self.pages.find_one(db=session, page_id=image2.page_id)
         score = self.calculate_macthing_score(image1, image2)
         logger.info(f"Matching score: {score}")
         bounding_boxes = self.calculate_bouding_boxes(page1, page2)
