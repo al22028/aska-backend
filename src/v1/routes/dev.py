@@ -7,6 +7,7 @@ from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.event_handler.api_gateway import Router
 from aws_lambda_powertools.event_handler.exceptions import NotFoundError
 from controllers.dev import DevController
+from schemas.diff import DiffSchema
 
 app = APIGatewayRestResolver(debug=True)
 router = Router()
@@ -21,8 +22,8 @@ controller = DevController()
     summary="差分のjsonを計算",
     description="差分のJsonを計算します",
 )
-def create_image_diff(image1_id: str, image2_id) -> dict:
-    return {"statusCode": 200, "body": event}
+def create_image_diff(image1_id: str, image2_id) -> DiffSchema:
+    return controller.create_image_diff(image1_id=image1_id, image2_id=image2_id)
 
 
 v1_json = """
