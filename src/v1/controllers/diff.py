@@ -25,7 +25,7 @@ class DiffController:
         return [DiffSchema(**diff.serializer()) for diff in diffs]
 
     @with_session
-    def find_by_ids(self, image1_id: str, image2_id, session: Session) -> DiffSchema:
+    def find_by_ids(self, image1_id: str, image2_id: str, session: Session) -> DiffSchema:
         diff = self.matchings.find_by_ids(image1_id=image1_id, image2_id=image2_id, db=session)
         return DiffSchema(**diff.serializer())
 

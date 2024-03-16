@@ -34,7 +34,7 @@ class MatchinORM(object):
             )
 
     @log_function_execution(logger=logger)
-    def create_one(self, diff_data: DiffCreateSchema, db: Session):
+    def create_one(self, diff_data: DiffCreateSchema, db: Session) -> Matching:
         matching = Matching(**diff_data.model_dump())
         db.add(matching)
         return matching
