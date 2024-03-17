@@ -2,6 +2,8 @@
 from aws_lambda_powertools import Tracer
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.event_handler.api_gateway import Router
+from aws_lambda_powertools.event_handler.openapi.params import Query
+from aws_lambda_powertools.shared.types import Annotated
 from controllers.diff import DiffController
 from schemas.diff import DiffCreateSchema, DiffSchema
 
@@ -15,7 +17,7 @@ controller = DiffController()
 
 
 @router.get(
-    "/",
+    "/all",
     tags=["Diff"],
     summary="全ての差分情報を取得",
     description="全ての差分情報を持つjsonを取得します。",
@@ -28,7 +30,7 @@ def fetch_all_diffs() -> list[DiffSchema]:
 
 
 @router.get(
-    "/<image1_id>/<image2_id>",
+    "/",
     tags=["Diff"],
     summary="画像対の差分情報を取得",
     description="画像対の差分情報を取得を持つjsonを取得します。",
@@ -36,8 +38,10 @@ def fetch_all_diffs() -> list[DiffSchema]:
     operation_id="fetchDiffByImageIds",
     responses={200: {"description": "成功"}, 500: {"description": "Internal Server Error"}},
 )
-def find_matched_image_diff(image1_id: str, image2_id: str) -> list[DiffSchema]:
-    return controller.find_by_ids(image1_id=image1_id, image2_id=image2_id)
+def find_matched_image_diff(
+    image1Id: Annotated[str, Query], image2Id: Annotated[str, Query]
+) -> list[DiffSchema]:
+    return controller.find_by_ids(image1_id=image1Id, image2_id=image2Id)
 
 
 @router.post(
