@@ -339,8 +339,8 @@ class Matching(Base, TimestampMixin):
     def serializer(self) -> dict:
         return {
             "id": self.id,
-            "image1": self.image1.serializer(),
-            "image2": self.image2.serializer(),
+            "image1Id": self.image1_id,
+            "image2Id": self.image2_id,
             "score": self.score,
             "status": self.status,
             "params": self.params,
