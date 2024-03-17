@@ -59,7 +59,7 @@ class DiffUpdateSchema(BaseSchema):
         ...,
         title="Bounding Boxes",
         description="Bounding Boxes",
-        example={[{"maxX": 0, "maxY": 0, "minX": 100, "minY": 100}, {"maxX": 0, "maxY": 0, "minX": 100, "minY": 100}]},  # type: ignore
+        example=[{"maxX": 0, "maxY": 0, "minX": 100, "minY": 100}, {"maxX": 0, "maxY": 0, "minX": 100, "minY": 100}],  # type: ignore
     )
 
 
