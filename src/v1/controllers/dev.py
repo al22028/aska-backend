@@ -1,5 +1,6 @@
 # Standard Library
 import json
+import time
 
 # Third Party Library
 import boto3
@@ -54,7 +55,8 @@ class DevController:
             ),
         )
         logger.info(response)
-        body = json.loads(response)["body"]
+        body = json.loads(response["Payload"].read().decode("utf-8"))["body"]
+        time.sleep(1)
         logger.info(body)
         return body["score"]
 
@@ -80,9 +82,11 @@ class DevController:
         )
         logger.info(response)
         body = json.loads(response)["body"]
+        time.sleep(1)
         logger.info(body)
         file_body = self.get_object_body(bucket=AWS_IMAGE_BUCKET, key=body["objectKey"])
         body = json.loads(file_body)
+        time.sleep(1)
         logger.info(body)
         return body
 
