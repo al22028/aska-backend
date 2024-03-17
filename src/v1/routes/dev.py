@@ -21,6 +21,6 @@ controller = DevController()
     description="差分のJsonを計算します",
 )
 def create_image_diff(
-    iimage1Id: Annotated[str, Query], image2Id: Annotated[str, Query]
+    image1Id: Annotated[str, Query], image2Id: Annotated[str, Query]
 ) -> DiffSchema:
-    return controller.create_image_diff(image1_id=iimage1Id, image2_id=image2Id)
+    return controller.create_image_diff(image1_id=image1Id, image2_id=image2Id)
