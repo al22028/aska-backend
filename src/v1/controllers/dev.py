@@ -6,7 +6,7 @@ import time
 import boto3
 from aws.lambda_client import LambdaClient
 from aws_lambda_powertools import Logger
-from config.settings import AWS_IMAGE_BUCKET
+from config.settings import AWS_IMAGE_BUCKET, AWS_TMP_BUCKET
 from database.base import Page
 from database.session import with_session
 from models.image import ImageORM
@@ -92,7 +92,7 @@ class DevController:
         logger.info(response)
         response = response["Payload"].read().decode("utf-8")
         object_key = json.loads(json.loads(response)["body"])["objectKey"]
-        file_body = self.get_object_body(bucket=AWS_IMAGE_BUCKET, key=object_key)
+        file_body = self.get_object_body(bucket=AWS_TMP_BUCKET, key=object_key)
         body = json.loads(file_body)
         time.sleep(1)
         logger.info(body)
