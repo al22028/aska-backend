@@ -18,15 +18,15 @@ def invoke_lambda():
     payload = {
         "body": {
             "bucket_name": "aska-image-bucket-dev",
-            "before": {"json_object_key":"id231321/1.json","image_object_key":"id231321/1.png"},
-            "after": {"json_object_key":"id231321/2.json","image_object_key":"id231321/2.png"},
-            "params" : {
-                "match_threshold" : 0.85,
-                "threshold" : 220,
-                "eps" : 20,
-                "min_samples" : 50,
+            "before": {"json_object_key": "id231321/1.json", "image_object_key": "id231321/1.png"},
+            "after": {"json_object_key": "id231321/2.json", "image_object_key": "id231321/2.png"},
+            "params": {
+                "match_threshold": 0.85,
+                "threshold": 220,
+                "eps": 20,
+                "min_samples": 50,
             },
-            "is_dev": True
+            "is_dev": True,
         }
     }
 
@@ -36,7 +36,9 @@ def invoke_lambda():
         LogType="Tail",
         Payload=bytes(json.dumps(payload).encode()),
     )
-    print(response["Payload"].read().decode("utf-8"))
+    response = response["Payload"].read().decode("utf-8")
+    object_key = json.loads(json.loads(response)["body"])["objectKey"]
+    print(object_key)
 
 
 if __name__ == "__main__":
