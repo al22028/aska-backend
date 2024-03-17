@@ -62,7 +62,7 @@ class DevController:
             Payload=bytes(json.dumps(payload).encode()),
         )
         logger.info(response)
-        body = json.loads(response["Payload"].read().decode("utf-8"))["body"]
+        body = json.loads(response["Payload"].read().decode("utf-8"))
         time.sleep(1)
         logger.info(body)
         return body["score"]
