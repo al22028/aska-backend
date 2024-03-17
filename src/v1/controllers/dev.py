@@ -7,7 +7,7 @@ import boto3
 from aws.lambda_client import LambdaClient
 from aws_lambda_powertools import Logger
 from config.settings import AWS_IMAGE_BUCKET
-from database.base import Image, Page
+from database.base import Page
 from database.session import with_session
 from models.image import ImageORM
 from models.json import JsonORM
@@ -15,7 +15,6 @@ from models.matching import MatchinORM
 from models.page import PageORM
 from models.version import VersionORM
 from schemas.diff import DiffCreateSchema, DiffSchema
-from schemas.payload import LambdaInvokePayload
 from schemas.status import Status
 from sqlalchemy.orm.session import Session
 
@@ -38,24 +37,32 @@ class DevController:
     matchings = MatchinORM()
     lambda_client = LambdaClient()
     s3 = boto3.client("s3")
+    lambda_client = boto3.client("lambda")
 
     def get_object_body(self, bucket: str, key: str) -> str:
         response = self.s3.get_object(Bucket=bucket, Key=key)
         return response["Body"].read().decode("utf-8")
 
-    def calculate_macthing_score(self, image1: Image, image2: Image) -> float:
+    def calculate_macthing_score(self, page1: Page, page2: Page) -> float:
+        payload = {
+            "body": {
+                "bucket_name": AWS_IMAGE_BUCKET,
+                "before": {
+                    "json_object_key": page1.json.object_key,
+                },
+                "after": {
+                    "json_object_key": page2.json.object_key,
+                },
+            }
+        }
         response = self.lambda_client.invoke(
-            function_name="aska-api-dev-MatchingCalculateHandler",
-            payload=LambdaInvokePayload(
-                body={
-                    "bucket_name": AWS_IMAGE_BUCKET,
-                    "before": image1.object_key,
-                    "after": image2.object_key,
-                }
-            ),
+            FunctionName="aska-api-dev-MatchingCalculateHandler",
+            InvocationType="RequestResponse",
+            LogType="Tail",
+            Payload=bytes(json.dumps(payload).encode()),
         )
         logger.info(response)
-        body = json.loads(response["Payload"].read().decode("utf-8"))["body"]
+        body = json.loads(response)["body"]
         time.sleep(1)
         logger.info(body)
         return body["score"]
@@ -96,7 +103,7 @@ class DevController:
         image2 = self.images.find_one(db=session, image_id=image2_id)
         page1 = self.pages.find_one(db=session, page_id=image1.page_id)
         page2 = self.pages.find_one(db=session, page_id=image2.page_id)
-        score = self.calculate_macthing_score(image1, image2)
+        score = self.calculate_macthing_score(page1, page2)
         logger.info(f"Matching score: {score}")
         bounding_boxes = self.calculate_bouding_boxes(page1, page2)
         logger.info(f"Bounding boxes: {bounding_boxes}")
