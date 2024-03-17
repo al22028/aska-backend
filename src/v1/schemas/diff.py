@@ -34,6 +34,35 @@ class ParamsSchema(BaseSchema):
     )
 
 
+class BoundingBoxSchema(BaseSchema):
+    """Bounding Box Schema"""
+
+    max_x: int = Field(
+        ...,
+        title="Max X",
+        description="Max X",
+        example=0,  # type: ignore
+    )
+    max_y: int = Field(
+        ...,
+        title="Max Y",
+        description="Max Y",
+        example=0,  # type: ignore
+    )
+    min_x: int = Field(
+        ...,
+        title="Min X",
+        description="Min X",
+        example=100,  # type: ignore
+    )
+    min_y: int = Field(
+        ...,
+        title="Min Y",
+        description="Min Y",
+        example=100,  # type: ignore
+    )
+
+
 class DiffUpdateSchema(BaseSchema):
     """Diff Update Schema"""
 
@@ -49,13 +78,18 @@ class DiffUpdateSchema(BaseSchema):
         description="Status",
         example=Status.matching_calculation_success.value,  # type: ignore
     )
-    params: dict = Field(
+    params: ParamsSchema = Field(
         ...,
         title="Params",
         params="Params",
-        example={"threshold": 0.5},  # type: ignore
+        example={
+            "matchThreshold": 0.85,
+            "threshold": 220,
+            "eps": 20,
+            "minSamples": 50,
+        },  # type: ignore
     )
-    bounding_boxes: list[dict] = Field(
+    bounding_boxes: list[BoundingBoxSchema] = Field(
         ...,
         title="Bounding Boxes",
         description="Bounding Boxes",
