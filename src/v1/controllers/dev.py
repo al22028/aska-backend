@@ -69,23 +69,26 @@ class DevController:
 
     def calculate_bouding_boxes(self, page1: Page, page2: Page, params: dict = PARAMS) -> dict:
         # TODO: payloadをschemaに変更する
+        payload = {
+            "body": {
+                "bucket_name": AWS_IMAGE_BUCKET,
+                "before": {
+                    "json_object_key": page1.json.object_key,
+                    "image_object_key": page1.image.object_key,
+                },
+                "after": {
+                    "json_object_key": page2.json.object_key,
+                    "image_object_key": page2.image.object_key,
+                },
+                "params": params,
+                "is_dev": True,
+            }
+        }
         response = self.lambda_client.invoke(
-            function_name="aska-api-dev-ImageDiffHandler",
-            payload={
-                "body": {
-                    "bucket_name": AWS_IMAGE_BUCKET,
-                    "before": {
-                        "json_object_key": page1.json.object_key,
-                        "image_object_key": page1.image.object_key,
-                    },
-                    "after": {
-                        "json_object_key": page2.json.object_key,
-                        "image_object_key": page2.image.object_key,
-                    },
-                    "params": params,
-                    "is_dev": True,
-                }
-            },
+            FunctionName="aska-api-dev-ImageDiffHandler",
+            InvocationType="RequestResponse",
+            LogType="Tail",
+            Payload=bytes(json.dumps(payload).encode()),
         )
         logger.info(response)
         body = json.loads(response)["body"]
