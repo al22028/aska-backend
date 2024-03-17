@@ -1,9 +1,9 @@
 # Standard Library
 import json
+import boto3
 
 # Third Party Library
 from aws.lambda_client import LambdaClient
-from aws.s3 import S3
 from aws_lambda_powertools import Logger
 from config.settings import AWS_IMAGE_BUCKET
 from database.base import Image, Page
@@ -36,7 +36,7 @@ class DevController:
     versions = VersionORM()
     matchings = MatchinORM()
     lambda_client = LambdaClient()
-    s3 = S3()
+    s3 = boto3.client("s3")
 
     def get_object_body(self, bucket: str, key: str) -> bytes:
         response = self.s3.get_object(Bucket=bucket, Key=key)
@@ -81,7 +81,8 @@ class DevController:
         logger.info(response)
         body = json.loads(response)["body"]
         logger.info(body)
-        body = json.loads(self.get_object_body(bucket=AWS_IMAGE_BUCKET, key=body["objectKey"]))
+        file_body = self.get_object_body(bucket=AWS_IMAGE_BUCKET, key=body["objectKey"])
+        body = json.loads(file_body)
         logger.info(body)
         return body
 
