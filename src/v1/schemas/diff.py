@@ -5,6 +5,35 @@ from schemas.common import TimeStampSchema
 from schemas.status import Status
 
 
+class ParamsSchema(BaseSchema):
+    """Params Schema"""
+
+    match_threshold: float = Field(
+        ...,
+        title="Match Threshold",
+        description="Match Threshold",
+        example=0.85,  # type: ignore
+    )
+    threshold: int = Field(
+        ...,
+        title="Threshold",
+        description="Threshold",
+        example=220,  # type: ignore
+    )
+    eps: int = Field(
+        ...,
+        title="Eps",
+        description="Eps",
+        example=20,  # type: ignore
+    )
+    min_samples: int = Field(
+        ...,
+        title="Min Samples",
+        description="Min Samples",
+        example=50,  # type: ignore
+    )
+
+
 class DiffUpdateSchema(BaseSchema):
     """Diff Update Schema"""
 
