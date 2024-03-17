@@ -40,7 +40,7 @@ def fetch_all_diffs() -> list[DiffSchema]:
 )
 def find_matched_image_diff(
     image1Id: Annotated[str, Query], image2Id: Annotated[str, Query]
-) -> list[DiffSchema]:
+) -> DiffSchema:
     return controller.find_by_ids(image1_id=image1Id, image2_id=image2Id)
 
 
