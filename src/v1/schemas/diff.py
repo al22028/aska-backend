@@ -55,11 +55,11 @@ class DiffUpdateSchema(BaseSchema):
         params="Params",
         example={"threshold": 0.5},  # type: ignore
     )
-    bounding_boxes: dict = Field(
+    bounding_boxes: list[dict] = Field(
         ...,
         title="Bounding Boxes",
         description="Bounding Boxes",
-        example={"image1": {"x": 0, "y": 0, "w": 100, "h": 100}, "image2": {"x": 0, "y": 0, "w": 100, "h": 100}},  # type: ignore
+        example={[{"maxX": 0, "maxY": 0, "minX": 100, "minY": 100}, {"maxX": 0, "maxY": 0, "minX": 100, "minY": 100}]},  # type: ignore
     )
 
 
