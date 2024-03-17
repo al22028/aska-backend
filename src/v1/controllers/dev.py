@@ -1,8 +1,8 @@
 # Standard Library
 import json
-import boto3
 
 # Third Party Library
+import boto3
 from aws.lambda_client import LambdaClient
 from aws_lambda_powertools import Logger
 from config.settings import AWS_IMAGE_BUCKET
@@ -38,7 +38,7 @@ class DevController:
     lambda_client = LambdaClient()
     s3 = boto3.client("s3")
 
-    def get_object_body(self, bucket: str, key: str) -> bytes:
+    def get_object_body(self, bucket: str, key: str) -> str:
         response = self.s3.get_object(Bucket=bucket, Key=key)
         return response["Body"].read().decode("utf-8")
 
