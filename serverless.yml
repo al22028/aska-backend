@@ -73,7 +73,7 @@ provider:
   # Processor architecture: 'x86_64' or 'arm64' via Graviton2 (default: x86_64)
   architecture: x86_64
   # Default memory size for functions (default: 1024MB)
-  memorySize: 512
+  memorySize: 4096
   # Default timeout for functions (default: 6 seconds)
   # Note: API Gateway has a maximum timeout of 30 seconds
   timeout: 150
