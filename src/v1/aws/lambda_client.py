@@ -9,7 +9,7 @@ from schemas.payload import LambdaInvokePayload
 class LambdaClient:
     client = boto3.client("lambda")
 
-    def invoke(self, function_name: str, payload: LambdaInvokePayload) -> tuple[str, int]:
+    def invoke(self, function_name: str, payload: LambdaInvokePayload) -> str:
         """Invoke Lambda functionS
 
         Args:
@@ -24,4 +24,4 @@ class LambdaClient:
             InvocationType="RequestResponse",
             Payload=bytes(json.dumps(payload.model_dump()).encode()),
         )
-        return response["Payload"].read().decode("utf-8"), response["StatusCode"]
+        return response["Payload"].read().decode("utf-8")

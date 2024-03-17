@@ -47,7 +47,7 @@ app.include_router(version.router, prefix="/versions")
 app.include_router(page.router, prefix="/pages")
 app.include_router(image.router, prefix="/images")
 app.include_router(json.router, prefix="/jsons")
-app.include_router(diff.router, prefix="/diffs")
+app.include_router(diff.router, prefix="/diff")
 
 if STAGE != "prod":
     app.include_router(dev.router, prefix="/dev")
