@@ -13,7 +13,9 @@ from models.image import ImageORM
 from models.json import JsonORM
 from models.matching import MatchinORM
 from models.page import PageORM
+from models.user import UserORM
 from models.version import VersionORM
+from schemas.common import DeletedSchema
 from schemas.diff import DiffCreateSchema, DiffSchema
 from schemas.status import Status
 from sqlalchemy.orm.session import Session
@@ -31,6 +33,7 @@ PARAMS = {
 
 class DevController:
     pages = PageORM()
+    users = UserORM()
     images = ImageORM()
     jsons = JsonORM()
     versions = VersionORM()
@@ -120,3 +123,9 @@ class DevController:
             db=session,
         )
         return DiffSchema(**diff.serializer())
+
+    @with_session
+    def delete_single_user(self, session: Session, user_id: str) -> DeletedSchema:
+        user = self.users.find_one(db=session, user_id=user_id)
+        self.users.delete_one(db=session, user_id=user.id)
+        return DeletedSchema(message="User deleted")
