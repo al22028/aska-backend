@@ -6,6 +6,8 @@ from typing import List
 from aws_lambda_powertools import Tracer
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.event_handler.api_gateway import Router
+from aws_lambda_powertools.event_handler.openapi.params import Path
+from aws_lambda_powertools.shared.types import Annotated
 from controllers.user import UserController
 from schemas.common import DeletedSchema
 from schemas.user import UserCreateResponsSchema, UserCreateSchema, UserSchema, UserUpdateSchema
@@ -42,7 +44,16 @@ def fetch_all_users() -> List[UserSchema]:
         404: {"description": "User Not Found"},
     },
 )
-def fetch_user(userId: str) -> UserSchema:
+def fetch_user(
+    userId: Annotated[
+        str,
+        Path(
+            title="ユーザーID",
+            description="CognitoのSubに相当するユーザーIDを指定してください。",
+            example="e7b45a98-1031-7095-d7ee-6748af941d2a",
+        ),
+    ],
+) -> UserSchema:
     return controller.find_one_or_404(user_id=userId)
 
 
@@ -73,7 +84,17 @@ def create_user(user: UserCreateSchema) -> UserCreateResponsSchema:
         404: {"description": "User Not Found"},
     },
 )
-def update_user(userId: str, user: UserUpdateSchema) -> UserSchema:
+def update_user(
+    userId: Annotated[
+        str,
+        Path(
+            title="ユーザーID",
+            description="CognitoのSubに相当するユーザーIDを指定してください。",
+            example="e7b45a98-1031-7095-d7ee-6748af941d2a",
+        ),
+    ],
+    user: UserUpdateSchema,
+) -> UserSchema:
     updated_user = controller.update_one(user_id=userId, user_data=user)
     return updated_user
 
@@ -90,6 +111,15 @@ def update_user(userId: str, user: UserUpdateSchema) -> UserSchema:
         404: {"description": "User Not Found"},
     },
 )
-def delete_single_user(userId: str) -> DeletedSchema:
+def delete_single_user(
+    userId: Annotated[
+        str,
+        Path(
+            title="ユーザーID",
+            description="CognitoのSubに相当するユーザーIDを指定してください。",
+            example="e7b45a98-1031-7095-d7ee-6748af941d2a",
+        ),
+    ],
+) -> DeletedSchema:
     controller.delete_one(user_id=userId)
     return DeletedSchema(message="User deleted successfully"), HTTPStatus.OK  # type: ignore

@@ -5,7 +5,7 @@ from typing import List
 from aws_lambda_powertools import Tracer
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.event_handler.api_gateway import Router
-from aws_lambda_powertools.event_handler.openapi.params import Query
+from aws_lambda_powertools.event_handler.openapi.params import Path, Query
 from aws_lambda_powertools.shared.types import Annotated
 from controllers.version import VersionController
 from schemas.common import DeletedSchema, DownloadURLSchema
@@ -84,7 +84,16 @@ def create_single_version(version_data: VersionCreateSchema) -> VersionCreateRes
         500: {"description": "Internal Server Error"},
     },
 )
-def fetch_single_version_by_id(versionId: str) -> VersionDetailSchema:
+def fetch_single_version_by_id(
+    versionId: Annotated[
+        str,
+        Path(
+            title="バージョンID",
+            description="取得したいバージョンのIDを指定してください。",
+            example="e7b45a9810317095d7ee6748af941d2a",
+        ),
+    ],
+) -> VersionDetailSchema:
     return controller.find_one(version_id=versionId)
 
 
@@ -101,7 +110,16 @@ def fetch_single_version_by_id(versionId: str) -> VersionDetailSchema:
         500: {"description": "Internal Server Error"},
     },
 )
-def fetch_single_version_download_url(versionId: str) -> DownloadURLSchema:
+def fetch_single_version_download_url(
+    versionId: Annotated[
+        str,
+        Path(
+            title="バージョンID",
+            description="ダウンロードしたいバージョンのIDを指定してください。",
+            example="e7b45a9810317095d7ee6748af941d2a",
+        ),
+    ],
+) -> DownloadURLSchema:
     return controller.generate_download_url(version_id=versionId)
 
 
@@ -118,7 +136,17 @@ def fetch_single_version_download_url(versionId: str) -> DownloadURLSchema:
         500: {"description": "Internal Server Error"},
     },
 )
-def update_single_version(versionId: str, version_data: VersionUpdateSchema) -> VersionSchema:
+def update_single_version(
+    versionId: Annotated[
+        str,
+        Path(
+            title="バージョンID",
+            description="更新したいバージョンのIDを指定してください。",
+            example="e7b45a9810317095d7ee6748af941d2a",
+        ),
+    ],
+    version_data: VersionUpdateSchema,
+) -> VersionSchema:
     return controller.update_one(version_id=versionId, version_data=version_data)
 
 
@@ -135,5 +163,14 @@ def update_single_version(versionId: str, version_data: VersionUpdateSchema) -> 
         500: {"description": "Internal Server Error"},
     },
 )
-def delete_single_version(versionId: str) -> DeletedSchema:
+def delete_single_version(
+    versionId: Annotated[
+        str,
+        Path(
+            title="バージョンID",
+            description="削除したいバージョンのIDを指定してください。",
+            example="e7b45a9810317095d7ee6748af941d2a",
+        ),
+    ],
+) -> DeletedSchema:
     return controller.delete_one(version_id=versionId)
