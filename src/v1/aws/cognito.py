@@ -86,3 +86,15 @@ class Cognito:
             self.client.admin_disable_user(UserPoolId=self._user_pool_id, Username=user_id)
         except Exception:
             raise BadRequestError("user id not found")
+
+    def delete_user(self, user_id: str) -> None:
+        """Delete user
+        Args:
+            user_id (str): user id
+        Raises:
+            BadRequestError: some error occurred
+        """
+        try:
+            self.client.admin_delete_user(UserPoolId=self._user_pool_id, Username=user_id)
+        except Exception:
+            raise BadRequestError("user id not found")
