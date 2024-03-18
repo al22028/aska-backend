@@ -32,7 +32,12 @@ def create_image_diff(
     return controller.create_image_diff(image1_id=image1Id, image2_id=image2Id)
 
 
-@router.delete("/users/<userId>", tags=["Dev"], summary="ユーザーを削除")
+@router.delete(
+    "/users/<userId>",
+    tags=["Dev"],
+    summary="ユーザーを削除",
+    description="APIのみのユーザーを削除します",
+)
 def delete_single_user_dev(
     userId: Annotated[
         str,
