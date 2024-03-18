@@ -5,6 +5,8 @@ from typing import List
 from aws_lambda_powertools import Tracer
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.event_handler.api_gateway import Router
+from aws_lambda_powertools.event_handler.openapi.params import Path
+from aws_lambda_powertools.shared.types import Annotated
 from controllers.project import ProjectController
 from schemas.common import DeletedSchema
 from schemas.project import (
@@ -43,7 +45,16 @@ def fetch_all_projects() -> List[ProjectSchema]:
     operation_id="fetchSingleProjectById",
     responses={200: {"description": "プロジェクト詳細"}, 404: {"description": "Not found"}},
 )
-def fetch_project(projectId: str) -> ProjectDetailSchema:
+def fetch_project(
+    projectId: Annotated[
+        str,
+        Path(
+            title="プロジェクトID",
+            description="取得したいプロジェクトのIDを指定してください。",
+            example="e7b45a9810317095d7ee6748af941d2a",
+        ),
+    ],
+) -> ProjectDetailSchema:
     return controller.find_one_or_404(project_id=projectId)
 
 
@@ -77,7 +88,17 @@ def create_project(project: ProjectCreateSchema) -> ProjectDetailSchema:
         404: {"description": "Project Not Found"},
     },
 )
-def update_project(projectId: str, project: ProjectUpdateSchema) -> ProjectDetailSchema:
+def update_project(
+    projectId: Annotated[
+        str,
+        Path(
+            title="プロジェクトID",
+            description="更新したいプロジェクトのIDを指定してください。",
+            example="e7b45a9810317095d7ee6748af941d2a",
+        ),
+    ],
+    project: ProjectUpdateSchema,
+) -> ProjectDetailSchema:
     updated_project = controller.update_one(project_id=projectId, project_data=project)
     return updated_project
 
@@ -94,6 +115,15 @@ def update_project(projectId: str, project: ProjectUpdateSchema) -> ProjectDetai
         404: {"description": "Project Not Found"},
     },
 )
-def delete_project(projectId: str) -> DeletedSchema:
+def delete_project(
+    projectId: Annotated[
+        str,
+        Path(
+            title="プロジェクトID",
+            description="削除したいプロジェクトのIDを指定してください。",
+            example="e7b45a9810317095d7ee6748af941d2a",
+        ),
+    ],
+) -> DeletedSchema:
     delete_project, status_code = controller.delete_one(project_id=projectId)
     return delete_project, status_code  # type: ignore

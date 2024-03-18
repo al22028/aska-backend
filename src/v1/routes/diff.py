@@ -39,7 +39,12 @@ def fetch_all_diffs() -> list[DiffSchema]:
     responses={200: {"description": "成功"}, 500: {"description": "Internal Server Error"}},
 )
 def find_matched_image_diff(
-    image1Id: Annotated[str, Query], image2Id: Annotated[str, Query]
+    image1Id: Annotated[
+        str, Query(description="画像1のID", example="44f97c86d4954afcbdc6f2443a159c28")
+    ],
+    image2Id: Annotated[
+        str, Query(description="画像2のID", example="44f97c86d4954afcbdc6f2443a159c29")
+    ],
 ) -> DiffSchema:
     return controller.find_by_ids(image1_id=image1Id, image2_id=image2Id)
 

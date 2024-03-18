@@ -2,6 +2,8 @@
 from aws_lambda_powertools import Tracer
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.event_handler.api_gateway import Router
+from aws_lambda_powertools.event_handler.openapi.params import Path
+from aws_lambda_powertools.shared.types import Annotated
 from controllers.image import ImageController
 from schemas.common import DownloadURLSchema
 from schemas.image import ImageSchema
@@ -41,5 +43,14 @@ def fetch_all_images() -> list[ImageSchema]:
         500: {"description": "Internal Server Error"},
     },
 )
-def fetch_single_image_download_url(imageId: str) -> DownloadURLSchema:
+def fetch_single_image_download_url(
+    imageId: Annotated[
+        str,
+        Path(
+            title="画像ID",
+            description="ダウンロードしたい画像のIDを指定してください。",
+            example="44f97c86d4954afcbdc6f2443a159c28",
+        ),
+    ]
+) -> DownloadURLSchema:
     return controller.generate_download_url(image_id=imageId)
