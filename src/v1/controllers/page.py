@@ -7,7 +7,7 @@ from models.page import PageORM
 from models.version import VersionORM
 from schemas.image import ImageCreateSchema
 from schemas.json import JsonCreateSchema
-from schemas.page import PageCreateSchema, PageSchema
+from schemas.page import PageCreateSchema, PageSchema, PageUpdateSchema
 from schemas.status import Status
 from sqlalchemy.orm.session import Session
 
@@ -24,6 +24,17 @@ class PageController:
     def find_all_pages(self, session: Session) -> list[PageSchema]:
         pages = self.pages.find_all(session)
         return [PageSchema(**page.serializer()) for page in pages]
+
+    @with_session
+    def update_single_page(
+        self, page_id: str, data: PageUpdateSchema, session: Session
+    ) -> PageSchema:
+        page = self.pages.find_one(session, page_id)
+        page.local_index = data.local_index
+        page.global_index = data.global_index
+        page.status = data.status
+        session.commit()
+        return PageSchema(**page.serializer())
 
     @with_session
     def bulk_insert_pages(self, pages: list[dict], session: Session) -> None:
