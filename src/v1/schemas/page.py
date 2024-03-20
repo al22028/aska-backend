@@ -45,6 +45,12 @@ class PageUpdateSchema(BaseSchema):
         description="Status",
         example=Status.pending.value,  # type: ignore
     )
+    local_index: int = Field(
+        ...,
+        title="Local Index",
+        description="Local Index",
+        example=1,  # type: ignore
+    )
     global_index: int = Field(
         title="Global Index",
         description="Global Index",
