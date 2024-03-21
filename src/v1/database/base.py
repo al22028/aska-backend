@@ -179,20 +179,24 @@ class Image(Base, TimestampMixin):
     id = Column(String, primary_key=True)
     page_id = Column(String, ForeignKey("pages.id", ondelete="CASCADE"), nullable=False)
     object_key = Column(String, nullable=False, default="")
+    original_object_key = Column(String, nullable=False, default="")
     status = Column(Enum(Status), nullable=False, default=Status.pending)
 
     page: Mapped["Page"] = relationship("Page", back_populates="image")
 
-    def __init__(self, id: str, page_id: str, object_key: str, status: Status) -> None:
+    def __init__(
+        self, id: str, page_id: str, object_key: str, original_object_key: str, status: Status
+    ) -> None:
         self.id = id
         self.page_id = page_id
         self.object_key = object_key
         self.status = status
+        self.original_object_key = original_object_key
         self.updated_at = datetime.now()
         self.created_at = self.updated_at
 
     def __str__(self) -> str:
-        return f"<Image id={self.id}, page_id={self.page_id}, object_key={self.object_key}, status={self.status}>"
+        return f"<Image id={self.id}, page_id={self.page_id}, object_key={self.object_key}, original_object_key={self.original_object_key}, status={self.status}>"
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -202,6 +206,7 @@ class Image(Base, TimestampMixin):
             "id": self.id,
             "pageId": self.page_id,
             "objectKey": self.object_key,
+            "originalObjectKey": self.original_object_key,
             "src": AWS_IMAGE_HOST_DOMAIN + "/" + self.object_key,
             "status": self.status,
             "updatedAt": self.updated_at.isoformat(),  # type: ignore
@@ -285,7 +290,7 @@ class Page(Base, TimestampMixin):
             "id": self.id,
             "versionId": self.version_id,
             "status": self.status,
-            "version_number": self.version.title[1:] if self.version.title else 0,
+            "version": self.version.title[1:] if self.version.title else 0,
             "local_index": self.local_index,
             "global_index": self.global_index,
             "image": self.image.serializer(),
@@ -301,7 +306,7 @@ class Matching(Base, TimestampMixin):
     id = Column(String, primary_key=True)
     image1_id = Column(String, ForeignKey("images.id", ondelete="CASCADE"), nullable=False)
     image2_id = Column(String, ForeignKey("images.id", ondelete="CASCADE"), nullable=False)
-    score = Column(Float, nullable=True, default=-1.0)
+    score = Column(Float, nullable=False, default=-1.0)
     status = Column(Enum(Status), nullable=False, default=Status.pending)
     params = Column(JSON, nullable=False, default={})
     bounding_boxes = Column(JSON, nullable=True, default={})

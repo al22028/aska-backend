@@ -69,6 +69,7 @@ class PageController:
                 db=session,
                 image_data=ImageCreateSchema(
                     object_key=page["image"]["object_key"],
+                    original_object_key=page["image"]["object_key"],  # FIXME: original_object_key
                     page_id=created_page.id,
                     status=Status(page["image"]["status"]),
                 ),

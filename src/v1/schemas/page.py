@@ -79,7 +79,7 @@ class PageSchema(PageCreateSchema, TimeStampSchema):
         description="Version ID",
         example="44f97c86d4954afcbdc6f2443a159c28",  # type: ignore
     )
-    version_number: int = Field(
+    version: int = Field(
         title="Version Number",
         description="Version Number",
         example=1,  # type: ignore

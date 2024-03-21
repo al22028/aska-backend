@@ -22,9 +22,15 @@ class ImageCreateSchema(BaseSchema):
     )
     object_key: str = Field(
         ...,
-        title="Object Key",
-        description="Object Key",
+        title="Resized Image Object Key",
+        description="Resized Image Object Key",
         example="44f97c86d4954afcbdc6f2443a159c28/1.png",  # type: ignore
+    )
+    original_object_key: str = Field(
+        ...,
+        title="Original Image Object Key",
+        description="Original Image Object Key",
+        example="44f97c86d4954afcbdc6f2443a159c28/1_original.png",  # type: ignore
     )
 
 
