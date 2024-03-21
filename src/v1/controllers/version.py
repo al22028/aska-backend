@@ -15,7 +15,6 @@ from schemas.common import DeletedSchema, DownloadURLSchema
 from schemas.page import PageSchema
 from schemas.version import (
     VersionCreateResponseSchema,
-    VersionCreateSchema,
     VersionDetailSchema,
     VersionSchema,
     VersionUpdateSchema,
@@ -47,12 +46,11 @@ class VersionController:
 
     @with_session
     def create_one(
-        self, session: Session, version_data: VersionCreateSchema
+        self, session: Session, project_id: str
     ) -> tuple[VersionCreateResponseSchema, int]:
-
-        if not self.projects.exists(db=session, project_id=version_data.project_id):
-            raise NotFoundError("project not found")
-        version = self.versions.create_one(db=session, version_data=version_data)
+        if not self.projects.exists(db=session, project_id=project_id):
+            raise NotFoundError("Project not found")
+        version = self.versions.create_one(db=session, project_id=project_id)
         presigned_url = s3.create_presigned_url(
             client_method="put_object",
             bucket_name=AWS_PDF_BUCKET,

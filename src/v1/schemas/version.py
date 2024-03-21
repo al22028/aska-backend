@@ -24,16 +24,13 @@ class VersionUpdateSchema(BaseSchema):
     )
 
 
-class VersionCreateSchema(BaseSchema):
+class VersionSchema(VersionUpdateSchema, TimeStampSchema):
     project_id: str = Field(
         ...,
         title="Project ID",
         description="Project ID",
         example="44f97c86d4954afcbdc6f2443a159c28",  # type: ignore
     )
-
-
-class VersionSchema(VersionCreateSchema, VersionUpdateSchema, TimeStampSchema):
     id: str = Field(
         ...,
         title="ID",
