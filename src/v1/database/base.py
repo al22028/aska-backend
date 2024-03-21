@@ -196,7 +196,7 @@ class Image(Base, TimestampMixin):
         self.created_at = self.updated_at
 
     def __str__(self) -> str:
-        return f"<Image id={self.id}, page_id={self.page_id}, object_key={self.object_key}, status={self.status}>"
+        return f"<Image id={self.id}, page_id={self.page_id}, object_key={self.object_key}, original_object_key={self.original_object_key}, status={self.status}>"
 
     def __repr__(self) -> str:
         return self.__str__()
