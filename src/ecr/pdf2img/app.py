@@ -14,6 +14,7 @@ from aws_lambda_powertools.utilities.data_classes import S3Event, event_source
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from pdf2image import convert_from_bytes
 from PIL import Image
+from pydantic import BaseModel
 
 logger = Logger()
 
@@ -35,6 +36,24 @@ class Status(Enum):
     preprocessed = "PREPROCESSED"  # 前処理完了
     preprocessing_timedout = "PREPROCESSING_TIMEDOUT"  # 前処理タイムアウト
     preprocessing_failed = "PREPROCESSING_FAILED"  # 前処理失敗
+
+
+class JsonSchema(BaseModel):
+    object_key: str
+    status: str
+
+
+class ImageSchema(BaseModel):
+    object_key: str
+    status: str
+    original_object_key: str
+
+
+class Payload(BaseModel):
+    version_id: str
+    local_index: int
+    json: JsonSchema
+    image: ImageSchema
 
 
 # TODO: Refactor this function to use AWS Lambda Powertools
@@ -85,7 +104,7 @@ def keypoint_serializer(kp: cv2.KeyPoint) -> dict:
     }
 
 
-def invoke_lambda(payload: list[dict[str, object]]) -> None:
+def invoke_lambda(payload: list[Payload]) -> None:
     logger.info(payload)
     response = lambda_client.invoke(
         FunctionName="aska-api-dev-InvokedLambdaHandler",
@@ -128,20 +147,25 @@ def convert_to_images(id: str, pdf_file_data: bytes) -> None:
         image.save(buffer, format="PNG")
         buffer.seek(0)
         image_object_key = f"{id}/{i+1}.png"
+        original_image_object_key = f"original/{id}/{i+1}.png"
         client.upload_fileobj(
             Fileobj=buffer,
             Bucket=AWS_IMAGE_BUCKET,
             Key=image_object_key,
             ExtraArgs={"ContentType": "image/png"},
         )
-        payload.append(
-            {
-                "version_id": id,
-                "local_index": i + 1,
-                "json": {"object_key": json_object_key, "status": Status.preprocessed.value},
-                "image": {"object_key": image_object_key, "status": Status.preprocessed.value},
-            }
+
+        json_params = JsonSchema(object_key=json_object_key, status=Status.preprocessed.value)
+
+        image_params = ImageSchema(
+            object_key=image_object_key,
+            status=Status.preprocessed.value,
+            original_object_key=original_image_object_key,
         )
+
+        params = Payload(version_id=id, local_index=i + 1, json=json_params, image=image_params)
+
+        payload.append(params)
     invoke_lambda(payload)
 
 
