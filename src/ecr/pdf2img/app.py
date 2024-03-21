@@ -57,6 +57,10 @@ class Payload(BaseModel):
     image: ImageSchema
 
 
+class Payloads(BaseModel):
+    payload: list[Payload]
+
+
 # TODO: Refactor this function to use AWS Lambda Powertools
 def extract_feature_points(img: np.ndarray) -> dict:
     """
@@ -105,12 +109,12 @@ def keypoint_serializer(kp: cv2.KeyPoint) -> dict:
     }
 
 
-def invoke_lambda(payload: list[Payload]) -> None:
+def invoke_lambda(payload: Payloads) -> None:
     logger.info(payload)
     response = lambda_client.invoke(
         FunctionName="aska-api-dev-InvokedLambdaHandler",
         InvocationType="RequestResponse",
-        Payload=json.dumps(payload).encode(),
+        Payload=payload.model_dump_json().encode(),
     )
     logger.info(response["Payload"].read().decode("utf-8"))
 
@@ -133,7 +137,7 @@ def replace_red_with_white(img: Image) -> Image:
 
 def convert_to_images(id: str, pdf_file_data: bytes) -> None:
     images = convert_from_bytes(pdf_file_data)
-    payload = []
+    payload = Payloads(payload=[])
     for i, image in enumerate(images):
         rw_image = replace_red_with_white(image)
         img = np.array(rw_image)
@@ -165,8 +169,7 @@ def convert_to_images(id: str, pdf_file_data: bytes) -> None:
         )
 
         params = Payload(version_id=id, local_index=i + 1, json=json_params, image=image_params)
-
-        payload.append(params)
+        payload.payload.append(params)
     invoke_lambda(payload)
 
 
