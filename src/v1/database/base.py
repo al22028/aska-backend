@@ -285,7 +285,7 @@ class Page(Base, TimestampMixin):
             "id": self.id,
             "versionId": self.version_id,
             "status": self.status,
-            "version_number": self.version.title[1:] if self.version.title else 0,
+            "version": self.version.title[1:] if self.version.title else 0,
             "local_index": self.local_index,
             "global_index": self.global_index,
             "image": self.image.serializer(),
