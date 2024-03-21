@@ -11,7 +11,6 @@ from controllers.version import VersionController
 from schemas.common import DeletedSchema, DownloadURLSchema
 from schemas.version import (
     VersionCreateResponseSchema,
-    VersionCreateSchema,
     VersionDetailSchema,
     VersionSchema,
     VersionUpdateSchema,
@@ -66,8 +65,15 @@ def fetch_all_versions() -> List[VersionSchema]:
         500: {"description": "Internal Server Error"},
     },
 )
-def create_single_version(version_data: VersionCreateSchema) -> VersionCreateResponseSchema:
-    created_pdf, status_code = controller.create_one(version_data=version_data)
+def create_single_version(
+    projectId: Annotated[
+        str,
+        Query(
+            title="プロジェクトID",
+        ),
+    ]
+) -> VersionCreateResponseSchema:
+    created_pdf, status_code = controller.create_one(project_id=projectId)
     return created_pdf, status_code  # type: ignore
 
 
