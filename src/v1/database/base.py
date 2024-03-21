@@ -306,7 +306,7 @@ class Matching(Base, TimestampMixin):
     id = Column(String, primary_key=True)
     image1_id = Column(String, ForeignKey("images.id", ondelete="CASCADE"), nullable=False)
     image2_id = Column(String, ForeignKey("images.id", ondelete="CASCADE"), nullable=False)
-    score = Column(Float, nullable=True, default=-1.0)
+    score = Column(Float, nullable=False, default=-1.0)
     status = Column(Enum(Status), nullable=False, default=Status.pending)
     params = Column(JSON, nullable=False, default={})
     bounding_boxes = Column(JSON, nullable=True, default={})
