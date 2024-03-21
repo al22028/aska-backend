@@ -52,7 +52,8 @@ class ImageSchema(BaseModel):
 class Payload(BaseModel):
     version_id: str
     local_index: int
-    json: JsonSchema
+    # FIXME: lint error
+    json: JsonSchema  # type: ignore
     image: ImageSchema
 
 
