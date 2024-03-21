@@ -179,15 +179,19 @@ class Image(Base, TimestampMixin):
     id = Column(String, primary_key=True)
     page_id = Column(String, ForeignKey("pages.id", ondelete="CASCADE"), nullable=False)
     object_key = Column(String, nullable=False, default="")
+    original_object_key = Column(String, nullable=False, default="")
     status = Column(Enum(Status), nullable=False, default=Status.pending)
 
     page: Mapped["Page"] = relationship("Page", back_populates="image")
 
-    def __init__(self, id: str, page_id: str, object_key: str, status: Status) -> None:
+    def __init__(
+        self, id: str, page_id: str, object_key: str, original_object_key: str, status: Status
+    ) -> None:
         self.id = id
         self.page_id = page_id
         self.object_key = object_key
         self.status = status
+        self.original_object_key = original_object_key
         self.updated_at = datetime.now()
         self.created_at = self.updated_at
 
@@ -202,6 +206,7 @@ class Image(Base, TimestampMixin):
             "id": self.id,
             "pageId": self.page_id,
             "objectKey": self.object_key,
+            "originalObjectKey": self.original_object_key,
             "src": AWS_IMAGE_HOST_DOMAIN + "/" + self.object_key,
             "status": self.status,
             "updatedAt": self.updated_at.isoformat(),  # type: ignore

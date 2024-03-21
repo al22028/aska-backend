@@ -48,7 +48,7 @@ class ImageController:
         presigned_url = s3.create_presigned_url(
             client_method="put_object",
             bucket_name=AWS_IMAGE_BUCKET,
-            object_key=image.object_key,  # type: ignore
+            object_key=image.original_object_key,  # type: ignore
             expiration=3600,
         )
         return (
@@ -88,7 +88,7 @@ class ImageController:
             presigned_url=s3.create_presigned_url(
                 client_method="get_object",
                 bucket_name=AWS_IMAGE_BUCKET,
-                object_key=image.object_key,  # type: ignore
+                object_key=image.original_object_key,
                 expiration=3600,
             )
         )
