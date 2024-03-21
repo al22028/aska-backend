@@ -1,6 +1,7 @@
 # Standard Library
 import io
 import json
+import math
 import os
 from enum import Enum
 from typing import TypeVar
@@ -26,6 +27,9 @@ client = boto3.client("s3")
 lambda_client = boto3.client("lambda")
 
 T = TypeVar("T")
+
+shrinked_height = 1000
+shrinked_width = int(1000 * math.sqrt(2))
 
 
 class Status(Enum):
@@ -148,22 +152,40 @@ def convert_to_images(id: str, pdf_file_data: bytes) -> None:
             Key=json_object_key,
             Body=json.dumps(serialized_keypoints).encode(),
         )
-        buffer = io.BytesIO()
-        image.save(buffer, format="PNG")
-        buffer.seek(0)
-        image_object_key = f"{id}/{i+1}.png"
-        original_image_object_key = f"original/{id}/{i+1}.png"
+
+        original_image = image.copy()
+        shrinked_image = image.resize((shrinked_width, shrinked_height))
+
+        original_buffer = io.BytesIO()
+        shrinked_buffer = io.BytesIO()
+
+        original_image.save(original_buffer, format="PNG")
+        shrinked_image.save(shrinked_buffer, format="PNG")
+
+        original_buffer.seek(0)
+        shrinked_buffer.seek(0)
+
+        original_image_object_key = f"{id}/original_{i+1}.png"
+        shrinked_image_object_key = f"{id}/{i+1}.png"
+
         client.upload_fileobj(
-            Fileobj=buffer,
+            Fileobj=original_buffer,
             Bucket=AWS_IMAGE_BUCKET,
-            Key=image_object_key,
+            Key=original_image_object_key,
+            ExtraArgs={"ContentType": "image/png"},
+        )
+
+        client.upload_fileobj(
+            Fileobj=shrinked_buffer,
+            Bucket=AWS_IMAGE_BUCKET,
+            Key=shrinked_image_object_key,
             ExtraArgs={"ContentType": "image/png"},
         )
 
         json_params = JsonSchema(object_key=json_object_key, status=Status.preprocessed.value)
 
         image_params = ImageSchema(
-            object_key=image_object_key,
+            object_key=shrinked_image_object_key,
             status=Status.preprocessed.value,
             original_object_key=original_image_object_key,
         )
