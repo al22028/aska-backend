@@ -1,5 +1,6 @@
 # Third Party Library
 from aws_lambda_powertools import Logger
+from aws_lambda_powertools.event_handler.exceptions import NotFoundError
 from database.session import with_session
 from models.image import ImageORM
 from models.json import JsonORM
@@ -26,10 +27,19 @@ class PageController:
         return [PageSchema(**page.serializer()) for page in pages]
 
     @with_session
+    def find_single_page(self, page_id: str, session: Session) -> PageSchema:
+        page = self.pages.find_one_or_404(session, page_id)
+        if page is None:
+            raise NotFoundError("Page not found")
+        return PageSchema(**page.serializer())
+
+    @with_session
     def update_single_page(
         self, page_id: str, data: PageUpdateSchema, session: Session
     ) -> PageSchema:
-        page = self.pages.find_one(session, page_id)
+        page = self.pages.find_one_or_404(session, page_id)
+        if page is None:
+            raise NotFoundError("Page not found")
         page.local_index = data.local_index
         page.global_index = data.global_index
         page.status = data.status
