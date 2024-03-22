@@ -75,7 +75,7 @@ class S3:
     def upload_image_from_buffer(self, image_data: Image.Image, object_key: str) -> None:
         image_buffer = io.BytesIO()
         image_data.save(image_buffer, format="PNG")
-        image_data.seek(0)
+        image_buffer.seek(0)
         self.client.upload_fileobj(
             Fileobj=image_buffer,
             Bucket=self._bucket_name,
