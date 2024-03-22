@@ -176,7 +176,9 @@ def convert_to_images(version_id: str, pdf_file_data: bytes) -> None:
         resized_image_object_key = f"{version_id}/{i+1}.png"
 
         original_image = image.copy()
-        resized_image = image.resize((IMAGE_HEIGHT, int(IMAGE_HEIGHT * math.sqrt(2))))
+        # NOTE:  width, height
+        size = (int(IMAGE_HEIGHT * math.sqrt(2)), IMAGE_HEIGHT)
+        resized_image = image.resize(size)
 
         s3.upload_image_from_buffer(original_image, original_image_object_key)
         s3.upload_image_from_buffer(resized_image, resized_image_object_key)
