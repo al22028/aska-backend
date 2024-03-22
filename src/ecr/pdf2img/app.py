@@ -23,7 +23,6 @@ logger = Logger()
 AWS_IMAGE_BUCKET = os.environ["AWS_IMAGE_BUCKET"]
 
 
-client = boto3.client("s3")
 lambda_client = boto3.client("lambda")
 
 T = TypeVar("T")
@@ -60,8 +59,32 @@ class Payload(BaseModel):
     image: ImageSchema
 
 
-class Payloads(BaseModel):
-    payload: list[Payload]
+class S3:
+    client = boto3.client("s3")
+
+    def __init__(self, bucket_name: str):
+        self._bucket_name = bucket_name
+
+    def get_object(self, object_key: str) -> dict:
+        response = self.client.get_object(Bucket=self._bucket_name, Key=object_key)
+        return json.loads(response["Body"].read())
+
+    def put_object(self, object_key: str, body: bytes) -> None:
+        self.client.put_object(Bucket=self._bucket_name, Key=object_key, Body=body)
+
+    def upload_image_from_buffer(self, image_data: Image.Image, object_key: str) -> None:
+        image_buffer = io.BytesIO()
+        image_data.save(image_buffer, format="PNG")
+        image_buffer.seek(0)
+        self.client.upload_fileobj(
+            Fileobj=image_buffer,
+            Bucket=self._bucket_name,
+            Key=object_key,
+            ExtraArgs={"ContentType": "image/png"},
+        )
+
+
+s3 = S3(AWS_IMAGE_BUCKET)
 
 
 # TODO: Refactor this function to use AWS Lambda Powertools
@@ -112,12 +135,13 @@ def keypoint_serializer(kp: cv2.KeyPoint) -> dict:
     }
 
 
-def invoke_lambda(payload: Payloads) -> None:
-    logger.info(payload)
+def invoke_lambda(payloads: list[Payload]) -> None:
+    logger.info(payloads)
+    dict_payloads = [payload.model_dump() for payload in payloads]
     response = lambda_client.invoke(
         FunctionName="aska-api-dev-InvokedLambdaHandler",
         InvocationType="RequestResponse",
-        Payload=payload.model_dump_json().encode(),
+        Payload=json.dumps(dict_payloads).encode(),
     )
     logger.info(response["Payload"].read().decode("utf-8"))
 
@@ -138,46 +162,26 @@ def replace_red_with_white(img: Image) -> Image:
     return pil_image
 
 
-def upload_image_to_s3(image_buffer: io.BytesIO, object_key: str) -> None:
-    client.upload_fileobj(
-        Fileobj=image_buffer,
-        Bucket=AWS_IMAGE_BUCKET,
-        Key=object_key,
-        ExtraArgs={"ContentType": "image/png"},
-    )
-
-
-def convert_to_images(id: str, pdf_file_data: bytes) -> None:
+def convert_to_images(version_id: str, pdf_file_data: bytes) -> None:
     images = convert_from_bytes(pdf_file_data)
-    payload = Payloads(payload=[])
+    payloads: list[Payload] = []
     for i, image in enumerate(images):
         rw_image = replace_red_with_white(image)
         img = np.array(rw_image)
         serialized_keypoints = extract_feature_points(img)
-        json_object_key = f"{id}/{i+1}.json"
-        client.put_object(
-            Bucket=AWS_IMAGE_BUCKET,
-            Key=json_object_key,
-            Body=json.dumps(serialized_keypoints).encode(),
-        )
+        json_object_key = f"{version_id}/{i+1}.json"
+        s3.put_object(json_object_key, json.dumps(serialized_keypoints).encode())
+
+        original_image_object_key = f"{version_id}/original_{i+1}.png"
+        resized_image_object_key = f"{version_id}/{i+1}.png"
 
         original_image = image.copy()
-        resized_image = image.resize((IMAGE_HEIGHT, int(IMAGE_HEIGHT * math.sqrt(2))))
+        # NOTE:  width, height
+        size = (int(IMAGE_HEIGHT * math.sqrt(2)), IMAGE_HEIGHT)
+        resized_image = image.resize(size)
 
-        original_buffer = io.BytesIO()
-        resized_buffer = io.BytesIO()
-
-        original_image.save(original_buffer, format="PNG")
-        resized_image.save(resized_buffer, format="PNG")
-
-        original_buffer.seek(0)
-        resized_buffer.seek(0)
-
-        original_image_object_key = f"{id}/original_{i+1}.png"
-        resized_image_object_key = f"{id}/{i+1}.png"
-
-        upload_image_to_s3(original_buffer, original_image_object_key)
-        upload_image_to_s3(resized_buffer, resized_image_object_key)
+        s3.upload_image_from_buffer(original_image, original_image_object_key)
+        s3.upload_image_from_buffer(resized_image, resized_image_object_key)
 
         json_params = JsonSchema(object_key=json_object_key, status=Status.preprocessed.value)
 
@@ -187,9 +191,11 @@ def convert_to_images(id: str, pdf_file_data: bytes) -> None:
             original_object_key=original_image_object_key,
         )
 
-        params = Payload(version_id=id, local_index=i + 1, json=json_params, image=image_params)
-        payload.payload.append(params)
-    invoke_lambda(payload)
+        params = Payload(
+            version_id=version_id, local_index=i + 1, json=json_params, image=image_params
+        )
+        payloads.append(params)
+    invoke_lambda(payloads)
 
 
 @event_source(data_class=S3Event)
@@ -198,8 +204,8 @@ def lambda_handler(event: S3Event, context: LambdaContext) -> dict:
     logger.info(event)
     bucket_name = event.bucket_name
     object_key = event.object_key
-    pdf_id, _ = object_key.split("/")
-    response = client.get_object(Bucket=bucket_name, Key=object_key)
+    version_id, _ = object_key.split("/")
+    response = boto3.client("s3").get_object(Bucket=bucket_name, Key=object_key)
     pdf_file_data = response["Body"].read()
-    convert_to_images(pdf_id, pdf_file_data)
+    convert_to_images(version_id, pdf_file_data)
     return {"statusCode": 200, "body": json.dumps({"message": "Converted PDF to Images"})}
