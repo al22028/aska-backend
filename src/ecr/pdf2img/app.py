@@ -1,6 +1,7 @@
 # Standard Library
 import io
 import json
+import math
 import os
 from enum import Enum
 from typing import TypeVar
@@ -26,6 +27,8 @@ client = boto3.client("s3")
 lambda_client = boto3.client("lambda")
 
 T = TypeVar("T")
+
+IMAGE_HEIGHT = 1000
 
 
 class Status(Enum):
@@ -135,6 +138,15 @@ def replace_red_with_white(img: Image) -> Image:
     return pil_image
 
 
+def upload_image_to_s3(image_buffer: io.BytesIO, object_key: str) -> None:
+    client.upload_fileobj(
+        Fileobj=image_buffer,
+        Bucket=AWS_IMAGE_BUCKET,
+        Key=object_key,
+        ExtraArgs={"ContentType": "image/png"},
+    )
+
+
 def convert_to_images(id: str, pdf_file_data: bytes) -> None:
     images = convert_from_bytes(pdf_file_data)
     payload = Payloads(payload=[])
@@ -148,22 +160,29 @@ def convert_to_images(id: str, pdf_file_data: bytes) -> None:
             Key=json_object_key,
             Body=json.dumps(serialized_keypoints).encode(),
         )
-        buffer = io.BytesIO()
-        image.save(buffer, format="PNG")
-        buffer.seek(0)
-        image_object_key = f"{id}/{i+1}.png"
-        original_image_object_key = f"original/{id}/{i+1}.png"
-        client.upload_fileobj(
-            Fileobj=buffer,
-            Bucket=AWS_IMAGE_BUCKET,
-            Key=image_object_key,
-            ExtraArgs={"ContentType": "image/png"},
-        )
+
+        original_image = image.copy()
+        resized_image = image.resize((IMAGE_HEIGHT, int(IMAGE_HEIGHT * math.sqrt(2))))
+
+        original_buffer = io.BytesIO()
+        resized_buffer = io.BytesIO()
+
+        original_image.save(original_buffer, format="PNG")
+        resized_image.save(resized_buffer, format="PNG")
+
+        original_buffer.seek(0)
+        resized_buffer.seek(0)
+
+        original_image_object_key = f"{id}/original_{i+1}.png"
+        resized_image_object_key = f"{id}/{i+1}.png"
+
+        upload_image_to_s3(original_buffer, original_image_object_key)
+        upload_image_to_s3(resized_buffer, resized_image_object_key)
 
         json_params = JsonSchema(object_key=json_object_key, status=Status.preprocessed.value)
 
         image_params = ImageSchema(
-            object_key=image_object_key,
+            object_key=resized_image_object_key,
             status=Status.preprocessed.value,
             original_object_key=original_image_object_key,
         )
