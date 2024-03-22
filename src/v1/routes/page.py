@@ -29,6 +29,29 @@ def fetch_all_pages() -> list[PageSchema]:
     return controller.find_all_pages()
 
 
+@router.get(
+    "/<pageId>",
+    tags=["Page"],
+    summary="単一ページを取得",
+    description="単一ページを取得します。",
+    response_description="単一ページ",
+    operation_id="fetchSinglePage",
+    responses={200: {"description": "成功"}, 500: {"description": "Internal Server Error"}},
+)
+def fetch_single_page(
+    pageId: Annotated[
+        str,
+        Path(
+            ...,
+            title="ページID",
+            description="取得するページのID",
+            example="44f97c86d4954afcbdc6f2443a159c28",
+        ),
+    ]
+) -> PageSchema:
+    return controller.find_single_page(page_id=pageId)
+
+
 @router.put(
     "/<pageId>",
     tags=["Page"],
