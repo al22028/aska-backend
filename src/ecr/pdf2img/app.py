@@ -53,7 +53,7 @@ class ImageSchema(BaseModel):
 
 
 class Payload(BaseModel):
-    version_id: str
+    version_id: int
     local_index: int
     # FIXME: lint error
     json: JsonSchema  # type: ignore
@@ -138,7 +138,10 @@ def replace_red_with_white(img: Image) -> Image:
     return pil_image
 
 
-def upload_image_to_s3(image_buffer: io.BytesIO, object_key: str) -> None:
+def upload_image_to_s3(image_data: Image.Image, object_key: str) -> None:
+    image_buffer = io.BytesIO()
+    image_data.save(image_buffer, format="PNG")
+    image_data.seek(0)
     client.upload_fileobj(
         Fileobj=image_buffer,
         Bucket=AWS_IMAGE_BUCKET,
@@ -147,7 +150,7 @@ def upload_image_to_s3(image_buffer: io.BytesIO, object_key: str) -> None:
     )
 
 
-def convert_to_images(id: str, pdf_file_data: bytes) -> None:
+def convert_to_images(id: int, pdf_file_data: bytes) -> None:
     images = convert_from_bytes(pdf_file_data)
     payload = Payloads(payload=[])
     for i, image in enumerate(images):
@@ -161,23 +164,14 @@ def convert_to_images(id: str, pdf_file_data: bytes) -> None:
             Body=json.dumps(serialized_keypoints).encode(),
         )
 
-        original_image = image.copy()
-        resized_image = image.resize((IMAGE_HEIGHT, int(IMAGE_HEIGHT * math.sqrt(2))))
-
-        original_buffer = io.BytesIO()
-        resized_buffer = io.BytesIO()
-
-        original_image.save(original_buffer, format="PNG")
-        resized_image.save(resized_buffer, format="PNG")
-
-        original_buffer.seek(0)
-        resized_buffer.seek(0)
-
         original_image_object_key = f"{id}/original_{i+1}.png"
         resized_image_object_key = f"{id}/{i+1}.png"
 
-        upload_image_to_s3(original_buffer, original_image_object_key)
-        upload_image_to_s3(resized_buffer, resized_image_object_key)
+        original_image = image.copy()
+        resized_image = image.resize((IMAGE_HEIGHT, int(IMAGE_HEIGHT * math.sqrt(2))))
+
+        upload_image_to_s3(original_image, original_image_object_key)
+        upload_image_to_s3(resized_image, resized_image_object_key)
 
         json_params = JsonSchema(object_key=json_object_key, status=Status.preprocessed.value)
 
@@ -198,8 +192,8 @@ def lambda_handler(event: S3Event, context: LambdaContext) -> dict:
     logger.info(event)
     bucket_name = event.bucket_name
     object_key = event.object_key
-    pdf_id, _ = object_key.split("/")
+    version_id, _ = object_key.split("/")
     response = client.get_object(Bucket=bucket_name, Key=object_key)
     pdf_file_data = response["Body"].read()
-    convert_to_images(pdf_id, pdf_file_data)
+    convert_to_images(int(version_id), pdf_file_data)
     return {"statusCode": 200, "body": json.dumps({"message": "Converted PDF to Images"})}
