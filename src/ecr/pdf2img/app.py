@@ -28,8 +28,7 @@ lambda_client = boto3.client("lambda")
 
 T = TypeVar("T")
 
-shrinked_height = 1000
-shrinked_width = int(1000 * math.sqrt(2))
+IMAGE_HEIGHT = 1000
 
 
 class Status(Enum):
@@ -139,6 +138,15 @@ def replace_red_with_white(img: Image) -> Image:
     return pil_image
 
 
+def upload_image_to_s3(image_buffer: io.BytesIO, object_key: str) -> None:
+    client.upload_fileobj(
+        Fileobj=image_buffer,
+        Bucket=AWS_IMAGE_BUCKET,
+        Key=object_key,
+        ExtraArgs={"ContentType": "image/png"},
+    )
+
+
 def convert_to_images(id: str, pdf_file_data: bytes) -> None:
     images = convert_from_bytes(pdf_file_data)
     payload = Payloads(payload=[])
@@ -154,38 +162,27 @@ def convert_to_images(id: str, pdf_file_data: bytes) -> None:
         )
 
         original_image = image.copy()
-        shrinked_image = image.resize((shrinked_width, shrinked_height))
+        resized_image = image.resize((IMAGE_HEIGHT, int(IMAGE_HEIGHT * math.sqrt(2))))
 
         original_buffer = io.BytesIO()
-        shrinked_buffer = io.BytesIO()
+        resized_buffer = io.BytesIO()
 
         original_image.save(original_buffer, format="PNG")
-        shrinked_image.save(shrinked_buffer, format="PNG")
+        resized_image.save(resized_buffer, format="PNG")
 
         original_buffer.seek(0)
-        shrinked_buffer.seek(0)
+        resized_buffer.seek(0)
 
         original_image_object_key = f"{id}/original_{i+1}.png"
-        shrinked_image_object_key = f"{id}/{i+1}.png"
+        resized_image_object_key = f"{id}/{i+1}.png"
 
-        client.upload_fileobj(
-            Fileobj=original_buffer,
-            Bucket=AWS_IMAGE_BUCKET,
-            Key=original_image_object_key,
-            ExtraArgs={"ContentType": "image/png"},
-        )
-
-        client.upload_fileobj(
-            Fileobj=shrinked_buffer,
-            Bucket=AWS_IMAGE_BUCKET,
-            Key=shrinked_image_object_key,
-            ExtraArgs={"ContentType": "image/png"},
-        )
+        upload_image_to_s3(original_buffer, original_image_object_key)
+        upload_image_to_s3(resized_buffer, resized_image_object_key)
 
         json_params = JsonSchema(object_key=json_object_key, status=Status.preprocessed.value)
 
         image_params = ImageSchema(
-            object_key=shrinked_image_object_key,
+            object_key=resized_image_object_key,
             status=Status.preprocessed.value,
             original_object_key=original_image_object_key,
         )
