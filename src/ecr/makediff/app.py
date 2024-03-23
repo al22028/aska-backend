@@ -1,7 +1,5 @@
-# type: ignore
 # Standard Library
 import json
-import time
 
 # Third Party Library
 from aws_lambda_powertools import Logger
@@ -45,7 +43,7 @@ def lambda_handler(event: LambdaFunctionUrlEvent, context: LambdaContext) -> dic
 
         event_body = EventBody(**event_body_dict)
     except ValidationError as e:
-        logger(e)
+        logger.error(e)
         raise e
     bucket_name = event_body.bucket_name
     before_json_object_key, after_json_object_key = (
@@ -63,21 +61,12 @@ def lambda_handler(event: LambdaFunctionUrlEvent, context: LambdaContext) -> dic
     after_json = JsonModel(bucket_name, after_json_object_key)
     before_image = ImageModel(bucket_name, before_image_object_key)
     after_image = ImageModel(bucket_name, after_image_object_key)
-    pdf_id, image_name = before_image_object_key.split("/")
-    # TODO: Use decorator to log time
+    version_id, image_name = before_image_object_key.split("/")
     page, _ = image_name.split(".")
-    logger.info(f"start : {time.time()}")
-    now = time.time()
     calculator = Calculator(
-        before_json, after_json, before_image, after_image, pdf_id, page, event_body.params
+        before_json, after_json, before_image, after_image, version_id, page, event_body.params
     )
     homography_matrix = calculator.homography_matrix()
-    logger.info(f"homography : {time.time() - now}")
-    now = time.time()
     calculator.create_image_diff(homography_matrix, IS_DEV)
-    logger.info(f"create image diff : {time.time() - now}")
-    now = time.time()
     calculator.image_to_clusters()
-    logger.info(f"image to cluster : {time.time() - now}")
-    now = time.time()
     return {"statusCode": 200, "body": json.dumps({"objectKey": f"{str(calculator.export_path)}"})}

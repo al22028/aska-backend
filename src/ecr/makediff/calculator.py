@@ -32,7 +32,7 @@ class Calculator:
         after_json: JsonModel,
         before_image: ImageModel,
         after_image: ImageModel,
-        id: str,
+        version_id: str,
         page: str,
         params: BaseModel,
     ) -> None:
@@ -40,7 +40,7 @@ class Calculator:
         self.after_json = after_json
         self.before_image = before_image
         self.after_image = after_image
-        self.id = id
+        self.id = version_id
         self.page = page
         self.diff_img = None
         self.export_path = None
