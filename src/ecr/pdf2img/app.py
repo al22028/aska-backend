@@ -54,7 +54,6 @@ class ImageSchema(BaseModel):
 class Payload(BaseModel):
     version_id: str
     local_index: int
-    # FIXME: lint error
     json: JsonSchema  # type: ignore
     image: ImageSchema
 
@@ -103,27 +102,12 @@ def extract_feature_points(img: np.ndarray) -> dict:
     detector = cv2.AKAZE_create()  # type: ignore
 
     kp, desc = detector.detectAndCompute(img, None)
-    kpt = []
-    # keypointをシリアライズ化してリストに格納
     kpt = [keypoint_serializer(k) for k in kp]
     res = {"keypoints": kpt, "descriptors": desc.tolist()}
     return res
 
 
 def keypoint_serializer(kp: cv2.KeyPoint) -> dict:
-    """
-    JSONでデータを扱いたいため、cv2.Keypointをjsonにdumpsできる形にdecodeする
-    1つのcv2.Keypointからパラメータ x,y,size,angle,response,octave,calss_idを取りだす
-    取り出したパラメータを辞書型にして返す
-
-    Args:
-      kp (cv2.KeyPoint) : デコードするcv2.KeyPoint型のデータ
-
-    Return:
-      dict : cv2.KeyPointのパラメータを持った辞書
-    """
-
-    # TODO: パラメータを削った後のファイルサイズを確認してから検討
     return {
         "x": float(kp.pt[0]),
         "y": float(kp.pt[1]),
@@ -146,7 +130,7 @@ def invoke_lambda(payloads: list[Payload]) -> None:
     logger.info(response["Payload"].read().decode("utf-8"))
 
 
-def replace_red_with_white(img: Image) -> Image:
+def mask_red_with_white(img: Image) -> Image:
     pil_image = np.array(img)
     hsv = cv2.cvtColor(pil_image, cv2.COLOR_RGB2HSV)
     lower_red1 = np.array([0, 70, 50])
@@ -155,7 +139,6 @@ def replace_red_with_white(img: Image) -> Image:
     upper_red2 = np.array([180, 255, 255])
     mask1 = cv2.inRange(hsv, lower_red1, upper_red1)
     mask2 = cv2.inRange(hsv, lower_red2, upper_red2)
-    # TODO : Type check
     mask = mask1 + mask2  # type: ignore
     pil_image[mask != 0] = [255, 255, 255]
     pil_image = Image.fromarray(pil_image)
@@ -166,8 +149,8 @@ def convert_to_images(version_id: str, pdf_file_data: bytes) -> None:
     images = convert_from_bytes(pdf_file_data)
     payloads: list[Payload] = []
     for i, image in enumerate(images):
-        rw_image = replace_red_with_white(image)
-        img = np.array(rw_image)
+        masked_image = mask_red_with_white(image)
+        img = np.array(masked_image)
         serialized_keypoints = extract_feature_points(img)
         json_object_key = f"{version_id}/{i+1}.json"
         s3.put_object(json_object_key, json.dumps(serialized_keypoints).encode())
@@ -176,8 +159,7 @@ def convert_to_images(version_id: str, pdf_file_data: bytes) -> None:
         resized_image_object_key = f"{version_id}/{i+1}.png"
 
         original_image = image.copy()
-        # NOTE:  width, height
-        size = (int(IMAGE_HEIGHT * math.sqrt(2)), IMAGE_HEIGHT)
+        size = (int(IMAGE_HEIGHT * math.sqrt(2)), IMAGE_HEIGHT)  # WIDTH, HEIGHT
         resized_image = image.resize(size)
 
         s3.upload_image_from_buffer(original_image, original_image_object_key)
