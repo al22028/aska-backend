@@ -31,6 +31,32 @@ def fetch_all_images() -> list[ImageSchema]:
 
 
 @router.get(
+    "/<imageId>",
+    tags=["Image"],
+    summary="特定の画像の情報を取得",
+    description="特定の画像の情報を取得します。",
+    response_description="画像情報",
+    operation_id="fetchSingleImage",
+    responses={
+        200: {"description": "成功"},
+        404: {"description": "Not Found"},
+        500: {"description": "Internal Server Error"},
+    },
+)
+def fetch_single_image_by_id(
+    imageId: Annotated[
+        str,
+        Path(
+            title="画像ID",
+            description="特定の画像のIDを指定してください。",
+            example="44f97c86d4954afcbdc6f2443a159c28",
+        ),
+    ]
+) -> ImageSchema:
+    return controller.find_one(image_id=imageId)
+
+
+@router.get(
     "/<imageId>/download",
     tags=["Image"],
     summary="画像のダウンロードURLを取得",
