@@ -135,6 +135,8 @@ provider:
         path: ./src/ecr/matching_calculator
       ImageDiffImage:
         path: ./src/ecr/makediff
+      ImageToPDFImage:
+        path: ./src/ecr/img2pdf
 
   environment:
     TZ: Asia/Tokyo
@@ -223,3 +225,11 @@ functions:
       name: ImageDiffImage
     memorySize: 4096 # optional, in MB, default is 1024
     timeout: 120 # optional, in seconds, default is 6
+
+  ImageToPDFHandler:
+    description: Convert Image to PDF
+    image:
+      name: ImageToPDFImage
+    memorySize: 1024 # optional, in MB, default is 1024
+    timeout: 120 # optional, in seconds, default is 6
+
