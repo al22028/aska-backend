@@ -40,6 +40,7 @@ def lambda_handler(event: LambdaFunctionUrlEvent, context: LambdaContext) -> dic
         image_data.append(img_file_data)
 
     pdf_bytes = img2pdf.convert(image_data)  # type: ignore
+    # FIXME: ここを動的に変更できるように修正
 
     upload_bucket = "aska-tmp-dir"
     upload_object_key = "created_pdf.pdf"
