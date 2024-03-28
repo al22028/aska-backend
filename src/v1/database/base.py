@@ -28,8 +28,8 @@ logger = Logger(service="aws_s3_client")
 class TimestampMixin(object):
     """Timestamp Mixin"""
 
-    created_at = Column(DateTime, default=datetime.now(), nullable=False)
-    updated_at = Column(DateTime, default=datetime.now(), onupdate=datetime.now(), nullable=False)
+    created_at = Column(DateTime, default=datetime.now, nullable=False)
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now, nullable=False)
 
 
 class User(Base, TimestampMixin):
