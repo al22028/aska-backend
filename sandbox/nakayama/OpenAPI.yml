@@ -1,0 +1,251 @@
+openapi: 3.0.0
+info:
+  title: aska-backend-api
+  description: ファイル管理システムのためのAPI
+  version: 1.0.0
+servers:
+  - url: "https://XXXXX.execute-api.ap-northeast-1.amazonaws.com/dev"
+    variables:
+      protocol:
+        default: https
+        enum:
+          - http
+          - https
+paths:
+  # /users:
+  #   get:
+  #     tags:
+  #       - Users
+  #     summary: 全ユーザーの取得
+  #     description: :全ユーザーの取得
+  #     responses:
+  #       '200':
+  #         description: 成功
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: array
+  #               items:
+  #                 $ref:
+  
+  # /users/{userId}:
+  #   get:
+  #     tags:
+  #       - Users
+  #     summary: 特定ユーザーの取得
+  #     description: :特定ユーザーの取得
+  #     responses:
+  #       '200':
+  #         description: 成功
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: array
+  #               items:
+  #                 $ref:
+
+  /files:
+    get:
+      tags:
+        - Files
+      summary: 全ファイルアイテムの取得
+      description: ファイルアイテムの一覧を取得します。
+      parameters:
+        - in: query
+          name: path
+          description: ファイルのパスを指定してください
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 成功。ファイルアイテムのリストを返します。
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/file-info"
+    
+    post:
+      tags:
+        - Files
+      summary: ファイルアイテムの登録
+      description: ファイルアイテムの登録
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title: 
+                  type: string
+                  example: K17000
+                path:
+                  type: string
+                  example: ~/github/world-wing/aska-backend/sandbox
+                  description: ファイルのパス
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/file-info"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/bad-request"
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/not-found"
+
+  /files/{id}:
+    get:
+      tags:
+        - Files
+      summary: 特定のファイルアイテムの取得
+      description: 特定のファイルアイテムの一覧を取得します。
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: "unique key"
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 成功。特定のファイルアイテムのリストを返します。
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/file-info"
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/not-found"
+
+
+    put:
+      tags:
+        - Files
+      summary: ファイルアイテムの更新
+      description: ファイルアイテムの更新
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: "unique key"
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title: 
+                  type: string
+                  example: K17000
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/file-info"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/bad-request"
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/not-found"
+
+components:
+  schemas:
+    file-info:
+      type: object
+      properties:
+        title:
+          type: string
+          example: K17000
+          description: ファイル名
+        id:
+          type: string
+          example: 5408wt4w8e7
+          description: id
+        path:
+          type: string
+          example: ~/github/world-wing/aska-backend/sandbox
+          description: ファイルのパス
+        size:
+          type: integer
+          example: 1024
+          description: ファイルサイズ（バイト）
+        mimeType:
+          type: string
+          example: application/pdf
+          description: MIME タイプ
+        owner:
+          type: string
+          example: user123
+          description: ファイルの所有者
+        createdAt:
+          type: string
+          example: 2021-09-01T00:00:00.000Z
+          description: 作成日
+        updatedAt:
+          type: string
+          example: 2021-09-01T00:00:00.000Z
+          description: 更新日
+        startedAt:
+          type: string
+          example: 2021-09-01T00:00:00.000Z
+          description: 開始日
+        endedAt:
+          type: string
+          example: 2021-09-01T00:00:00.000Z
+          description: 終了日
+    
+    bad-request:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Bad Request
+
+    not-found:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Not Found

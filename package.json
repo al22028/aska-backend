@@ -25,7 +25,7 @@
   "devDependencies": {
     "serverless-deployment-bucket": "^1.6.0",
     "serverless-ignore": "^0.2.1",
-    "serverless-offline": "^13.3.2",
+    "serverless-offline": "^13.5.0",
     "serverless-plugin-tracing": "^2.0.0",
     "serverless-prune-plugin": "^2.0.2",
     "serverless-prune-versions": "^1.0.4",
@@ -35,5 +35,8 @@
     "node": "18.12.1",
     "npm": "8.19.2"
   },
-  "homepage": "https://github.com/world-wing/aska-backend#readme"
+  "homepage": "https://github.com/world-wing/aska-backend#readme",
+  "dependencies": {
+    "serverless": "^3.38.0"
+  }
 }

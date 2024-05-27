@@ -178,3 +178,116 @@ Please refer to the following template for the commit message.
 #🙈 :see_no_evil: .gitignore追加
 #🛠️ :hammer_and_wrench: バグ修正や基本的な問題解決
 ```
+
+
+```mermaid
+erDiagram
+
+users || --o{ posters: ""
+users || --o{ favorites : ""
+users || --o{ collaborators: ""
+users || --o{ comments : ""
+users || --o{ members : ""
+organizations || --o{ members : ""
+posters|| --o{ favorites : ""
+posters|| --o{ collaborators : ""
+posters|| --o{ assets : ""
+posters|| --o{ comments : ""
+posters|| --o{ histories : ""
+
+
+users {
+    string id PK
+    string username
+    string(256) email
+    string first_name
+    string last_name
+    string(512) description
+    string profile_picture
+    timestamp created_at
+    timestamp updated_at
+}
+
+favorites {
+    string id PK
+    string user_id FK
+    string poster_id FK
+    timestamp created_at
+    timestamp updated_at
+}
+
+collaborators {
+    string id PK
+    string poster_id FK
+    string user_id FK
+    string role
+    timestamp created_at
+    timestamp updated_at
+}
+
+posters {
+    string id PK
+    string owner_id FK
+    string(256) title
+    string(512) description
+    string body
+    string thumbnail
+    bool is_archive
+    timestamp created_at
+    timestamp updated_at
+}
+
+assets {
+    string id PK
+    string poster_id FK
+    string object_key
+    string src
+    string(512) alt
+    bool is_uploaded
+    timestamp created_at
+    timestamp updated_at
+}
+
+comments {
+    string id PK
+    string user_id FK
+    string poster_id FK
+    string parent_comment_id FK
+    string body
+    json position
+    bool is_deleted
+    bool resolved
+    timestamp created_at
+    timestamp updated_at
+}
+
+organizations {
+    string id PK
+    string name
+    string description
+    string logo
+    timestamp created_at
+    timestamp updated_at
+}
+
+members {
+    string id PK
+    string user_id FK
+    string organization_id FK
+    string role
+    timestamp created_at
+    timestamp updated_at
+}
+
+histories {
+    string id PK
+    string poster_id FK
+    string object_key
+    string comment
+    string user_id FK
+    string body
+    timestamp created_at
+    timestamp updated_at
+}
+
+```
